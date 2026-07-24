@@ -1,0 +1,410 @@
+Backup controlfile written to trace file /u01/app/oracle/diag/rdbms/orcl/orcl/trace/orcl_ora_4799.trc
+
+ /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl, /u01/app/oracle/fast_recovery_area/ORCL/controlfile/o1_mf_jngnomvm_.ctl
+ 
+ rm /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl ;
+ rm /u01/app/oracle/fast_recovery_area/ORCL/controlfile/o1_mf_jngnomvm_.ctl
+[oracle@linux7 oaz]$ more /u01/app/oracle/diag/rdbms/orcl/orcl/trace/orcl_ora_4799.trc
+Trace file /u01/app/oracle/diag/rdbms/orcl/orcl/trace/orcl_ora_4799.trc
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+Build label:    RDBMS_19.3.0.0.0DBRU_LINUX.X64_190417
+ORACLE_HOME:    /u01/app/oracle/product/19.0.0/dbhome_1
+System name:    Linux
+Node name:      linux7
+Release:        4.14.35-1902.300.11.el7uek.x86_64
+Version:        #2 SMP Tue Mar 17 17:11:47 PDT 2020
+Machine:        x86_64
+Instance name: orcl
+Redo thread mounted by this instance: 1
+Oracle process number: 48
+Unix process pid: 4799, image: oracle@linux7 (TNS V1-V3)
+
+
+*** 2022-07-11T20:27:03.357710+07:00 (CDB$ROOT(1))
+*** SESSION ID:(30.12819) 2022-07-11T20:27:03.357777+07:00
+*** CLIENT ID:() 2022-07-11T20:27:03.357795+07:00
+*** SERVICE NAME:(SYS$USERS) 2022-07-11T20:27:03.357878+07:00
+*** MODULE NAME:(rman@linux7 (TNS V1-V3)) 2022-07-11T20:27:03.357898+07:00
+*** ACTION NAME:(0000001 FINISHED70) 2022-07-11T20:27:03.357914+07:00
+*** CLIENT DRIVER:() 2022-07-11T20:27:03.357928+07:00
+*** CONTAINER ID:(1) 2022-07-11T20:27:03.357941+07:00
+ 
+krsv_proc_add: Request to add process to V$MANAGED_STANDBY [krse.c:2735]
+krsv_proc_rem: Request to remove process from V$MANAGED_STANDBY [krse.c:2794]
+
+*** 2022-07-11T20:27:08.077718+07:00 (CDB$ROOT(1))
+*** ACTION NAME:(0000003 FINISHED66) 2022-07-11T20:27:08.078496+07:00
+ 
+ RECID #17 Recno 17 
+  Internal Status: 6
+  External Status: 2
+    Command id: 2022-07-11T20:26:41
+  Operation: backup
+  Start and End time 07/11/22 20:27:04 07/11/22 20:27:08
+
+*** 2022-07-11T20:27:31.787796+07:00 (CDB$ROOT(1))
+*** ACTION NAME:(0000007 FINISHED66) 2022-07-11T20:27:31.793068+07:00
+ 
+ RECID #18 Recno 18 
+  Internal Status: 6
+  External Status: 2
+    Command id: 2022-07-11T20:26:41
+  Operation: backup
+  Start and End time 07/11/22 20:27:08 07/11/22 20:27:31
+krsv_proc_add: Request to add process to V$MANAGED_STANDBY [krse.c:2735]
+Log read is SYNCHRONOUS though disk_asynch_io is enabled!
+krsv_proc_rem: Request to remove process from V$MANAGED_STANDBY [krse.c:2794]
+
+*** 2022-07-11T20:27:34.163256+07:00 (CDB$ROOT(1))
+*** ACTION NAME:(0000009 FINISHED66) 2022-07-11T20:27:34.163308+07:00
+ 
+ RECID #19 Recno 19 
+  Internal Status: 6
+  External Status: 2
+    Command id: 2022-07-11T20:26:41
+  Operation: backup
+  Start and End time 07/11/22 20:27:31 07/11/22 20:27:34
+
+*** 2022-07-11T20:27:35.301331+07:00 (CDB$ROOT(1))
+ RECID #20 Recno 20 
+  Internal Status: 6
+  External Status: 2
+    Command id: 2022-07-11T20:26:41
+  Operation: Control File and SPFILE Autoback
+  Start and End time 07/11/22 20:27:34 07/11/22 20:27:35
+*** ACTION NAME:(0000023 FINISHED129) 2022-07-11T20:28:06.535721+07:00
+ 
+
+*** 2022-07-11T20:28:06.535687+07:00 (CDB$ROOT(1))
+-- The following are current System-scope REDO Log Archival related
+-- parameters and can be included in the database initialization file.
+--
+-- LOG_ARCHIVE_DEST=''
+-- LOG_ARCHIVE_DUPLEX_DEST=''
+--
+-- LOG_ARCHIVE_FORMAT=%t_%s_%r.arch
+--
+-- DB_UNIQUE_NAME="orcl"
+--
+-- LOG_ARCHIVE_CONFIG='SEND, RECEIVE, NODG_CONFIG'
+-- LOG_ARCHIVE_MAX_PROCESSES=4
+-- STANDBY_FILE_MANAGEMENT=MANUAL
+-- FAL_CLIENT=''
+-- FAL_SERVER=''
+--
+-- LOG_ARCHIVE_DEST_1='LOCATION=USE_DB_RECOVERY_FILE_DEST'
+-- LOG_ARCHIVE_DEST_1='MANDATORY REOPEN=300 NODELAY'
+-- LOG_ARCHIVE_DEST_1='ARCH NOAFFIRM NOVERIFY SYNC'
+-- LOG_ARCHIVE_DEST_1='NOREGISTER'
+-- LOG_ARCHIVE_DEST_1='NOALTERNATE'
+-- LOG_ARCHIVE_DEST_1='NODEPENDENCY'
+-- LOG_ARCHIVE_DEST_1='NOMAX_FAILURE NOQUOTA_SIZE NOQUOTA_USED NODB_UNIQUE_NAME'
+-- LOG_ARCHIVE_DEST_1='VALID_FOR=(PRIMARY_ROLE,ONLINE_LOGFILES)'
+-- LOG_ARCHIVE_DEST_STATE_1=ENABLE
+--
+-- Below are two sets of SQL statements, each of which creates a new
+-- control file and uses it to open the database. The first set opens
+-- the database with the NORESETLOGS option and should be used only if
+-- the current versions of all online logs are available. The second
+-- set opens the database with the RESETLOGS option and should be used
+-- if online logs are unavailable.
+-- The appropriate set of statements can be copied from the trace into
+-- a script file, edited as necessary, and executed when there is a
+-- need to re-create the control file.
+--
+--     Set #1. NORESETLOGS case
+--
+-- The following commands will create a new control file and use it
+-- to open the database.
+-- Data used by Recovery Manager will be lost.
+-- Additional logs may be required for media recovery of offline
+-- Use this only if the current versions of all online logs are
+-- available.
+-- After mounting the created controlfile, the following SQL
+-- statement will place the database in the appropriate
+-- protection mode:
+--  ALTER DATABASE SET STANDBY DATABASE TO MAXIMIZE PERFORMANCE
+STARTUP NOMOUNT
+CREATE CONTROLFILE REUSE DATABASE "ORCL" NORESETLOGS  ARCHIVELOG
+    MAXLOGFILES 16
+    MAXLOGMEMBERS 3
+    MAXDATAFILES 1024
+    MAXINSTANCES 8
+    MAXLOGHISTORY 292
+LOGFILE
+  GROUP 1 (
+    '/u01/app/oracle/oradata/ORCL/onlinelog/o1_mf_1_jngnoq26_.log',
+    '/u01/app/oracle/fast_recovery_area/ORCL/onlinelog/o1_mf_1_jngnotg1_.log'
+  ) SIZE 200M BLOCKSIZE 512,
+  GROUP 2 (
+    '/u01/app/oracle/oradata/ORCL/onlinelog/o1_mf_2_jngnoq3d_.log',
+    '/u01/app/oracle/fast_recovery_area/ORCL/onlinelog/o1_mf_2_jngnotfp_.log'
+  ) SIZE 200M BLOCKSIZE 512,
+  GROUP 3 (
+    '/u01/app/oracle/oradata/ORCL/onlinelog/o1_mf_3_jngnoq50_.log',
+    '/u01/app/oracle/fast_recovery_area/ORCL/onlinelog/o1_mf_3_jngnotg1_.log'
+  ) SIZE 200M BLOCKSIZE 512
+-- STANDBY LOGFILE
+DATAFILE
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_system_jngnlyw0_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_sysaux_jngnmr4x_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_undotbs1_jngnn7b8_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_system_jngomqr0_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_sysaux_jngomqr2_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_users_jngnn8g7_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_undotbs1_jngomqr3_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_system_jngplfv4_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_sysaux_jngplfv9_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_undotbs1_jngplfv9_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_users_jngpltl1_.dbf'
+CHARACTER SET AL32UTF8
+;
+-- Commands to re-create incarnation table
+-- Below log names MUST be changed to existing filenames on
+-- disk. Any one log file from each branch can be used to
+-- re-create incarnation records.
+-- ALTER DATABASE REGISTER LOGFILE '/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2022_07_11/o1_mf_1_1_%u_.arc';
+-- ALTER DATABASE REGISTER LOGFILE '/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2022_07_11/o1_mf_1_1_%u_.arc';
+-- Recovery is required if any of the datafiles are restored backups,
+-- or if the last shutdown was not normal or immediate.
+RECOVER DATABASE
+-- All logs need archiving and a log switch is needed.
+ALTER SYSTEM ARCHIVE LOG ALL;
+-- Database can now be opened normally.
+ALTER DATABASE OPEN;
+-- Open all the PDBs.
+ALTER PLUGGABLE DATABASE ALL OPEN;
+-- Commands to add tempfiles to temporary tablespaces.
+-- Online tempfiles have complete space information.
+-- Other tempfiles may require adjustment.
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_temp_jngnp437_.tmp'
+     SIZE 81788928  REUSE AUTOEXTEND ON NEXT 655360  MAXSIZE 32767M;
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/datafile/o2_mf_temp_jngnp437_.tmp'
+     SIZE 58720256  REUSE AUTOEXTEND ON NEXT 1048576  MAXSIZE 32767M;
+ALTER SESSION SET CONTAINER = "PDB$SEED";
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/datafile/temp012021-09-19_22-26-02-682-PM.dbf'
+     SIZE 37748736  REUSE AUTOEXTEND ON NEXT 655360  MAXSIZE 32767M;
+ALTER SESSION SET CONTAINER = "PDB1";
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_temp_jngplfvb_.dbf'
+     SIZE 37748736  REUSE AUTOEXTEND ON NEXT 655360  MAXSIZE 32767M;
+ALTER SESSION SET CONTAINER = "CDB$ROOT";
+-- End of tempfile additions.
+--
+--     Set #2. RESETLOGS case
+--
+-- The following commands will create a new control file and use it
+-- to open the database.
+-- Data used by Recovery Manager will be lost.
+-- The contents of online logs will be lost and all backups will
+-- be invalidated. Use this only if online logs are damaged.
+-- After mounting the created controlfile, the following SQL
+-- statement will place the database in the appropriate
+-- protection mode:
+--  ALTER DATABASE SET STANDBY DATABASE TO MAXIMIZE PERFORMANCE
+STARTUP NOMOUNT
+CREATE CONTROLFILE REUSE DATABASE "ORCL" RESETLOGS  ARCHIVELOG
+    MAXLOGFILES 16
+    MAXLOGMEMBERS 3
+    MAXDATAFILES 1024
+    MAXINSTANCES 8
+    MAXLOGHISTORY 292
+LOGFILE
+  GROUP 1 (
+    '/u01/app/oracle/oradata/ORCL/onlinelog/o1_mf_1_jngnoq26_.log',
+    '/u01/app/oracle/fast_recovery_area/ORCL/onlinelog/o1_mf_1_jngnotg1_.log'
+  ) SIZE 200M BLOCKSIZE 512,
+  GROUP 2 (
+    '/u01/app/oracle/oradata/ORCL/onlinelog/o1_mf_2_jngnoq3d_.log',
+    '/u01/app/oracle/fast_recovery_area/ORCL/onlinelog/o1_mf_2_jngnotfp_.log'
+  ) SIZE 200M BLOCKSIZE 512,
+  GROUP 3 (
+    '/u01/app/oracle/oradata/ORCL/onlinelog/o1_mf_3_jngnoq50_.log',
+    '/u01/app/oracle/fast_recovery_area/ORCL/onlinelog/o1_mf_3_jngnotg1_.log'
+	 ) SIZE 200M BLOCKSIZE 512
+-- STANDBY LOGFILE
+DATAFILE
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_system_jngnlyw0_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_sysaux_jngnmr4x_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_undotbs1_jngnn7b8_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_system_jngomqr0_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_sysaux_jngomqr2_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_users_jngnn8g7_.dbf',
+  '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_undotbs1_jngomqr3_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_system_jngplfv4_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_sysaux_jngplfv9_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_undotbs1_jngplfv9_.dbf',
+  '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_users_jngpltl1_.dbf'
+CHARACTER SET AL32UTF8
+;
+-- Commands to re-create incarnation table
+-- Below log names MUST be changed to existing filenames on
+-- disk. Any one log file from each branch can be used to
+-- re-create incarnation records.
+-- ALTER DATABASE REGISTER LOGFILE '/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2022_07_11/o1_mf_1_1_%u_.arc';
+-- ALTER DATABASE REGISTER LOGFILE '/u01/app/oracle/fast_recovery_area/ORCL/archivelog/2022_07_11/o1_mf_1_1_%u_.arc';
+-- Recovery is required if any of the datafiles are restored backups,
+-- or if the last shutdown was not normal or immediate.
+RECOVER DATABASE USING BACKUP CONTROLFILE
+-- Database can now be opened zeroing the online logs.
+ALTER DATABASE OPEN RESETLOGS;
+-- Open all the PDBs.
+ALTER PLUGGABLE DATABASE ALL OPEN;
+-- Commands to add tempfiles to temporary tablespaces.
+-- Online tempfiles have complete space information.
+-- Other tempfiles may require adjustment.
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/datafile/o1_mf_temp_jngnp437_.tmp'
+     SIZE 81788928  REUSE AUTOEXTEND ON NEXT 655360  MAXSIZE 32767M;
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/datafile/o2_mf_temp_jngnp437_.tmp'
+     SIZE 58720256  REUSE AUTOEXTEND ON NEXT 1048576  MAXSIZE 32767M;
+ALTER SESSION SET CONTAINER = "PDB$SEED";
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/datafile/temp012021-09-19_22-26-02-682-PM.dbf'
+     SIZE 37748736  REUSE AUTOEXTEND ON NEXT 655360  MAXSIZE 32767M;
+ALTER SESSION SET CONTAINER = "PDB1";
+ALTER TABLESPACE TEMP ADD TEMPFILE '/u01/app/oracle/oradata/ORCL/CC5C01A97A924B63E05380BDA8C055CE/datafile/o1_mf_temp_jngplfvb_.dbf'
+     SIZE 37748736  REUSE AUTOEXTEND ON NEXT 655360  MAXSIZE 32767M;
+ALTER SESSION SET CONTAINER = "CDB$ROOT";
+-- End of tempfile additions.
+--
+
+*** 2022-07-11T20:30:34.518943+07:00 (CDB$ROOT(1))
+ RECID #16 Recno 16 
+  Internal Status: 34
+  External Status: 2
+    Command id: 2022-07-11T20:26:41
+  Operation: RMAN
+  Start and End time 07/11/22 20:26:43 07/11/22 20:30:34
+KJHA:2phase 001 prepare ctx action:1 env usecnt:1 ctx usecnt:1
+KJHA:2phase 215 usecnt:1 tha stop prepare
+2022-07-11 20:30:34.534 : [GIPCXCPT][GIPCXCPT] gipcInternalConnectSync: failed sync request, addr 0x188cd4c0 [0000000000000014] { gipcAddress : name 'ipc://scls_opct_linux7', objFlags 0x0, 
+addrFlags 0x4 }, ret gipcretConnectionRefused (29)
+2022-07-11 20:30:34.537 : [GIPCXCPT][GIPCXCPT] gipcInternalConnectSync: failed sync request, addr 0x188cdd90 [000000000000001c] { gipcAddress : name 'ipc://scls_opct_linux7', objFlags 0x0, 
+addrFlags 0x4 }, ret gipcretConnectionRefused (29)
+2022-07-11 20:30:34.537 : [GIPCXCPT][GIPCXCPT] gipcInternalConnectSync: failed sync request, addr 0x188cddd0 [0000000000000024] { gipcAddress : name 'ipc://scls_opct_linux7', objFlags 0x0, 
+addrFlags 0x4 }, ret gipcretConnectionRefused (29)
+[ default][ default]u_set_comp_error: comptype '103' : error '29'
+2022-07-11 20:30:34.539 : [GIPCXCPT][GIPCXCPT] gipcInternalConnectSync: failed sync request, addr 0x188d6e70 [0000000000000035] { gipcAddress : name 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=CRSD
+_UI_SOCKET)(GIPCID=00000000-00000000-0))', objFlags 0x0, addrFlags 0x4 }, ret gipcretConnectionRefused (29)
+2022-07-11 20:30:34.539 : [GIPCXCPT][GIPCXCPT] gipcConnectSyncF [clscrsconGipcConnect : clscrscon.c : 686]: EXCEPTION[ ret gipcretConnectionRefused (29) ]  failed sync connect endp 0x188d7e
+e0 [0000000000000032] { gipcEndpoint : localAddr 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=)(GIPCID=00000000-00000000-0))', remoteAddr 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=CRSD_UI_SOCKET)(GIPCID=0
+0000000-00000000-0))', numPend 0, numReady 0, numDone 0, numDead 0, numTransfer 0, objFlags 0x0, pidPeer 0, readyRef (nil), ready 0, wobj 0x188cdf70, sendp 0x188d7430 status 13flags 0xa1080
+71a, flags-2 0x0, usrFlags 0x0 }, addr 0x188d6e70 [0000000000000035] { gipcAddress : name 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=CRSD_UI_SOCKET)(GIPCID=00000000-00000000-0))', objFlags 0x0, ad
+drFlags 0x4 }, flags 0x0
+2022-07-11 20:30:34.540 : [GIPCXCPT][GIPCXCPT] gipcInternalConnectSync: failed sync request, addr 0x188ce340 [000000000000003a] { gipcAddress : name 'ipc://scls_opct_linux7', objFlags 0x0, 
+addrFlags 0x4 }, ret gipcretConnectionRefused (29)
+2022-07-11 20:30:34.540 : [GIPCXCPT][GIPCXCPT] gipcInternalConnectSync: failed sync request, addr 0x188cc8a0 [0000000000000042] { gipcAddress : name 'ipc://scls_opct_linux7', objFlags 0x0, 
+addrFlags 0x4 }, ret gipcretConnectionRefused (29)
+[ default][ default]u_set_comp_error: comptype '103' : error '29'
+2022-07-11 20:30:34.542 : [GIPCXCPT][GIPCXCPT] gipcInternalConnectSync: failed sync request, addr 0x188cd340 [0000000000000053] { gipcAddress : name 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=CRSD
+_UI_SOCKET)(GIPCID=00000000-00000000-0))', objFlags 0x0, addrFlags 0x4 }, ret gipcretConnectionRefused (29)
+2022-07-11 20:30:34.542 : [GIPCXCPT][GIPCXCPT] gipcConnectSyncF [clscrsconGipcConnect : clscrscon.c : 686]: EXCEPTION[ ret gipcretConnectionRefused (29) ]  failed sync connect endp 0x188cf3
+90 [0000000000000050] { gipcEndpoint : localAddr 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=)(GIPCID=00000000-00000000-0))', remoteAddr 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=CRSD_UI_SOCKET)(GIPCID=0
+0000000-00000000-0))', numPend 0, numReady 0, numDone 0, numDead 0, numTransfer 0, objFlags 0x0, pidPeer 0, readyRef (nil), ready 0, wobj 0x188cba50, sendp 0x188d6520 status 13flags 0xa1080
+71a, flags-2 0x0, usrFlags 0x0 }, addr 0x188cd340 [0000000000000053] { gipcAddress : name 'clsc://(ADDRESS=(PROTOCOL=ipc)(KEY=CRSD_UI_SOCKET)(GIPCID=00000000-00000000-0))', objFlags 0x0, ad
+drFlags 0x4 }, flags 0x0
+KJHA: kjha_doDBAction2 400 clsrapi_stop_db prepare ret:184
+KJHA: kjha_doDBAction2 990 clscrs_stat:184
+KJHA:2phase 660 clscrs_stat statret:184 usecnt:1 env id: ctx id:
+
+*** 2022-07-11T20:30:35.492296+07:00 (CDB$ROOT(1))
+Stopping background process SMCO
+
+*** 2022-07-11T20:30:36.624308+07:00 (CDB$ROOT(1))
+kwsbgshms: Shutdown all masters complete
+
+*** 2022-07-11T20:30:36.624570+07:00 (CDB$ROOT(1))
+Stopping background process MMNL
+
+*** 2022-07-11T20:30:37.661270+07:00 (CDB$ROOT(1))
+Stopping background process MMON
+
+*** 2022-07-11T20:30:39.762718+07:00 (PDB1(3))
+JIT: pid 4799 requesting stop
+
+*** 2022-07-11T20:30:40.117514+07:00 (PDB$SEED(2))
+JIT: pid 4799 requesting stop
+
+*** 2022-07-11T20:30:40.198203+07:00 (CDB$ROOT(1))
+ksukia: Starting kill, flags = 1
+ksukia: Attempt 1 to kill process oracle@linux7 (TNS V1-V3), OS id=5088
+ksukia: killed 1 out of 1 processes.
+*** 2022-07-11T20:30:41.245096+07:00 (CDB$ROOT(1))
+ksukia: Starting kill, flags = 1
+ksukia: killed 0 out of 0 processes.
+
+*** 2022-07-11T20:30:42.269410+07:00 (CDB$ROOT(1))
+KJHA:2phase 003 finish ctx opi_error:0 action:1 env usecnt:1 id: ctx usecnt:1 id: envp:0
+KJHA:2phase 215 usecnt:2 tha stop finish
+
+*** 2022-07-11T20:30:42.707355+07:00 (CDB$ROOT(1))
+kwsbgshms: Shutdown all masters complete
+Shutting down AQ Process Coordinator 
+
+*** 2022-07-11T20:30:42.707674+07:00 (CDB$ROOT(1))
+Stopping background process AQPC
+
+*** 2022-07-11T20:30:50.898427+07:00 (CDB$ROOT(1))
+kwsbgshms: Shutdown all masters complete
+Shutting down AQ Process Coordinator 
+
+*** 2022-07-11T20:30:58.024112+07:00 (CDB$ROOT(1))
+*** 2022-07-11 20:30:58.024098 [krsv.c:2729]
+krso_proc_stop: Clearing start ARCH error state
+DDE rules only execution for: ORA 202
+----- START Event Driven Actions Dump ----
+---- END Event Driven Actions Dump ----
+----- START DDE Actions Dump -----
+Executing SYNC actions
+----- START DDE Action: 'DB_STRUCTURE_INTEGRITY_CHECK' (Async) -----
+Successfully dispatched
+----- END DDE Action: 'DB_STRUCTURE_INTEGRITY_CHECK' (SUCCESS, 0 csec) -----
+Executing ASYNC actions
+----- END DDE Actions Dump (total 0 csec) -----
+
+*** 2022-07-11T20:31:45.414926+07:00
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+DDE: Problem Key 'ORA 202' was flood controlled (0x1) (no incident)
+ORA-00202: control file: '/u01/app/oracle/oradata/ORCL/controlfile/o1_mf_jngnomtw_.ctl'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+
+*** 2022-07-11T20:31:45.460220+07:00 (CDB$ROOT(1))
+USER (ospid: 4799): terminating the instance

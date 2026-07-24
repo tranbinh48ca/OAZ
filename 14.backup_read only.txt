@@ -1,0 +1,45 @@
+Read Only, Offline: Da backup DATA2001-2018
+
+-- Dung luong 3.5TB ban backup 96GB
+
+--1.Chạy script backup trên node 2 hoặc node 4
+$cd /u01/oracle/backup_db/scripts
+
+[oracle@ scripts]$ more backup_db_ro.rcv 
+RUN
+{
+#SQL 'ALTER SYSTEM FLUSH SHARED_POOL';
+#CROSSCHECK BACKUP;
+#DELETE NOPROMPT EXPIRED BACKUP;
+#CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT '+reco_coredb/coredb/backupset/level0/ora_df%T_s%s_s%p';
+# MAXPIECESIZE 8192 M; 
+BACKUP AS COMPRESSED BACKUPSET TABLESPACE DATA2001,DATA2003,DATA2004,DATA2005,DATA2006,DATA2007,DATA2008,DATA2009,DATA2010,DATA2011,DATA2012,DATA2013,DATA2014,DATA2015,DATA2016,DATA2017,DATA2018,INDX2003,INDX2004,INDX2005,INDX2006,INDX2007,INDX2008,INDX2009,INDX2010,INDX2011,INDX2012,INDX2013,INDX2014,INDX2015,INDX2016,INDX2017,INDX2018 FORMAT '+reco/coredb/backupset/backup_readonly/tbs_readonly_%T_%d_%U' FILESPERSET 10 MAXSETSIZE 40 G TAG TBS_READONLY;
+}
+
+[oracle@ scripts]$ more run_backup_db_ro.sh
+target='target /'
+rcvcat='nocatalog'
+freq=24
+time=`date '+%H%M%S'`
+cmdfile=/u01/app/backup_db/scripts/backup_db_ro.rcv
+#rman $target $rcvcat cmdfile $cmdfile msglog $msglog
+#rman target / cmdfile=/u01/app/backup_db/scripts/end_backup.rcv
+rman $target top$rcvcat cmdfile $cmdfile
+exit
+
+--Tu 02h15 20/11/2020 - 
+$ nohup ./run_backup_tbs_readonly_offline.sh &
+
+
+
+--2. Sau khi backup xong doi ten tu '/+reco_coredb/coredb/backupset/backup_readonly thanh /+reco_coredb/coredb/backupset/backup_readonly_20190124:
+mv /+reco/coredb/backupset/backup_readonly thanh /+reco_coredb/coredb/backupset/backup_readonly_20190124
+Doi quyen root de tranh bi xoa
+# chown -Rf root /+reco/coredb/backupset/backup_readonly_20190124
+
+24/01/2019: Da chuyen sang phan vung /+reco_coredb/coredb/backupset/backup_readonly
+drwxr-xr-x   2 1000     1001        1536 Nov 27  2017 coredb.20171127
+
+--3.Khi can su dung
+# mv /+reco/coredb/backupset/backup_readonly_20190124 /+reco_coredb/coredb/backupset/backup_readonly
+# chown -Rf oracle:oinstall /+reco_coredb/coredb/backupset/backup_readonly

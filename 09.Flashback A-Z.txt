@@ -1,0 +1,437 @@
+Tất cả về công nghệ Flashback trong Oracle Database A-Z
+Trong bài viết này chúng ta sẽ cùng tìm hiểu các nội dung liên quan đến công nghệ Flashback để khôi phục lại bảng, transaction xảy ra trong quá khứ đã commit, các bảng đã xóa (drop) và khôi phục lại toàn bộ database:
+Flashback Query
+Flashback Version Query
+Flashback Transaction Query
+Flashback Table
+Flashback Drop (Recycle Bin)
+Flashback Database
+Các hàm dùng với Flashback Query 
+
+ĐIỀU KIỆN TIÊN QUYẾT
+Áp dụng cho Flashback Query, Flashback Version Query, Flashback Transaction Query, Flashback Table sử dụng dữ liệu undo để khôi phục dữ liệu cũ trong quá khứ do đó cần thiết lập:
+
+- Tham số undo_retention là 12h hoặc 24h (mặc định là 900s) để có thể khôi phục được trong thời gian 12h hoặc 24h (tùy yêu cầu cụ thể vì nếu dể dài sẽ tốn dung lượng lưu trữ). Ví dụ tôi để 24h tức 86.400s
+
+SQL> alter system set undo_retention=86400 sid='*'; -- Với RAC
+
+SQL> alter system set undo_retention=86400 ; -- Với single 
+
+- Đi kèm với thời gian undo_retention dài là 24h cần dung lượng của undo_tablespace tương ứng (size chuẩn bằng undo advisor) hoặc default cứ thêm 10 file 1GB, tăng tự động 100M là ổn:
+
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS1 add datafile '+DATA' size 1G autoextend on next 100m;
+
+Nếu RAC 2 node thì thêm trên node 2:
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+alter tablespace UNDOTBS2 add datafile '+DATA' size 1G autoextend on next 100m;
+
+Như vậy UNDOTBS1, UNDOTBS2 chúng ta có tối thiểu 10 file 320GB, tiếp tục monitor và dùng undo advisor để tìm ra dung lượng cho phù hợp. Cách monitor:
+
+--Hiển thị dung lượng trống của tablespace
+SELECT  a.tablespace_name,100 - ROUND ( (NVL (b.bytes_free, 0) / a.bytes_alloc) * 100) "%Usage",
+    ROUND (a.bytes_alloc / 1024 / 1024) "Size MB",
+    ROUND (a.bytes_alloc / 1024 / 1024)- ROUND (NVL (b.bytes_free, 0) / 1024 / 1024) "Used MB",
+    ROUND (NVL (b.bytes_free, 0) / 1024 / 1024) "Free MB",
+    --ROUND ( (NVL (b.bytes_free, 0) / a.bytes_alloc) * 100) "%Free",
+    ROUND (maxbytes / 1048576)  "Max MB",
+    round(maxbytes/1048576-(ROUND (a.bytes_alloc / 1024 / 1024)- ROUND (NVL (b.bytes_free, 0) / 1024 / 1024)),0) "Free_MB_Max",
+    ROUND (ROUND ( (a.bytes_alloc - NVL (b.bytes_free, 0)) / 1024 / 1024)/  ROUND (maxbytes / 1048576) * 100) "%Used of Max"
+    FROM (SELECT f.tablespace_name, SUM (f.bytes) bytes_alloc,  SUM (DECODE (f.autoextensible, 'YES', f.maxbytes, 'NO', f.bytes)) maxbytes
+            FROM dba_data_files f
+            GROUP BY tablespace_name) a,
+        (SELECT f.tablespace_name, SUM (f.bytes) bytes_free  FROM dba_free_space f  GROUP BY tablespace_name) b
+ WHERE a.tablespace_name = b.tablespace_name(+)  and  (a.tablespace_name in ('TEMP1','UNDOTBS1','UNDOTBS1'))
+ order by "%Used of Max" desc;
+
+Flashback Query
+Flashback Query cho phép nội dung của một bảng được truy vấn với tham chiếu đến một thời điểm cụ thể, sử dụng mệnh đề AS OF. Về cơ bản, nó giống với chức năng DBMS_FLASHBACK. Ví dụ.
+CREATE TABLE flashback_query_test (
+  id  NUMBER(10)
+);
+INSERT INTO flashback_query_test (id) VALUES (1);
+COMMIT;
+
+SELECT current_scn, TO_CHAR(SYSTIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') FROM v$database;
+
+CURRENT_SCN TO_CHAR(SYSTIMESTAM
+----------- -------------------
+     722452 2020-03-29 13:34:12
+
+INSERT INTO flashback_query_test (id) VALUES (2);
+COMMIT;
+
+SELECT COUNT(*) FROM flashback_query_test;
+
+  COUNT(*)
+----------
+         2
+
+SELECT COUNT(*)
+FROM   flashback_query_test AS OF TIMESTAMP TO_TIMESTAMP('2020-03-29 13:34:12', 'YYYY-MM-DD HH24:MI:SS');
+
+  COUNT(*)
+----------
+         1
+
+SELECT COUNT(*)
+FROM   flashback_query_test AS OF SCN 722452;
+
+  COUNT(*)
+----------
+         1
+
+Có thể tạo bảng tạm chứa dữ liệu ở thời điểm 2020-03-29 13:34:12:
+create table dbaviet.xxx_test_20200329_1334 as select * FROM   flashback_query_test AS OF TIMESTAMP TO_TIMESTAMP('2020-03-29 13:34:12', 'YYYY-MM-DD HH24:MI:SS');
+
+select * from  dbaviet.xxx_test_20200329_1334;
+
+Flashback Version Query
+Flashback version query cho phép các phiên bản (version) của một row cụ thể được theo dõi trong một khoảng thời gian cụ thể bằng cách sử dụng mệnh đề VERSIONS BETWEEN.
+CREATE TABLE flashback_version_query_test (
+  id           NUMBER(10),
+  description  VARCHAR2(50)
+);
+
+INSERT INTO flashback_version_query_test (id, description) VALUES (1, 'ONE');
+COMMIT;
+
+SELECT current_scn, TO_CHAR(SYSTIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') FROM v$database;
+
+CURRENT_SCN TO_CHAR(SYSTIMESTAM
+----------- -------------------
+     725202 2020-03-29 14:59:08
+     
+UPDATE flashback_version_query_test SET description = 'TWO' WHERE id = 1;
+COMMIT;
+UPDATE flashback_version_query_test SET description = 'THREE' WHERE id = 1;
+COMMIT;
+
+SELECT current_scn, TO_CHAR(SYSTIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') FROM v$database;
+
+CURRENT_SCN TO_CHAR(SYSTIMESTAM
+----------- -------------------
+     725219 2020-03-29 14:59:36
+     
+COLUMN versions_startscn FORMAT 99999999999999999
+COLUMN versions_starttime FORMAT A24
+COLUMN versions_endscn FORMAT 99999999999999999
+COLUMN versions_endtime FORMAT A24
+COLUMN versions_xid FORMAT A16
+COLUMN versions_operation FORMAT A1
+COLUMN description FORMAT A11
+SET LINESIZE 200
+
+SELECT versions_startscn, versions_starttime, 
+       versions_endscn, versions_endtime,
+       versions_xid, versions_operation,
+       description  
+FROM   flashback_version_query_test 
+       VERSIONS BETWEEN TIMESTAMP TO_TIMESTAMP('2020-03-29 14:59:08', 'YYYY-MM-DD HH24:MI:SS')
+       AND TO_TIMESTAMP('2020-03-29 14:59:36', 'YYYY-MM-DD HH24:MI:SS')
+WHERE  id = 1;
+
+ VERSIONS_STARTSCN VERSIONS_STARTTIME          VERSIONS_ENDSCN VERSIONS_ENDTIME         VERSIONS_XID     V DESCRIPTION
+------------------ ------------------------ ------------------ ------------------------ ---------------- - -----------
+            725212 29-MAR-20 02.59.16 PM                                                02001C0043030000 U THREE
+            725209 29-MAR-20 02.59.16 PM                725212 29-MAR-20 02.59.16 PM    0600030021000000 U TWO
+                                                        725209 29-MAR-20 02.59.16 PM                       ONE
+
+SELECT versions_startscn, versions_starttime, 
+       versions_endscn, versions_endtime,
+       versions_xid, versions_operation,
+       description  
+FROM   flashback_version_query_test 
+       VERSIONS BETWEEN SCN 725202 AND 725219
+WHERE  id = 1;
+
+ VERSIONS_STARTSCN VERSIONS_STARTTIME          VERSIONS_ENDSCN VERSIONS_ENDTIME         VERSIONS_XID     V DESCRIPTION
+------------------ ------------------------ ------------------ ------------------------ ---------------- - -----------
+            725212 29-MAR-20 02.59.16 PM                                                02001C0043030000 U THREE
+            725209 29-MAR-20 02.59.16 PM                725212 29-MAR-20 02.59.16 PM    0600030021000000 U TWO
+                                                        725209 29-MAR-20 02.59.16 PM                       ONE
+Các ý nghĩa cột giả có sẵn là:
+VERSIONS_STARTSCN hoặc VERSIONS_STARTTIME- Bắt đầu SCN và TIMESTAMP khi row có giá trị này. Giá trị của NULL được trả về nếu row được tạo trước bị ràng buộc thấp hơn SCN hoặc TIMESTAMP .
+VERSIONS_ENDSCN hoặc VERSIONS_ENDTIME- Kết thúc SCN và TIMESTAMP khi row cuối cùng chứa giá trị này. Giá trị của NULL được trả về nếu giá trị của row vẫn hiện tại tại giới hạn trên SCN hoặc TIMESTAMP .
+VERSIONS_XID - ID của giao dịch đã tạo hàng ở trạng thái hiện tại.
+VERSIONS_OPERATION - Hoạt động được thực hiện bởi giao dịch ((I) nsert, (U) pdate hoặc (D) elete)
+Ranh giới của truy vấn phiên bản cũng có thể được xác định bằng cách sử dụng MINVALUEvà MAXVALUEtừ khóa.
+
+Flashback Transaction Query
+Flashback transaction query được sử dụng để nhận thêm thông tin về các giao dịch được liệt kê theo flashback version queries. Các giá trị cột VERSIONS_XID từ flashback version query có thể được sử dụng để truy vấn view FLASHBACK_TRANSACTION_QUERY.
+SELECT xid, operation, start_scn,commit_scn, logon_user, undo_sql
+FROM   flashback_transaction_query
+WHERE  xid = HEXTORAW('0600030021000000');
+
+
+XID              OPERATION                         START_SCN COMMIT_SCN
+---------------- -------------------------------- ---------- ----------
+LOGON_USER
+------------------------------
+UNDO_SQL
+----------------------------------------------------------------------------------------------------
+0600030021000000 UPDATE                               725208     725209
+SCOTT
+update "SCOTT"."FLASHBACK_VERSION_QUERY_TEST" set "DESCRIPTION" = 'TWO' where ROWID = 'AAAMP9AAEAAAA
+AYAAA';
+
+0600030021000000 BEGIN                                725208     725209
+SCOTT
+
+XID              OPERATION                         START_SCN COMMIT_SCN
+---------------- -------------------------------- ---------- ----------
+LOGON_USER
+------------------------------
+UNDO_SQL
+----------------------------------------------------------------------------------------------------
+
+
+
+2 rows selected.
+
+Flashback Table
+Lệnh FLASHBACK TABLE cho phép lấy lại bảng đã xóa trong quá khứ nhưng có yêu cầu sau:
+Bạn phải có quyền hệ thống FLASHBACK ANY TABLE  hoặc có quyền đối tượng FLASHBACK trên bảng.
+Bạn phải có các quyền SELECT, INSERT, DELETE và ALTER trên bảng.
+Phải có đủ thông tin trong undo tablespace để hoàn tất thao tác.
+Row movement phải được bật trên bảng ( ALTER TABLE tablename ENABLE ROW MOVEMENT;).
+Ví dụ sau đây tạo một bảng, chèn một số dữ liệu và flashback đến một điểm trước khi chèn dữ liệu. Cuối cùng, flashback về thời điểm sau khi insert dữ liệu.
+CREATE TABLE flashback_table_test (
+  id  NUMBER(10)
+);
+
+ALTER TABLE flashback_table_test ENABLE ROW MOVEMENT;
+
+SELECT current_scn FROM v$database;
+
+CURRENT_SCN
+-----------
+     715315
+
+INSERT INTO flashback_table_test (id) VALUES (1);
+COMMIT;
+
+SELECT current_scn FROM v$database;
+
+CURRENT_SCN
+-----------
+     715340
+
+FLASHBACK TABLE flashback_table_test TO SCN 715315;
+
+SELECT COUNT(*) FROM flashback_table_test;
+
+  COUNT(*)
+----------
+         0
+
+FLASHBACK TABLE flashback_table_test TO SCN 715340;
+
+SELECT COUNT(*) FROM flashback_table_test;
+
+  COUNT(*)
+----------
+         1
+Flashback TABLE cũng có thể được thực hiện bằng cách sử dụng timestamps.
+FLASHBACK TABLE flashback_table_test TO TIMESTAMP TO_TIMESTAMP('2020-03-03 10:00:00', 'YYYY-MM-DD HH:MI:SS');
+
+Flashback Drop (Recycle Bin)
+Từ Oracle 10g, hành động mặc định của một lệnh  DROP TABLE là di chuyển bảng vào thùng rác (hoặc đổi tên nó), thay vì thực sự bỏ nó đi. Các tùy chọn  DROP TABLE ... PURGE có thể được sử dụng để xóa vĩnh viễn một bảng.
+DROP TABLE my_table PURGE;
+Thùng rác (recycle bin) là một tập hợp của các đối tượng đã bị loại bỏ (drop) trước đó, với quyền truy cập gắn liền với quyền DROP  Tính năng này không sử dụng flashback logshoawcj undo, vì vậy nó độc lập với các công nghệ flashback. Trong thùng rác có thể được hiển thị bằng lệnh SHOW RECYCLEBIN và được xóa bằng lệnh PURGE TABLE. Do đó, một bảng đã bị drop trước đó có thể được khôi phục từ thùng rác.
+CREATE TABLE flashback_drop_test (
+  id  NUMBER(10)
+);
+
+INSERT INTO flashback_drop_test (id) VALUES (1);
+COMMIT;
+
+DROP TABLE flashback_drop_test;
+
+SHOW RECYCLEBIN
+
+ORIGINAL NAME    RECYCLEBIN NAME                OBJECT TYPE  DROP TIME
+---------------- ------------------------------ ------------ -------------------
+FLASHBACK_DROP_T BIN$TstgCMiwQA66fl5FFDTBgA==$0 TABLE        2020-03-29:11:09:07
+EST
+
+--Để lấy lại bảng vừa xóa ta dùng cầu lệnh sau:
+FLASHBACK TABLE flashback_drop_test TO BEFORE DROP;
+
+SELECT * FROM flashback_drop_test;
+
+        ID
+----------
+         1
+Các bảng trong thùng rác có thể được truy vấn giống như bất kỳ bảng nào khác.
+DROP TABLE flashback_drop_test;
+
+SHOW RECYCLEBIN
+
+ORIGINAL NAME    RECYCLEBIN NAME                OBJECT TYPE  DROP TIME
+---------------- ------------------------------ ------------ -------------------
+FLASHBACK_DROP_T BIN$TDGqmJZKR8u+Hrc6PGD8kw==$0 TABLE        2020-03-29:11:18:39
+EST
+
+SELECT * FROM "BIN$TDGqmJZKR8u+Hrc6PGD8kw==$0";
+
+        ID
+----------
+         1
+Nếu một đối tượng bị drop và được tạo lại nhiều lần, tất cả các phiên bản bị drio sẽ được giữ trong thùng rác, tùy thuộc vào không gian lưu trữ. Trong trường hợp có nhiều phiên bản, tốt nhất bạn nên tham khảo các bảng thông qua RECYCLEBIN_NAME. Đối với bất kỳ tham chiếu nào đến ORIGINAL_NAME, giả định đối tượng gần đây nhất là phiên bản drop trong câu hỏi được tham chiếu. Trong quá trình flashback, bảng có thể được đổi tên.
+FLASHBACK TABLE flashback_drop_test TO BEFORE DROP RENAME TO flashback_drop_test_old;
+Một số tùy chọn làm sạch (purge):
+PURGE TABLE tablename;                   -- Purge Bảng cụ thể.
+PURGE INDEX indexname;                   -- Purge  index cụ thể
+PURGE TABLESPACE ts_name;                -- Purge Tất cả table trong 1 tablespace cụ thể
+PURGE TABLESPACE ts_name USER username;  -- Purge Recycle bin Tất cả table trong 1 tablespace cụ thể tương ứng với user
+PURGE RECYCLEBIN;                        -- Purge Recycle bin của user hiện tại
+PURGE DBA_RECYCLEBIN;                    -- Purge recycle bin của DB
+Một số hạn chế áp dụng liên quan đến thùng rác.
+Chỉ khả dụng cho tablespace không thuộc hệ thống (non-system), được quản lý cục bộ (locally managed tablespace)
+Không có kích thước cố định cho thùng rác. Thời gian một đối tượng vẫn còn trong thùng rác có thể thay đổi.
+Các đối tượng trong thùng rác chỉ bị hạn chế đối với các hoạt động truy vấn (không DDL hoặc DML).
+Các hoạt động  flashback query phải tham chiếu tên thùng rác.
+Các bảng và tất cả các phụ thuộc đối tượng được đặt vào, phục hồi và loại bỏ khỏi thùng rác cùng một lúc.
+Các bảng có FGA (Fine Grained Access) không được bảo vệ bởi thùng rác.
+Các bảng partition index-orginized không được bảo vệ bởi thùng rác.
+Thùng rác không bảo toàn tính toàn vẹn của tham chiếu.
+Tính năng này có thể được tắt / bật ở cấp session hoặc cấp system.
+-- Session level.
+ALTER SESSION SET recyclebin = OFF;
+ALTER SESSION SET recyclebin = ON;
+
+-- System level.
+ALTER SYSTEM SET recyclebin = OFF;
+ALTER SYSTEM SET recyclebin = ON;
+Nội dung của thùng rác cũng có thể được hiển thị bằng giao diện DBA_RECYCLEBIN.
+
+Flashback Database
+Các lệnh FLASHBACK DATABASE để thực hiện phục hồi đầy đủ database nhanh chóng. Để FLASHBACK DATABASE, bạn phải có quyền SYSDBA và vùng khôi phục flash phải được chuẩn bị trước. Cột FLASHBACK_ON của view V$DATABASE hiển thị tình trạng hiện tại của flashback database.
+Nếu cơ sở dữ liệu ở trong NOARCHIVELOG nó phải được chuyển sang ARCHIVELOG chế độ theo các bước sau:
+CONN / AS SYSDBA
+ALTER SYSTEM SET log_archive_dest_1='location=/fra/archivelog/' SCOPE=SPFILE;
+--ALTER SYSTEM SET log_archive_dest_1='location=+RECO' SCOPE=SPFILE;
+ALTER SYSTEM SET log_archive_format='ARC%S_%R.%T' SCOPE=SPFILE;
+SHUTDOWN IMMEDIATE
+STARTUP MOUNT
+ALTER DATABASE ARCHIVELOG;
+ALTER DATABASE OPEN;
+Enable Flashback Database:
+Các bước thực hiện:
+1. Cấu hình fast recovery area
+alter system set DB_RECOVERY_FILE_DEST = '/fra' scope=both;
+alter system set DB_RECOVERY_FILE_DEST_SIZE = 10G scope=both;
+2. Đặt thời gian giới hạn có thể flashback database (optional vì mặc định là 1 ngày=1440 phút)
+ALTER SYSTEM SET DB_FLASHBACK_RETENTION_TARGET=4320;scope=both # 3 days 
+(Chú ý DB_RECOVERY_FILE_DEST_SIZE  phải đủ lớn không DB sẽ bị lỗi khi hoạt động)
+3. Enable Flashback Database
+Với Oracle 10g ta thực hiện như sau:
+CONN / AS SYSDBA
+SHUTDOWN IMMEDIATE
+STARTUP MOUNT EXCLUSIVE
+ALTER DATABASE FLASHBACK ON;
+ALTER DATABASE OPEN;
+Từ Oracle 11gR2, quá trình này đã được đơn giản hóa, cho phép bật / tắt flashback database mà không cần khởi động lại cơ sở dữ liệu. 
+CONN / AS SYSDBA
+ALTER DATABASE FLASHBACK ON;
+--ALTER DATABASE FLASHBACK OFF;
+4. Với tùy chọn, chúng ta có thể disable flashback 1 tablespace xác định
+ALTER TABLESPACE tbs_3 FLASHBACK OFF;
+Hoặc enable lại:
+ALTER TABLESPACE tbs_3 FLASHBACK ON;
+Nếu bạn disable Flash Database cho tablespace đó, thì bạn phải offlien các datafile của tablespace đó trước khi thực hiện FASLBHBACK DATABASE.
+Disable Flashback Database:
+ALTER DATABASE FLASHBACK OFF;
+Thực hiện Flashback Database:
+Khi bật tính năng flashback database, cơ sở dữ liệu có thể được khôi phục về bất kỳ thời điểm trước đó hoặc SCN mà không cần khôi phục thủ công bằng rman. Trong ví dụ sau, một bảng được tạo, cơ sở dữ liệu sau đó được flashback về thời điểm trước khi bảng được tạo.
+-- Tạo 1 bảng bất kỳ
+CONN scott/tiger
+CREATE TABLE flashback_database_test (
+  id  NUMBER(10)
+);
+
+insert into flashback_database_test values (1);
+commit;
+
+-- Flashback về trước đó 5 phút
+CONN / AS SYSDBA
+SHUTDOWN IMMEDIATE
+STARTUP MOUNT EXCLUSIVE
+FLASHBACK DATABASE TO TIMESTAMP SYSDATE-(1/24/12);
+-- FLASHBACK DATABASE TO SCN xxx
+ALTER DATABASE OPEN RESETLOGS;
+
+-- Kiểm tra bảng flashback_database_test.
+CONN scott/tiger
+select * from flashback_database_test; -- Không có bản ghi nào
+Khoảng thời gian có sẵn để flashback được xác định bởi tham số DB_FLASHBACK_RETENTION_TARGET. Flashback tối đa có thể được xác định bằng cách truy vấn view V$FLASHBACK_DATABASE_LOG. Chỉ có thể flashback lại một thời điểm sau khi flashback được bật trên cơ sở dữ liệu và kể từ lệnh RESETLOGS cuối cùng .
+Restore Points (Điểm khôi phục):
+Ngoài việc sử dụng SCN và timestamps, chúng ta có thể tạo điểm khôi phục (restore points) và điểm khôi phục đảm bảo (guaranteed restore points). Điểm khôi phục chỉ là một bí danh  đại diện cho SCN. Điểm khôi phục được đảm bảo có nghĩa là cơ sở dữ liệu không xóa bất kỳflashback log nào giữa thời điểm đó và thời điểm hiện tại. Bạn nên xóa tất cả các điểm khôi phục đảm bảo không cần thiết.
+
+Chúng ta hay sử dụng điểm khôi phục trong trường họp "Big Update" (cập nhật lớn) vào 23h00 chúng ta dừng hệ thống tạo 1 restore point là before_changes, sau đó cập nhật đến 4h sáng, nếu suôn sẻ chúng ta sẽ xóa restore point, còn nếu lỗi chúng ta sẽ restore về before_changes đó, đảm bỏa toàn vẹn dữ liệu.
+1. Tạo restore point:
+CREATE RESTORE POINT before_changes; -- Có thể khôi phục về điểm before_changes, nếu không đủ dung lượng lưu trữ sẽ bị bị ghi đè
+
+CREATE RESTORE POINT before_changes GUARANTEE FLASHBACK DATABASE; -- Đảm bảo có thể khôi phục về điểm before_changes, yêu cầu đủ dung lượng lưu trữ
+
+SELECT NAME, SCN, TIME, DATABASE_INCARNATION#,
+        GUARANTEE_FLASHBACK_DATABASE,STORAGE_SIZE
+        FROM V$RESTORE_POINT;
+
+SELECT NAME, SCN, TIME, DATABASE_INCARNATION#, GUARANTEE_FLASHBACK_DATABASE, STORAGE_SIZE 
+FROM V$RESTORE_POINT 
+WHERE GUARANTEE_FLASHBACK_DATABASE='YES';
+
+RMAN> LIST RESTORE POINT before_changes;
+RMAN> LIST RESTORE POINT ALL;
+
+using target database control file instead of recovery catalog
+SCN              RSP Time  Type       Time      Name
+---------------- --------- ---------- --------- ----
+341859           28-JUL-06            28-JUL-06 NORMAL_RS
+343690           28-JUL-06 GUARANTEED 28-JUL-06 GUARANTEED_RS
+Các điểm khôi phục hiện có có thể được hiển thị bằng cách sử dụng view V$RESTORE_POINT. 
+2. Khôi phục về before_changes
+Để flashback lại điểm khôi phục này, chúng ta sử dụng lệnh sau:
+FLASHBACK DATABASE TO RESTORE POINT before_changes;
+
+3. Xóa restore points
+Nếu không cần restore point nữa thì xóa đi để giải phóng dung lượng:
+DROP RESTORE POINT before_changes;
+
+Note: Việc bật flashback database sẽ ảnh hưởng đến performance của database, chúng ta có thể lấy AWR để đánh giá và view v$sysstat để check IO.
+Các hàm dùng với Flashback Query để giúp viết PL/SQL
+Các hàm TIMESTAMP_TO_SCN và SCN_TO_TIMESTAMP đã được thêm vào SQL và PL/SQL để đơn giản hóa các hoạt động flashback.
+SELECT *
+FROM   emp AS OF SCN TIMESTAMP_TO_SCN(SYSTIMESTAMP - 1/24);
+
+SELECT *
+FROM   emp AS OF TIMESTAMP SCN_TO_TIMESTAMP(993240);
+
+DECLARE
+  l_scn        NUMBER;
+  l_timestamp  TIMESTAMP;
+BEGIN
+  l_scn       := TIMESTAMP_TO_SCN(SYSTIMESTAMP - 1/24);
+  l_timestamp := SCN_TO_TIMESTAMP(l_scn);
+END;
+/
+Ngoài việc truy vấn view V$DATABASE, SCN hiện tại có thể được truy xuất bằng cách sử dụng gói DBMS_FLASHBACK.
+SELECT current_scn FROM v$database;
+
+SELECT DBMS_FLASHBACK.get_system_change_number FROM dual;
