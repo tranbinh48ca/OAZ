@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Framework Skill Quản trị Cơ sở Dữ liệu — VietDBA</title>
+<style>
+:root{
+  --red:#DA251D;--gold:#FFCD00;--bg:#FFF8F0;--bg2:#FFF0E0;
+  --ink:#1A1A2E;--ink2:#2D3561;--ink3:#4A5568;
+  --white:#FFFFFF;--border:#E8D5B0;--border2:#C8A97A;
+  --green:#1A6B45;--green-pale:#E8F7EF;
+  --blue:#1A4A8A;--blue-pale:#EBF2FB;
+  --purple:#5B2D8A;--purple-pale:#F4EEF9;
+  --cyan:#0D7377;--cyan-pale:#E8F6F7;
+  --amber:#B8860B;--amber-pale:#FDF8E8;
+  --red-pale:#FDF0EE;
+  --shadow:0 2px 16px rgba(218,37,29,.08);
+  --shadow2:0 8px 40px rgba(26,26,46,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+code,pre{font-family:'Cascadia Code','Consolas',monospace}
+
+/* PROGRESS */
+#pgbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));z-index:999;transition:width .1s;box-shadow:0 0 8px rgba(218,37,29,.4)}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,248,240,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--red);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--red),#8B0000);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff}
+.nav-title{font-size:13px;font-weight:700;color:var(--ink)}
+.nav-pills{display:flex;gap:3px;overflow-x:auto}
+.nav-pills a{font-size:11px;font-weight:600;color:var(--ink3);text-decoration:none;padding:4px 10px;border-radius:4px;white-space:nowrap;transition:all .15s}
+.nav-pills a:hover{background:var(--red);color:#fff}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1A1A2E 0%,#2D1B12 60%,#3D0000 100%);padding:64px 24px 48px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(218,37,29,.12) 0%,transparent 60%),radial-gradient(circle at 80% 20%,rgba(255,205,0,.08) 0%,transparent 50%)}
+.hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(218,37,29,.2);border:1px solid rgba(218,37,29,.4);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:700;color:#ff9a9a;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.hero h1{font-size:clamp(2rem,4vw,3.2rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:12px}
+.hero h1 span{color:var(--gold)}
+.hero-sub{font-size:1rem;color:rgba(255,255,255,.6);max-width:600px;margin-bottom:28px;line-height:1.7}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap}
+.hst{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 20px;text-align:center}
+.hst-num{font-family:'Cascadia Code',monospace;font-size:1.8rem;font-weight:700;color:var(--gold);line-height:1}
+.hst-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
+
+/* CONTAINER */
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+section{padding:56px 0}
+.sec-label{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.sec-title{font-size:clamp(1.5rem,2.5vw,2rem);font-weight:800;color:var(--ink);margin-bottom:8px}
+.sec-sub{font-size:.95rem;color:var(--ink3);max-width:640px;line-height:1.7;margin-bottom:32px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0}
+
+/* SKILL CARDS */
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:8px}
+.skill-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer}
+.skill-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px)}
+.skill-card-head{padding:16px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.skill-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Cascadia Code',monospace;font-weight:700;font-size:13px;flex-shrink:0}
+.skill-name{font-size:14px;font-weight:700;color:var(--ink)}
+.skill-code{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;font-family:monospace;margin-left:auto;flex-shrink:0}
+.skill-body{padding:14px 18px}
+.skill-desc{font-size:13px;color:var(--ink3);margin-bottom:12px;line-height:1.6}
+.skill-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:var(--bg2);color:var(--ink3)}
+
+/* SKILL DETAIL (accordion) */
+.skill-detail{display:none;padding:0 18px 16px}
+.skill-detail.open{display:block}
+.skill-detail-inner{background:var(--bg);border-radius:8px;padding:14px 16px}
+
+/* MODULES TABLE */
+.mod-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}
+.mod-table th{text-align:left;padding:8px 10px;border-bottom:2px solid var(--border2);font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3)}
+.mod-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--ink3);vertical-align:top}
+.mod-table tr:last-child td{border:none}
+.mod-table tr:hover td{background:var(--bg2)}
+.lv{padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700}
+.lv-f{background:#FFF3CD;color:#856404}.lv-i{background:#D1ECF1;color:#0C5460}.lv-a{background:#F8D7DA;color:#721C24}
+
+/* FRAMEWORK LEVELS */
+.level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.level-box{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.level-icon{font-size:2.2rem;margin-bottom:8px}
+.level-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.level-desc{font-size:12.5px;color:var(--ink3)}
+
+/* PROGRESSION PATH */
+.path{display:flex;flex-direction:column;gap:0;margin-top:20px}
+.path-step{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--border);position:relative}
+.path-step:last-child{border:none}
+.path-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;font-family:monospace;position:relative;z-index:1}
+.path-line{position:absolute;left:19px;top:58px;bottom:-18px;width:1px;border-left:1px dashed var(--border2)}
+.path-step:last-child .path-line{display:none}
+.path-content{flex:1;padding-top:6px}
+.path-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.path-desc{font-size:13px;color:var(--ink3);line-height:1.6}
+.path-skills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+
+/* CODE BLOCK */
+.codeblock{background:#1A1A2E;border-radius:8px;overflow:hidden;margin:10px 0}
+.cb-header{background:#2D2D4E;padding:8px 14px;font-size:10px;color:rgba(255,255,255,.5);font-family:monospace;display:flex;justify-content:space-between;align-items:center}
+.cb-copy{cursor:pointer;color:rgba(255,255,255,.4);background:none;border:none;font-size:11px;transition:color .15s;font-family:inherit}
+.cb-copy:hover{color:rgba(255,255,255,.9)}
+.cb-copy.done{color:#7ED07E}
+pre.cb{padding:12px 14px;color:#C8D6E5;font-size:12px;overflow-x:auto;line-height:1.75}
+pre.cb .k{color:#81CFDF}
+pre.cb .s{color:#C5E478}
+pre.cb .c{color:#555580}
+pre.cb .fn{color:#FFAA6E}
+
+/* ALERT BOX */
+.alert{display:flex;gap:10px;padding:12px 14px;border-radius:8px;margin:12px 0;border:1px solid;font-size:13px}
+.alert-w{background:var(--amber-pale);border-color:rgba(184,134,11,.25);color:var(--amber)}
+.alert-i{background:var(--blue-pale);border-color:rgba(26,74,138,.2);color:var(--blue)}
+.alert-s{background:var(--green-pale);border-color:rgba(26,107,69,.2);color:var(--green)}
+.alert-icon{font-size:1.1rem;flex-shrink:0}
+
+/* CHECKLIST */
+.checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:14px}
+.ci{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--white);border:1px solid var(--border);border-radius:8px;font-size:12.5px}
+.ci input{accent-color:var(--green);margin-top:2px;width:14px;height:14px;flex-shrink:0}
+.ci label{color:var(--ink3);cursor:pointer;line-height:1.45}
+
+/* BADGE */
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.br{background:var(--red-pale);color:var(--red)}
+.bg{background:var(--gold);color:#000}
+.bb{background:var(--blue-pale);color:var(--blue)}
+.bv{background:var(--purple-pale);color:var(--purple)}
+.bn{background:var(--green-pale);color:var(--green)}
+
+/* TOC */
+.toc{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:32px}
+.toc-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:12px}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.toc-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;text-decoration:none;font-size:12.5px;color:var(--ink3);transition:all .15s;border:1px solid transparent}
+.toc-link:hover{background:var(--red-pale);border-color:rgba(218,37,29,.2);color:var(--red)}
+.toc-link-num{font-family:monospace;font-weight:700;font-size:11px;opacity:.6}
+
+/* FOOTER */
+footer{background:var(--ink);color:rgba(255,255,255,.5);text-align:center;padding:28px;font-size:12px}
+footer strong{color:var(--red)}
+
+/* RESPONSIVE */
+@media(max-width:760px){
+  .level-grid{grid-template-columns:1fr}
+  .nav-pills{display:none}
+  .hst{min-width:80px}
+}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div id="pgbar" style="width:0"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">VDB</div>
+    <div class="nav-title">DBA Skill Framework</div>
+  </div>
+  <div class="nav-pills">
+    <a href="#overview">Tổng quan</a>
+    <a href="#skills">10 Skill Groups</a>
+    <a href="#path">Lộ trình</a>
+    <a href="#checklist">Checklist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">● VietDBA · Production-Ready Framework 2026</div>
+    <h1>Framework <span>Skill</span> Quản trị<br>Cơ sở Dữ liệu Toàn diện</h1>
+    <p class="hero-sub">10 nhóm skill · Oracle 11g→26ai · RAC · DataGuard · GoldenGate · PostgreSQL · SQL Server · MySQL/MariaDB · MongoDB — Từ cài đặt đến vận hành, từ tối ưu đến khắc phục sự cố.</p>
+    <div class="hero-stats">
+      <div class="hst"><div class="hst-num">10</div><div class="hst-lbl">Skill Groups</div></div>
+      <div class="hst"><div class="hst-num">120+</div><div class="hst-lbl">Sub-skills</div></div>
+      <div class="hst"><div class="hst-num">4</div><div class="hst-lbl">DBMS chính</div></div>
+      <div class="hst"><div class="hst-num">20+</div><div class="hst-lbl">Năm kinh nghiệm</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<section id="overview">
+  <div class="wrap">
+    <div class="sec-label">Nền tảng</div>
+    <h2 class="sec-title">Tổng quan Framework</h2>
+    <p class="sec-sub">Framework được xây dựng dựa trên tài liệu vận hành thực tế của Trần Văn Bình (MobiFone ~200 DB, 1200+ servers), tài liệu chính hãng Oracle, và best practices ngành. Ba cấp độ thành thạo, áp dụng cho mọi DBA.</p>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">📋 Mục lục — 10 Nhóm Skill</div>
+      <div class="toc-grid">
+        <a href="#sk1" class="toc-link"><span class="toc-link-num">01</span> Cài đặt, Patch, Upgrade, Migration</a>
+        <a href="#sk2" class="toc-link"><span class="toc-link-num">02</span> Quản trị Oracle Database</a>
+        <a href="#sk3" class="toc-link"><span class="toc-link-num">03</span> SQL & PL/SQL</a>
+        <a href="#sk4" class="toc-link"><span class="toc-link-num">04</span> Bảo mật Oracle Database</a>
+        <a href="#sk5" class="toc-link"><span class="toc-link-num">05</span> Tối ưu hiệu năng & SQL Tuning</a>
+        <a href="#sk6" class="toc-link"><span class="toc-link-num">06</span> Oracle RAC</a>
+        <a href="#sk7" class="toc-link"><span class="toc-link-num">07</span> High Availability (DataGuard & GoldenGate)</a>
+        <a href="#sk8" class="toc-link"><span class="toc-link-num">08</span> Database khác (PG, MSSQL, MySQL, Mongo)</a>
+        <a href="#sk9" class="toc-link"><span class="toc-link-num">09</span> Giám sát, Vận hành, Khai thác</a>
+        <a href="#sk10" class="toc-link"><span class="toc-link-num">10</span> Khắc phục lỗi Database</a>
+      </div>
+    </div>
+
+    <!-- 3 levels -->
+    <div class="level-grid">
+      <div class="level-box">
+        <div class="level-icon">🌱</div>
+        <div class="level-name">Foundation (F)</div>
+        <div class="level-desc">Kiến thức cơ bản, hiểu nguyên lý, thực hiện được các thao tác định kỳ theo hướng dẫn. 0–2 năm kinh nghiệm.</div>
+      </div>
+      <div class="level-box">
+        <div class="level-icon">⚙️</div>
+        <div class="level-name">Intermediate (I)</div>
+        <div class="level-desc">Độc lập xử lý các vấn đề phức tạp, tối ưu, thiết kế giải pháp. 2–5 năm kinh nghiệm.</div>
+      </div>
+      <div class="level-box">
+        <div class="level-icon">🏆</div>
+        <div class="level-name">Advanced (A)</div>
+        <div class="level-desc">Chuyên gia, kiến trúc hệ thống lớn, xử lý sự cố phức tạp, mentor team. 5+ năm kinh nghiệm.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-label">10 Nhóm Skill</div>
+    <h2 class="sec-title">Chi tiết từng Skill Group</h2>
+    <p class="sec-sub">Click vào từng card để xem chi tiết các sub-skill, level và gợi ý thực hành.</p>
+
+    <div class="skill-grid">
+
+      <!-- ── SKILL 1 ── -->
+      <div class="skill-card" id="sk1">
+        <div class="skill-card-head" onclick="toggleCard('d1')">
+          <div class="skill-num" style="background:#FFF0E0;color:var(--red)">01</div>
+          <div>
+            <div class="skill-name">Cài đặt · Patch · Upgrade · Migration</div>
+          </div>
+          <div class="skill-code" style="background:var(--red-pale);color:var(--red)">INST</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Toàn bộ vòng đời installation: Oracle Single Instance và RAC, từ 11g đến 26ai, bao gồm patching, upgrading, migration giữa các môi trường và uninstall.</div>
+          <div class="skill-tags">
+            <span class="tag">Oracle 11g/12c/19c/21c/26ai</span>
+            <span class="tag">RAC</span>
+            <span class="tag">OPatch</span>
+            <span class="tag">DBUA</span>
+            <span class="tag">DataPump</span>
+            <span class="tag">GoldenGate Migration</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d1">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>1.1 Chuẩn bị môi trường</strong></td><td>Pre-check OS (RHEL/OL/Solaris/AIX), kernel params, limits, hugepages, ASM setup, network</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>1.2 Cài Oracle Single Instance</strong></td><td>Silent install Oracle 19c/21c/26ai, cấu hình listener, tạo DB bằng DBCA, best practices</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>1.3 Cài Oracle RAC</strong></td><td>Grid Infrastructure, Clusterware, ASM, RAC DB install (2-node và multi-node), SCAN, VIP</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>1.4 Patching — OPatch</strong></td><td>CPU/PSU/RU/RUR patch, opatch lsinventory, conflict check, rolling patch trên RAC, rollback</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>1.5 Patching — OPatchAuto</strong></td><td>Automated patching với OPatchAuto cho Grid+DB đồng thời, minimal downtime</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>1.6 Upgrading (DBUA)</strong></td><td>Upgrade 11g→12c→19c→21c bằng DBUA, pre-upgrade checks, AutoUpgrade tool</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>1.7 Upgrading thủ công</strong></td><td>Manual upgrade, catupgrd.sql, catctl.pl parallel upgrade, postupgrade validations</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>1.8 Migration — DataPump</strong></td><td>expdp/impdp full/schema/table, network_link, tablespace transport, parallel</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>1.9 Migration — RMAN Duplicate</strong></td><td>Active duplicate, backup-based duplicate, cross-platform migration, TTS</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>1.10 Migration — GoldenGate</strong></td><td>Zero-downtime migration bằng OGG, cross-version/cross-platform</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>1.11 Migration — SQL Loader</strong></td><td>Direct path load, parallel load, external tables, big data loading</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>1.12 Multitenant Migration</strong></td><td>Non-CDB to PDB conversion, PDB cloning, unplug/plug PDB across CDB</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>1.13 Uninstall Oracle</strong></td><td>Deinstall tool, manual cleanup Grid/DB home, ASM diskgroup removal</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>1.14 Oracle 26ai Features</strong></td><td>AI Vector Search, JSON Duality Views, True Cache, new installation workflows</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+            <div class="alert alert-i" style="margin-top:12px">
+              <span class="alert-icon">📌</span>
+              <div>Tham khảo: Oracle Database Installation Guide, My Oracle Support, MOS Note 1299840.1 (Patch Set Download), AutoUpgrade 24c Documentation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 2 ── -->
+      <div class="skill-card" id="sk2">
+        <div class="skill-card-head" onclick="toggleCard('d2')">
+          <div class="skill-num" style="background:#EBF2FB;color:var(--blue)">02</div>
+          <div><div class="skill-name">Quản trị Oracle Database</div></div>
+          <div class="skill-code" style="background:var(--blue-pale);color:var(--blue)">ADMIN</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Toàn bộ tác vụ quản trị hàng ngày: storage, session, parameter, redo log, archive, backup/recovery, CDB/PDB, ASM, scheduler, job.</div>
+          <div class="skill-tags">
+            <span class="tag">RMAN</span><span class="tag">Tablespace</span><span class="tag">ASM</span>
+            <span class="tag">CDB/PDB</span><span class="tag">Scheduler</span><span class="tag">AWR/ADDM</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d2">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>2.1 Kiến trúc Oracle DB</strong></td><td>SGA/PGA, background processes, data dictionary, memory architecture, I/O subsystem</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>2.2 Startup / Shutdown</strong></td><td>Startup nomount/mount/open, restricted mode, force, abort, shutdown modes, pfile/spfile</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>2.3 Quản lý Parameter</strong></td><td>init.ora, spfile, ALTER SYSTEM/SESSION, scope=both/memory/spfile, reset parameter</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>2.4 Quản lý Tablespace</strong></td><td>Create/alter/drop, datafile management, autoextend, bigfile tablespace, temp, undo</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>2.5 Quản lý ASM</strong></td><td>Diskgroup create/drop/alter, add/remove disk, rebalance, ASM metadata backup, ACFS</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.6 Quản lý User & Security</strong></td><td>Create/alter/drop user, privilege, role, profile, password policy, account lock/unlock</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>2.7 Quản lý Redo Log</strong></td><td>Add/drop/switch group, log switch frequency, multiplexed redo, archivelog management</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.8 Quản lý Undo</strong></td><td>Undo retention, undo tablespace sizing, ORA-01555 prevention, undostat</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.9 Backup — RMAN</strong></td><td>Full/incremental backup, archivelog backup, controlfile backup, recovery catalog, retention policy</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.10 Recovery — RMAN</strong></td><td>Complete/incomplete recovery, PITR, flashback database, block media recovery</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>2.11 Flashback Technologies</strong></td><td>Flashback query, flashback table, flashback drop (recycle bin), flashback database</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.12 Quản lý Session & Lock</strong></td><td>V$SESSION query, blocking sessions, kill session, enqueue wait, deadlock detection</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.13 Quản lý Object</strong></td><td>Invalid objects compile, unusable index rebuild, statistics gather, partition management</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.14 Gather Statistics</strong></td><td>DBMS_STATS full/schema/table/partition, locked stats, stale stats, auto stats job</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.15 Scheduler & Jobs</strong></td><td>DBMS_SCHEDULER, DBMS_JOB, chain, program, schedule, job class, window</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>2.16 CDB/PDB Multitenant</strong></td><td>Create/open/close/drop PDB, PDB lockdown profiles, container queries, PDB backup</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>2.17 Listener & Network</strong></td><td>lsnrctl start/stop/status, tnsnames.ora, sqlnet.ora, SCAN listener, service registration</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>2.18 Enterprise Manager</strong></td><td>OEM Cloud Control, EM Express, monitoring targets, jobs, patching via OEM</td><td><span class="lv lv-i">I</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 3 ── -->
+      <div class="skill-card" id="sk3">
+        <div class="skill-card-head" onclick="toggleCard('d3')">
+          <div class="skill-num" style="background:var(--green-pale);color:var(--green)">03</div>
+          <div><div class="skill-name">SQL & PL/SQL</div></div>
+          <div class="skill-code" style="background:var(--green-pale);color:var(--green)">DEV</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Từ SQL cơ bản đến PL/SQL nâng cao: stored procedure, function, package, trigger, dynamic SQL, bulk operations, error handling, XML, JSON.</div>
+          <div class="skill-tags">
+            <span class="tag">DML/DDL/DCL</span><span class="tag">Analytic Functions</span>
+            <span class="tag">PL/SQL</span><span class="tag">DBMS Packages</span><span class="tag">JSON/XML</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d3">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>3.1 SQL Fundamentals</strong></td><td>SELECT, WHERE, GROUP BY, HAVING, ORDER BY, JOIN (INNER/OUTER/CROSS), UNION, subquery</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>3.2 SQL Nâng cao</strong></td><td>Analytic functions (ROW_NUMBER, RANK, LAG/LEAD), PIVOT/UNPIVOT, CONNECT BY hierarchical, CTE (WITH clause), MERGE</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>3.3 DDL & DCL</strong></td><td>CREATE/ALTER/DROP TABLE/INDEX/VIEW, GRANT/REVOKE, TRUNCATE vs DELETE, constraints, sequences</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>3.4 PL/SQL Fundamentals</strong></td><td>Block structure, variables, control flow (IF/LOOP/CURSOR), exception handling, %TYPE/%ROWTYPE</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>3.5 Stored Procedure & Function</strong></td><td>IN/OUT parameters, overloading, invoker/definer rights, pipelined function, autonomous transaction</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>3.6 Package</strong></td><td>Spec & body, public/private, package state, global variables, initialization block</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>3.7 Trigger</strong></td><td>DML/DDL/system triggers, row/statement level, :NEW/:OLD, INSTEAD OF, compound trigger, disable/enable</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>3.8 Dynamic SQL</strong></td><td>EXECUTE IMMEDIATE, DBMS_SQL, bind variables, cursor variables (REF CURSOR), open-for</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>3.9 Bulk Operations</strong></td><td>BULK COLLECT, FORALL, LIMIT clause, error logging (SAVE EXCEPTIONS), performance impact</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>3.10 Collections</strong></td><td>VARRAY, nested table, associative array (index-by), multiset operations, TABLE() function</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>3.11 Built-in Packages</strong></td><td>DBMS_OUTPUT, DBMS_LOB, DBMS_UTILITY, UTL_FILE, UTL_MAIL, DBMS_CRYPTO, DBMS_LOCK</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>3.12 XML & JSON</strong></td><td>XMLType, XMLQUERY, JSON_TABLE, JSON_VALUE, IS JSON constraint, JSON Duality Views (23ai)</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>3.13 AI Vector (26ai)</strong></td><td>VECTOR data type, vector_distance(), AI Vector Search, RAG patterns với Oracle DB</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 4 ── -->
+      <div class="skill-card" id="sk4">
+        <div class="skill-card-head" onclick="toggleCard('d4')">
+          <div class="skill-num" style="background:var(--red-pale);color:var(--red)">04</div>
+          <div><div class="skill-name">Bảo mật Oracle Database</div></div>
+          <div class="skill-code" style="background:var(--red-pale);color:var(--red)">SEC</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Toàn diện về bảo mật: audit, encryption (TDE), VPD, Data Masking, Database Vault, Label Security, Unified Auditing, network security.</div>
+          <div class="skill-tags">
+            <span class="tag">TDE</span><span class="tag">Unified Audit</span><span class="tag">VPD</span>
+            <span class="tag">Database Vault</span><span class="tag">Data Masking</span><span class="tag">SQL Firewall</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d4">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>4.1 Authentication & Authorization</strong></td><td>Password profile, account lockout, privilege analysis, principle of least privilege, SYS protection</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>4.2 Traditional Auditing</strong></td><td>AUDIT statement, object audit, privilege audit, FGA (Fine-Grained Auditing), audit trail maintenance</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>4.3 Unified Auditing</strong></td><td>Unified audit policy, condition-based audit, pre-defined policies, audit trail purge, mixed mode</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>4.4 Transparent Data Encryption (TDE)</strong></td><td>Tablespace encryption, column encryption, wallet management, keystore (auto-login, password), key rotation</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>4.5 Network Encryption</strong></td><td>Oracle Advanced Security, native network encryption, SSL/TLS, TCPS, sqlnet.ora configuration</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>4.6 Virtual Private Database (VPD)</strong></td><td>Row-level security, policy functions, static/dynamic policies, column masking</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>4.7 Oracle Label Security (OLS)</strong></td><td>Mandatory access control, sensitivity labels, SA_POLICY_ADMIN, compartments, groups</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>4.8 Oracle Database Vault</strong></td><td>Realms, command rules, factors, separation of duties, DV protect SYS/DBA, trusted paths</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>4.9 Data Masking & Subsetting</strong></td><td>Oracle Data Masking Pack, masking definitions, deterministic masking, data subsetting</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>4.10 SQL Firewall (23ai)</strong></td><td>Oracle SQL Firewall, capture allowed SQL, enforce policy, block unauthorized SQL</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>4.11 Privilege Analysis</strong></td><td>DBMS_PRIVILEGE_CAPTURE, used/unused privileges report, least privilege enforcement</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>4.12 Security Hardening</strong></td><td>CIS Oracle Benchmark, security checklists, default accounts, unnecessary packages, listener security</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>4.13 Compliance & Audit Vault</strong></td><td>Oracle Audit Vault & Database Firewall (AVDF), compliance reports, alert rules</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 5 ── -->
+      <div class="skill-card" id="sk5">
+        <div class="skill-card-head" onclick="toggleCard('d5')">
+          <div class="skill-num" style="background:var(--purple-pale);color:var(--purple)">05</div>
+          <div><div class="skill-name">Tối ưu hiệu năng & SQL Tuning</div></div>
+          <div class="skill-code" style="background:var(--purple-pale);color:var(--purple)">TUNE</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Performance tuning toàn diện: AWR/ASH analysis, execution plan, index design, SQL Tuning Advisor, memory tuning, I/O optimization, wait event analysis.</div>
+          <div class="skill-tags">
+            <span class="tag">AWR/ASH/ADDM</span><span class="tag">Execution Plan</span><span class="tag">Index Design</span>
+            <span class="tag">SQL Tuning Advisor</span><span class="tag">Optimizer Statistics</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d5">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>5.1 AWR / ASH Analysis</strong></td><td>AWR report, ASH report, wait events interpretation, top SQL by CPU/IO, AWR compare, ADDM findings</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>5.2 Execution Plan</strong></td><td>EXPLAIN PLAN, DBMS_XPLAN, actual plan (GATHER_PLAN_STATISTICS), plan stability, adaptive plans</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>5.3 SQL Tuning Advisor</strong></td><td>DBMS_SQLTUNE, automatic SQL tuning task, accept recommendations, SQL profiles, baselines</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>5.4 Index Design & Optimization</strong></td><td>B-tree, bitmap, function-based, composite, invisible, partial index; index skip scan, index hints</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.5 Optimizer Statistics</strong></td><td>Column histogram, NDV, clustering factor, optimizer_mode, fixed_date, extended statistics</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.6 SQL Plan Management (SPM)</strong></td><td>SQL plan baselines, evolve baselines, fixed plans, capture & load plans, plan history</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.7 Memory Tuning</strong></td><td>SGA/PGA sizing, buffer cache hit ratio, shared pool fragmentation, large pool, AMM/ASMM</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>5.8 I/O Optimization</strong></td><td>DB file sequential/scattered read, direct path, async I/O, striping, ASM rebalance, FRA sizing</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.9 Wait Event Analysis</strong></td><td>Top waits, DB CPU, log file sync, buffer busy waits, enqueue waits, latch contention</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.10 Partitioning for Performance</strong></td><td>Range/list/hash/interval/composite partition, partition pruning, partition-wise join, global/local index</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.11 Parallel Execution</strong></td><td>DOP, PQ hints, parallel DDL/DML, PQ server management, parallel degree policy</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.12 Result Cache & Buffer Optimization</strong></td><td>Result cache, SQL result cache, PL/SQL function result cache, NOCACHE hints</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>5.13 In-Memory Column Store</strong></td><td>INMEMORY population, IM expressions, In-Memory FastStart, vector joins, IM aggregation</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>5.14 Real Application Testing</strong></td><td>Database Replay, SQL Performance Analyzer (SPA), capture & replay workload</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 6 ── -->
+      <div class="skill-card" id="sk6">
+        <div class="skill-card-head" onclick="toggleCard('d6')">
+          <div class="skill-num" style="background:var(--amber-pale);color:var(--amber)">06</div>
+          <div><div class="skill-name">Oracle RAC</div></div>
+          <div class="skill-code" style="background:var(--amber-pale);color:var(--amber)">RAC</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Real Application Clusters: cài đặt, cấu hình, quản trị, giám sát, tối ưu Cache Fusion, Clusterware, ASM, load balancing, failover.</div>
+          <div class="skill-tags">
+            <span class="tag">Grid Infrastructure</span><span class="tag">Cache Fusion</span>
+            <span class="tag">SCAN</span><span class="tag">CRS/CRSD</span><span class="tag">ASM</span><span class="tag">TAF/FCF</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d6">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>6.1 RAC Architecture</strong></td><td>Shared-disk model, interconnect, GCS/GES, Cache Fusion, SCAN, VIP, node roles</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>6.2 Grid Infrastructure</strong></td><td>Clusterware stack, CSS (ocssd), CRSD, OHAS, OCR, voting disk, GPnP profile</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>6.3 ASM Administration</strong></td><td>Diskgroup management, disk add/drop/rebalance, ASM metadata backup, ASMCMD, ACFS</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>6.4 RAC Database Management</strong></td><td>srvctl commands, instance startup/stop, service management, redo thread management</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>6.5 RAC Networking</strong></td><td>Public/private/SCAN network, jumbo frames, bonding/teaming, network redundancy</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>6.6 RAC Services</strong></td><td>Create/modify service, service attributes, load balancing goal, connection load balancing</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>6.7 TAF & FCF</strong></td><td>Transparent Application Failover, Fast Connection Failover, ONS configuration, session/select TAF</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>6.8 RAC Backup & Recovery</strong></td><td>RMAN in RAC, channel allocation per node, recovery with node failure, archivelog management</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>6.9 RAC Performance Tuning</strong></td><td>Cluster wait events, GC (global cache) waits, interconnect analysis, sequence caching, hot blocks</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>6.10 RAC Patching</strong></td><td>Rolling patch (OPatchAuto), out-of-place patching, minimum downtime patching</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>6.11 Add / Remove Node</strong></td><td>addNode.sh, cluvfy checks, extend cluster, node eviction, decommission node</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>6.12 RAC Troubleshooting</strong></td><td>Node reboot causes, CRS resource failure, voting disk loss, OCR corruption, split-brain</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 7 ── -->
+      <div class="skill-card" id="sk7">
+        <div class="skill-card-head" onclick="toggleCard('d7')">
+          <div class="skill-num" style="background:var(--cyan-pale);color:var(--cyan)">07</div>
+          <div><div class="skill-name">High Availability: DataGuard & GoldenGate</div></div>
+          <div class="skill-code" style="background:var(--cyan-pale);color:var(--cyan)">HA</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Đảm bảo tính sẵn sàng cao: DataGuard (Physical/Logical Standby), Active DataGuard, Switchover/Failover, Oracle GoldenGate bidirectional replication.</div>
+          <div class="skill-tags">
+            <span class="tag">DataGuard</span><span class="tag">Active DG</span><span class="tag">Switchover</span>
+            <span class="tag">GoldenGate</span><span class="tag">Extract/Replicat</span><span class="tag">Zero Downtime</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d7">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>7.1 DataGuard Architecture</strong></td><td>Physical/Logical Standby, redo transport modes (Sync/Async/Max Protection/Availability/Performance), Gap resolution</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>7.2 Cài đặt Physical Standby</strong></td><td>RMAN duplicate for standby, manual setup, network config, redo apply, apply lag monitoring</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>7.3 Active DataGuard</strong></td><td>Read-only standby with redo apply, Real-Time Query, Far Sync, SQL Apply, hybrid standby</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>7.4 DataGuard Broker</strong></td><td>DGMGRL commands, configuration file, fast-start failover (FSFO), observer setup, switchover via broker</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>7.5 Switchover</strong></td><td>Planned switchover procedure (zero data loss), pre-checks, post-switchover validation, reverse setup</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>7.6 Failover</strong></td><td>Unplanned failover, FSFO, manual failover with flashback, activate standby, re-instate old primary</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>7.7 DG Gap Resolution</strong></td><td>Archive gap detection, incremental RMAN backup to fill gap, log file shipping troubleshooting</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>7.8 GoldenGate Architecture</strong></td><td>Extract (Classic/Integrated), Pump, Replicat (Classic/Integrated/MicroServices), trail files, GGSCI</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>7.9 GoldenGate Configuration</strong></td><td>Uni/Bidirectional replication, supplemental logging, table-level filtering, conflict detection/resolution</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>7.10 GoldenGate Cross-Platform</strong></td><td>Oracle→PostgreSQL, Oracle→MySQL, Oracle→Kafka, heterogeneous replication, data type mapping</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>7.11 GoldenGate MicroServices</strong></td><td>REST API management, ServiceManager, Admin/Distribution/Receiver Server, web UI</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>7.12 GoldenGate Troubleshooting</strong></td><td>abend process recovery, trail file recovery, OGG-01519, pump restart, integrated capture issues</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>7.13 DG + GG Combined HA</strong></td><td>DataGuard for DR, GoldenGate for zero-downtime migration, combined strategies for 99.99% uptime</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 8 ── -->
+      <div class="skill-card" id="sk8">
+        <div class="skill-card-head" onclick="toggleCard('d8')">
+          <div class="skill-num" style="background:var(--green-pale);color:var(--green)">08</div>
+          <div><div class="skill-name">Database khác: PostgreSQL · SQL Server · MySQL · MongoDB</div></div>
+          <div class="skill-code" style="background:var(--green-pale);color:var(--green)">MULTI-DB</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Vận hành và quản trị các database phi Oracle: PostgreSQL (streaming replication, pg_dump), SQL Server (AlwaysOn, SSMS), MySQL/MariaDB, MongoDB Atlas.</div>
+          <div class="skill-tags">
+            <span class="tag">PostgreSQL</span><span class="tag">SQL Server</span>
+            <span class="tag">MySQL/MariaDB</span><span class="tag">MongoDB</span><span class="tag">pgAdmin</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d8">
+          <div class="skill-detail-inner">
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td colspan="3" style="background:var(--bg2);font-weight:700;color:var(--blue);padding:6px 10px">PostgreSQL</td></tr>
+                <tr><td><strong>8.1 PG Administration</strong></td><td>postgresql.conf, pg_hba.conf, VACUUM/ANALYZE, extension management, schemas, pg_stat views</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>8.2 PG Backup & Recovery</strong></td><td>pg_dump/pg_restore, pg_basebackup, WAL archiving, PITR recovery, pgBackRest</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>8.3 PG Replication</strong></td><td>Streaming replication, logical replication, Patroni (HA), pg_rewind, replication slots</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>8.4 PG Performance</strong></td><td>pg_stat_statements, EXPLAIN ANALYZE, index types (B-tree/GiST/GIN/BRIN), connection pooling (PgBouncer)</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>8.5 PG Security</strong></td><td>Roles, pg_hba.conf auth methods, SSL, row-level security (RLS), audit with pgAudit</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td colspan="3" style="background:var(--bg2);font-weight:700;color:var(--blue);padding:6px 10px">SQL Server</td></tr>
+                <tr><td><strong>8.6 MSSQL Administration</strong></td><td>SSMS, Agent jobs, maintenance plans, database mail, linked servers, filegroups</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>8.7 MSSQL Backup</strong></td><td>Full/differential/log backup, striped backup, COPY_ONLY, restore with NORECOVERY, checkdb</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>8.8 MSSQL AlwaysOn AG</strong></td><td>Availability Groups, synchronous/asynchronous replicas, listener, manual/automatic failover</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>8.9 MSSQL Performance</strong></td><td>Query Store, execution plans, missing indexes, Statistics IO/Time, TempDB optimization</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td colspan="3" style="background:var(--bg2);font-weight:700;color:var(--blue);padding:6px 10px">MySQL / MariaDB</td></tr>
+                <tr><td><strong>8.10 MySQL Administration</strong></td><td>my.cnf, user management, GRANT/REVOKE, binary logs, slow query log, mysql CLI/phpMyAdmin</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>8.11 MySQL Backup</strong></td><td>mysqldump, mysqlpump, Percona XtraBackup, binary log based PITR, restore procedures</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>8.12 MySQL Replication & HA</strong></td><td>Master-slave, GTID-based replication, MySQL Group Replication, ProxySQL, Galera Cluster</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td colspan="3" style="background:var(--bg2);font-weight:700;color:var(--blue);padding:6px 10px">MongoDB</td></tr>
+                <tr><td><strong>8.13 MongoDB Administration</strong></td><td>Replica set management, mongod.conf, user roles, mongodump/mongorestore, Atlas operations</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>8.14 MongoDB Sharding</strong></td><td>Shard key selection, chunk management, mongos routing, balancer, config servers</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 9 ── -->
+      <div class="skill-card" id="sk9">
+        <div class="skill-card-head" onclick="toggleCard('d9')">
+          <div class="skill-num" style="background:var(--blue-pale);color:var(--blue)">09</div>
+          <div><div class="skill-name">Giám sát · Vận hành · Khai thác</div></div>
+          <div class="skill-code" style="background:var(--blue-pale);color:var(--blue)">OPS</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Quy trình vận hành hàng ngày theo tài liệu QT/DB.01: kiểm tra định kỳ, health check, bảo trì định kỳ, monitoring automation, KPI dashboards, alert thresholds.</div>
+          <div class="skill-tags">
+            <span class="tag">Daily Health Check</span><span class="tag">V$SESSION</span>
+            <span class="tag">Alert Log</span><span class="tag">Checklist vận hành</span><span class="tag">OEM/Zabbix</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d9">
+          <div class="skill-detail-inner">
+            <div class="alert alert-s">
+              <span class="alert-icon">📄</span>
+              <div>Dựa trực tiếp trên tài liệu QT/DB.01 của Trần Văn Bình — Phụ lục I, II, III (Kiểm tra định kỳ, Thao tác vận hành, Bảo trì định kỳ)</div>
+            </div>
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill</th><th>Mô tả</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>9.1 Daily Health Check</strong></td><td>Kiểm tra alert log, active sessions, blocking sessions, listener status, ASM status, instance status, cluster log</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>9.2 Storage Monitoring</strong></td><td>ASM diskgroup usage, tablespace free space, mountpoint usage, FRA usage, datafile status</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>9.3 Performance Monitoring</strong></td><td>CPU/memory load, active sessions trend, wait events, top SQL by resource, buffer cache hit ratio</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>9.4 Object Monitoring</strong></td><td>Invalid objects, unusable indexes, stale/missing statistics, locked statistics, job failures</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>9.5 Backup Monitoring</strong></td><td>RMAN backup status check, backup validation, FRA usage, archivelog gap detection, retention compliance</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>9.6 Periodic Maintenance</strong></td><td>Bảo trì định kỳ (theo Phụ lục III): kiểm tra OCR, voting disk, archive switch, AWR report, statistics</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>9.7 Monitoring Automation</strong></td><td>Shell script automation, cron jobs, Python monitoring scripts, email/SMS alerts, threshold management</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>9.8 OEM & Third-party Tools</strong></td><td>Oracle Enterprise Manager, Zabbix/Nagios Oracle templates, Grafana dashboards, custom plugins</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>9.9 KPI & SLA Management</strong></td><td>Định nghĩa KPI theo tài liệu QT/DB.01: uptime%, backup success rate, MTTR, response time SLA</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>9.10 Change Management</strong></td><td>Quy trình phối hợp giữa DBA và Application team, change request workflow, approval matrix, rollback plan</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>9.11 Capacity Planning</strong></td><td>Trend analysis, growth forecasting, tablespace/ASM expansion planning, license review</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>9.12 Incident Management</strong></td><td>P1/P2/P3 classification, escalation matrix, on-call procedures, post-incident review (PIR)</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>9.13 AI-Assisted Monitoring</strong></td><td>Claude API integration cho automated analysis, anomaly detection, natural language alerting</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+            <div class="codeblock" style="margin-top:12px">
+              <div class="cb-header"><span>SQL — Daily Health Check (Phụ lục I)</span><button class="cb-copy" onclick="copyCode(this)">Copy</button></div>
+              <pre class="cb"><span class="c">-- 1. Kiểm tra active session & blocking</span>
+<span class="k">SELECT</span> s.sid, s.serial#, s.username, s.status,
+       s.wait_class, s.event, s.seconds_in_wait,
+       s.blocking_session, s.sql_id
+<span class="k">FROM</span> v$session s
+<span class="k">WHERE</span> s.type = <span class="s">'USER'</span>
+  <span class="k">AND</span> s.status <span class="k">IN</span> (<span class="s">'ACTIVE'</span>,<span class="s">'KILLED'</span>)
+<span class="k">ORDER BY</span> s.seconds_in_wait <span class="k">DESC</span>;
+
+<span class="c">-- 2. Kiểm tra tablespace usage</span>
+<span class="k">SELECT</span> tablespace_name,
+       <span class="fn">ROUND</span>(used_space/1024,2) used_gb,
+       <span class="fn">ROUND</span>(tablespace_size/1024,2) total_gb,
+       <span class="fn">ROUND</span>(used_percent,1) pct_used
+<span class="k">FROM</span> dba_tablespace_usage_metrics
+<span class="k">ORDER BY</span> pct_used <span class="k">DESC</span>;
+
+<span class="c">-- 3. Kiểm tra invalid objects</span>
+<span class="k">SELECT</span> owner, object_type, object_name, status
+<span class="k">FROM</span> dba_objects
+<span class="k">WHERE</span> status = <span class="s">'INVALID'</span>
+  <span class="k">AND</span> owner <span class="k">NOT IN</span> (<span class="s">'SYS'</span>,<span class="s">'SYSTEM'</span>)
+<span class="k">ORDER BY</span> owner, object_type;</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILL 10 ── -->
+      <div class="skill-card" id="sk10">
+        <div class="skill-card-head" onclick="toggleCard('d10')">
+          <div class="skill-num" style="background:var(--red-pale);color:var(--red)">10</div>
+          <div><div class="skill-name">Khắc phục lỗi Database</div></div>
+          <div class="skill-code" style="background:var(--red-pale);color:var(--red)">TSHOOT</div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Troubleshooting toàn diện: ORA errors, performance degradation, storage issues, cluster failures, backup/recovery failures, GoldenGate abend, và escalation procedures.</div>
+          <div class="skill-tags">
+            <span class="tag">ORA errors</span><span class="tag">Alert Log</span><span class="tag">Trace Files</span>
+            <span class="tag">Diagnostic Pack</span><span class="tag">Support Workbench</span>
+          </div>
+        </div>
+        <div class="skill-detail" id="d10">
+          <div class="skill-detail-inner">
+            <div class="alert alert-w">
+              <span class="alert-icon">⚠️</span>
+              <div>Dựa trực tiếp trên Phụ lục IV (Khắc phục lỗi cơ bản) và các phụ lục V, VI của tài liệu QT/DB.01</div>
+            </div>
+            <table class="mod-table">
+              <thead><tr><th>Sub-Skill / Error Category</th><th>Mô tả & Tools</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td><strong>10.1 Phương pháp luận Troubleshooting</strong></td><td>5-step methodology: Identify → Isolate → Diagnose → Fix → Prevent. Alert log, trace file, ADRCI, TKPROF</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.2 ORA-01555 Snapshot Too Old</strong></td><td>Undo retention increase, long-running transactions, undo tablespace sizing, flashback query workaround</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.3 ORA-04031 Shared Pool</strong></td><td>Shared pool flush (emergency), shared_pool_size increase, large_pool_size, cursor sharing</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.4 ORA-00257 Archiver Stuck</strong></td><td>Archive log full, FRA full, archivelog deletion, disk space expansion, DB open with restricted mode</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.5 Tablespace Full (ORA-01653)</strong></td><td>Add datafile, extend datafile, autoextend enable, move segments, compress/purge data</td><td><span class="lv lv-f">F</span></td></tr>
+                <tr><td><strong>10.6 ORA-00020 Max Processes</strong></td><td>Kill idle sessions, increase processes parameter, connection pooling, session leak investigation</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.7 ORA-01000 Max Cursors</strong></td><td>Open_cursors parameter, cursor leak detection, session cursor cache, application fix guidance</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.8 Block Corruption (ORA-01578)</strong></td><td>DBMS_REPAIR, RMAN block media recovery, BBED (last resort), detect with RMAN validate</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>10.9 Deadlock (ORA-00060)</strong></td><td>Deadlock trace analysis, application-level fix, lock ordering, row-level vs table-level lock</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.10 Performance Degradation</strong></td><td>Sudden slowdown root cause: plan change (SPM), statistics issue, hot segment, new SQL, resource contention</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>10.11 RAC Node Eviction</strong></td><td>CSS timeout, interconnect failure, voting disk loss, node fencing, rejoining node to cluster</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>10.12 DataGuard Gap/Broken Redo</strong></td><td>Incremental backup gap fill, archive log shipping failure, redo apply stuck, ORA-16047, ORA-16401</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>10.13 GoldenGate Abend</strong></td><td>OGG-01519, OGG-00664, extract/replicat restart, trail file recovery, checkpoint reset, lag catchup</td><td><span class="lv lv-a">A</span></td></tr>
+                <tr><td><strong>10.14 RMAN Backup Failure</strong></td><td>Backup space issues, channel allocation failure, expired backups, catalog resync, crosscheck</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.15 PostgreSQL/MySQL/MSSQL Common Errors</strong></td><td>PG: autovacuum/bloat, max_connections; MySQL: table corruption, replication lag; MSSQL: log full, deadlock graphs</td><td><span class="lv lv-i">I</span></td></tr>
+                <tr><td><strong>10.16 Escalation & Oracle SR</strong></td><td>MOS Service Request, gather diagnostics (SQLT, OSWatcher, RDA), collaborate with Oracle Support</td><td><span class="lv lv-a">A</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /skill-grid -->
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<section id="path" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="sec-label">Lộ trình học tập</div>
+    <h2 class="sec-title">Progression Path theo kinh nghiệm</h2>
+    <p class="sec-sub">Lộ trình được thiết kế dựa trên kinh nghiệm thực tế đào tạo DBA tại MobiFone và các doanh nghiệp lớn. Tham khảo thêm tại <strong>www.tranvanbinh.vn</strong></p>
+
+    <div class="path">
+      <div class="path-step">
+        <div class="path-num" style="background:#FFF3CD;color:#856404">0–6<br>Tháng</div>
+        <div class="path-line"></div>
+        <div class="path-content">
+          <div class="path-title">🌱 DBA Trainee — Nền tảng</div>
+          <div class="path-desc">Xây dựng nền tảng vững chắc về kiến trúc, cài đặt cơ bản, SQL, và các tác vụ vận hành hàng ngày theo checklist.</div>
+          <div class="path-skills">
+            <span class="badge bb">SK1-F: Cài đặt Single Instance</span>
+            <span class="badge bb">SK2-F: Admin cơ bản</span>
+            <span class="badge bb">SK3-F: SQL Fundamentals</span>
+            <span class="badge bb">SK9-F: Daily Health Check</span>
+            <span class="badge bb">SK10-F: Lỗi cơ bản</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="path-step">
+        <div class="path-num" style="background:#D1ECF1;color:#0C5460">6–18<br>Tháng</div>
+        <div class="path-line"></div>
+        <div class="path-content">
+          <div class="path-title">⚙️ Junior DBA — Thực hành độc lập</div>
+          <div class="path-desc">Độc lập vận hành, backup/recovery, security cơ bản, SQL tuning đơn giản. Thi chứng chỉ OCA/OCP.</div>
+          <div class="path-skills">
+            <span class="badge bv">SK2-I: Admin nâng cao</span>
+            <span class="badge bv">SK3-I: PL/SQL</span>
+            <span class="badge bv">SK4-I: Security cơ bản</span>
+            <span class="badge bv">SK5-I: AWR Analysis</span>
+            <span class="badge bv">SK9-I: Monitoring tự động</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="path-step">
+        <div class="path-num" style="background:#D4EDDA;color:#155724">2–4<br>Năm</div>
+        <div class="path-line"></div>
+        <div class="path-content">
+          <div class="path-title">🔧 Senior DBA — Chuyên sâu</div>
+          <div class="path-desc">Xử lý RAC, DataGuard, performance tuning chuyên sâu, migration, security toàn diện. Dẫn dắt incident response.</div>
+          <div class="path-skills">
+            <span class="badge br">SK5-A: SQL Tuning toàn diện</span>
+            <span class="badge br">SK6-I: RAC Management</span>
+            <span class="badge br">SK7-I: DataGuard Switchover</span>
+            <span class="badge br">SK8-I: Multi-DB</span>
+            <span class="badge br">SK10-A: Complex troubleshooting</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="path-step">
+        <div class="path-num" style="background:#F8D7DA;color:#721C24">4+<br>Năm</div>
+        <div class="path-content">
+          <div class="path-title">🏆 DBA Architect / Expert — Chuyên gia</div>
+          <div class="path-desc">Thiết kế kiến trúc HA toàn diện, GoldenGate cross-platform, Oracle 26ai AI features, mentor team, capacity planning chiến lược.</div>
+          <div class="path-skills">
+            <span class="badge bg">SK1-A: RAC Install & Migration</span>
+            <span class="badge bg">SK6-A: RAC Architecture Design</span>
+            <span class="badge bg">SK7-A: GoldenGate Cross-Platform</span>
+            <span class="badge bg">SK4-A: Database Vault/TDE</span>
+            <span class="badge bg">SK5-A: In-Memory / RAT</span>
+            <span class="badge bg">SK9-A: AI-Assisted Monitoring</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certification Path -->
+    <div class="alert alert-i" style="margin-top:24px">
+      <span class="alert-icon">🎓</span>
+      <div>
+        <strong>Chứng chỉ Oracle khuyến nghị:</strong>
+        OCA → OCP (Oracle Certified Professional) → OCE (Expert in RAC, Data Guard, or Performance Tuning).
+        Tham khảo dump OCP mới nhất và lộ trình thi tại <strong>www.tranvanbinh.vn</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<section id="checklist">
+  <div class="wrap">
+    <div class="sec-label">Đánh giá & Thực hành</div>
+    <h2 class="sec-title">Self-Assessment Checklist</h2>
+    <p class="sec-sub">Tự đánh giá năng lực hiện tại. Đánh dấu các skill đã nắm vững.</p>
+
+    <h3 style="font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:10px">Foundation Skills (Junior DBA)</h3>
+    <div class="checklist">
+      <div class="ci"><input type="checkbox" id="c1"><label for="c1">Cài đặt Oracle Single Instance 19c trên Linux</label></div>
+      <div class="ci"><input type="checkbox" id="c2"><label for="c2">Startup/Shutdown database và listener</label></div>
+      <div class="ci"><input type="checkbox" id="c3"><label for="c3">Tạo/quản lý tablespace và datafile</label></div>
+      <div class="ci"><input type="checkbox" id="c4"><label for="c4">Tạo/quản lý user, role, privilege</label></div>
+      <div class="ci"><input type="checkbox" id="c5"><label for="c5">RMAN backup & basic recovery</label></div>
+      <div class="ci"><input type="checkbox" id="c6"><label for="c6">Đọc và phân tích alert log</label></div>
+      <div class="ci"><input type="checkbox" id="c7"><label for="c7">SQL SELECT, JOIN, GROUP BY thành thạo</label></div>
+      <div class="ci"><input type="checkbox" id="c8"><label for="c8">Daily health check checklist tự thực hiện</label></div>
+      <div class="ci"><input type="checkbox" id="c9"><label for="c9">Xử lý tablespace full, archive stuck</label></div>
+      <div class="ci"><input type="checkbox" id="c10"><label for="c10">Gather statistics (table/schema/database)</label></div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:10px;margin-top:24px">Intermediate Skills (Senior DBA)</h3>
+    <div class="checklist">
+      <div class="ci"><input type="checkbox" id="c11"><label for="c11">Phân tích AWR report và tìm root cause</label></div>
+      <div class="ci"><input type="checkbox" id="c12"><label for="c12">PL/SQL stored procedure & package</label></div>
+      <div class="ci"><input type="checkbox" id="c13"><label for="c13">DataGuard switchover & failover procedure</label></div>
+      <div class="ci"><input type="checkbox" id="c14"><label for="c14">Oracle RAC basic management (srvctl)</label></div>
+      <div class="ci"><input type="checkbox" id="c15"><label for="c15">Execution plan optimization & index design</label></div>
+      <div class="ci"><input type="checkbox" id="c16"><label for="c16">Unified Auditing configuration</label></div>
+      <div class="ci"><input type="checkbox" id="c17"><label for="c17">PostgreSQL replication setup</label></div>
+      <div class="ci"><input type="checkbox" id="c18"><label for="c18">GoldenGate basic configuration</label></div>
+      <div class="ci"><input type="checkbox" id="c19"><label for="c19">SQL Tuning Advisor & SQL Profile</label></div>
+      <div class="ci"><input type="checkbox" id="c20"><label for="c20">OPatch / patching Oracle database</label></div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:10px;margin-top:24px">Advanced Skills (Expert/Architect)</h3>
+    <div class="checklist">
+      <div class="ci"><input type="checkbox" id="c21"><label for="c21">Cài đặt Oracle RAC 2-node từ đầu</label></div>
+      <div class="ci"><input type="checkbox" id="c22"><label for="c22">TDE implementation & key rotation</label></div>
+      <div class="ci"><input type="checkbox" id="c23"><label for="c23">GoldenGate cross-platform replication</label></div>
+      <div class="ci"><input type="checkbox" id="c24"><label for="c24">Oracle Database Vault configuration</label></div>
+      <div class="ci"><input type="checkbox" id="c25"><label for="c25">RAC troubleshooting (node eviction, OCR)</label></div>
+      <div class="ci"><input type="checkbox" id="c26"><label for="c26">In-Memory Column Store configuration</label></div>
+      <div class="ci"><input type="checkbox" id="c27"><label for="c27">Zero-downtime migration với GoldenGate</label></div>
+      <div class="ci"><input type="checkbox" id="c28"><label for="c28">Database Replay & SQL Performance Analyzer</label></div>
+      <div class="ci"><input type="checkbox" id="c29"><label for="c29">Oracle 23ai/26ai AI Vector Search setup</label></div>
+      <div class="ci"><input type="checkbox" id="c30"><label for="c30">Design HA architecture 99.99% uptime</label></div>
+    </div>
+
+    <div style="margin-top:20px;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--ink3)">
+      <strong style="color:var(--ink)">Kết quả đánh giá:</strong>
+      <span id="score-result"> — Hãy đánh dấu các skill đã nắm vững để xem kết quả.</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<section style="background:var(--bg)">
+  <div class="wrap">
+    <div class="sec-label">Tài liệu tham khảo</div>
+    <h2 class="sec-title">Nguồn tài liệu chính</h2>
+
+    <div class="skill-grid" style="margin-top:16px">
+      <div class="skill-card">
+        <div class="skill-card-head">
+          <div class="skill-num" style="background:var(--red-pale);color:var(--red)">🏠</div>
+          <div><div class="skill-name">VietDBA — Trần Văn Bình</div></div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Website cá nhân với 1000+ bài viết thực chiến về Oracle, RAC, DataGuard, GoldenGate, tuning, troubleshooting.</div>
+          <div class="skill-tags"><span class="tag">www.tranvanbinh.vn</span><span class="tag">QT/DB.01</span></div>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-card-head">
+          <div class="skill-num" style="background:var(--red-pale);color:var(--red)">📖</div>
+          <div><div class="skill-name">Oracle Documentation</div></div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">Oracle Database 19c/21c/23ai Documentation, Concepts Guide, Administrator's Guide, SQL Reference, Performance Tuning Guide.</div>
+          <div class="skill-tags"><span class="tag">docs.oracle.com</span><span class="tag">MOS</span></div>
+        </div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-card-head">
+          <div class="skill-num" style="background:var(--red-pale);color:var(--red)">🛠️</div>
+          <div><div class="skill-name">My Oracle Support (MOS)</div></div>
+        </div>
+        <div class="skill-body">
+          <div class="skill-desc">MOS Notes, patch downloads, SR filing, knowledge base, RDBMS release schedule, critical patch updates (CPU).</div>
+          <div class="skill-tags"><span class="tag">support.oracle.com</span><span class="tag">Patches</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>Framework Skill Quản trị Cơ sở Dữ liệu</div>
+  <div style="margin-top:4px"><strong>VietDBA</strong> — Trần Văn Bình Master | Hotline/Zalo: 0902.912.888 | www.tranvanbinh.vn</div>
+  <div style="margin-top:4px;color:rgba(255,255,255,.3)">Phiên bản 2026 · 10 Skill Groups · 120+ Sub-skills · Oracle 11g→26ai · Multi-DB</div>
+</footer>
+
+<script>
+// Progress bar
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const pct=(h.scrollTop||document.body.scrollTop)/((h.scrollHeight||document.body.scrollHeight)-h.clientHeight);
+  document.getElementById('pgbar').style.width=(pct*100)+'%';
+});
+
+// Toggle skill detail
+function toggleCard(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const isOpen=el.classList.contains('open');
+  document.querySelectorAll('.skill-detail').forEach(d=>d.classList.remove('open'));
+  if(!isOpen)el.classList.add('open');
+}
+
+// Copy code
+function copyCode(btn){
+  const pre=btn.closest('.codeblock').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✓ Copied!';
+    btn.classList.add('done');
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('done');},2000);
+  });
+}
+
+// Checklist scoring
+const checkboxes=document.querySelectorAll('.ci input[type=checkbox]');
+checkboxes.forEach(cb=>cb.addEventListener('change',updateScore));
+function updateScore(){
+  const total=checkboxes.length;
+  const checked=[...checkboxes].filter(c=>c.checked).length;
+  const foundation=[...checkboxes].slice(0,10).filter(c=>c.checked).length;
+  const intermediate=[...checkboxes].slice(10,20).filter(c=>c.checked).length;
+  const advanced=[...checkboxes].slice(20).filter(c=>c.checked).length;
+  let level='DBA Trainee';
+  if(foundation>=8&&intermediate>=6&&advanced>=4)level='🏆 DBA Expert/Architect';
+  else if(foundation>=8&&intermediate>=5)level='🔧 Senior DBA';
+  else if(foundation>=7)level='⚙️ Junior DBA';
+  const el=document.getElementById('score-result');
+  el.innerHTML=` <strong>${checked}/${total}</strong> skills — Cấp độ hiện tại: <strong>${level}</strong> (Foundation: ${foundation}/10, Intermediate: ${intermediate}/10, Advanced: ${advanced}/10)`;
+}
+
+// Open first skill by default
+setTimeout(()=>{ /* no default open */ },100);
+</script>
+</body>
+</html>

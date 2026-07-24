@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản trị Linux Toàn diện - Từ Cơ bản đến Nâng cao (Bám sát LPI) | VietDBA</title>
+<style>
+:root{
+  --red:#DA251D; --red-dark:#A81C15; --gold:#FFCD00; --bg:#FFF8F0;
+  --ink:#2b2b2b; --muted:#6b6b6b; --card:#ffffff; --border:#eadfce;
+  --code-bg:#1e1e2e; --code-ink:#e6e6e6; --out-bg:#e8f7ee; --out-ink:#0f5a2e;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+#progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--red),var(--gold));z-index:999;width:0%}
+
+.topbar{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.topbar .brand{font-weight:800;font-size:1.15rem;letter-spacing:.5px}
+.topbar .brand span{color:var(--gold)}
+.topbar .sub{font-size:.82rem;opacity:.9}
+
+.layout{display:flex;max-width:1400px;margin:0 auto}
+.sidebar{width:268px;flex:none;background:linear-gradient(180deg,var(--red-dark),var(--red));min-height:100vh;
+  padding:20px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.sidebar .nav-title{color:var(--gold);font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;padding:0 20px 10px;font-weight:700}
+.nav-link{display:block;color:#fff;text-decoration:none;padding:10px 20px;font-size:.88rem;border-left:3px solid transparent;
+  opacity:.85;transition:.15s}
+.nav-link:hover{background:rgba(255,255,255,.08);opacity:1}
+.nav-link.active{border-left-color:var(--gold);background:rgba(255,255,255,.14);opacity:1;font-weight:600}
+
+.content{flex:1;padding:28px 40px;max-width:1050px}
+.hero{background:linear-gradient(135deg,#fff,#fff5e6);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:30px}
+.hero h1{margin:0 0 8px;font-size:1.9rem;color:var(--red-dark)}
+.hero p{margin:0;color:var(--muted)}
+.hero .badges{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+.hero .badge{background:var(--gold);color:#4a3800;font-weight:700;font-size:.75rem;padding:5px 12px;border-radius:20px}
+
+.module{margin-bottom:56px;padding-top:10px;scroll-margin-top:70px}
+.mod-head{border-bottom:3px solid var(--gold);padding-bottom:14px;margin-bottom:22px}
+.mod-badge{display:inline-block;background:var(--red);color:#fff;font-weight:800;font-size:.72rem;padding:4px 10px;
+  border-radius:6px;letter-spacing:1px;margin-bottom:8px}
+.mod-head h1{margin:4px 0 6px;font-size:1.55rem;color:var(--red-dark)}
+.mod-sub{color:var(--muted);font-size:.9rem;margin:0}
+
+.sec-h{color:var(--red-dark);font-size:1.2rem;margin:28px 0 14px;display:flex;align-items:center;gap:8px;
+  border-left:4px solid var(--gold);padding-left:10px}
+.sec-ic{color:var(--gold)}
+.subsec-h{color:var(--ink);font-size:1.02rem;margin:20px 0 10px;font-weight:700}
+.txt{margin:8px 0;color:var(--ink)}
+
+.tbl-wrap{overflow-x:auto;margin:14px 0}
+table.tbl{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,.06)}
+table.tbl th{background:var(--red);color:#fff;text-align:left;padding:10px 14px;font-size:.85rem}
+table.tbl td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:.88rem}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr:nth-child(even){background:#fffaf2}
+
+.example{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin:16px 0;
+  box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.ex-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ex-num{background:var(--gold);color:#4a3800;font-weight:800;font-size:.72rem;padding:3px 9px;border-radius:6px}
+.ex-title{font-weight:700;color:var(--red-dark);font-size:.98rem}
+.ex-desc{color:var(--muted);font-size:.87rem;margin:6px 0}
+.ex-note{background:#fff8dc;border-left:3px solid var(--gold);padding:8px 12px;margin-top:8px;font-size:.85rem;border-radius:0 6px 6px 0}
+
+pre.code{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;
+  font-family:'Cascadia Code','Consolas',monospace;font-size:.83rem;margin:10px 0;line-height:1.55}
+pre.out{background:var(--out-bg);color:var(--out-ink);padding:12px 16px;border-radius:8px;overflow-x:auto;
+  font-family:'Cascadia Code','Consolas',monospace;font-size:.82rem;margin:8px 0;border-left:4px solid #2e9c5a}
+
+.err-block{display:flex;flex-direction:column;gap:14px;margin:14px 0}
+.errbox{border-radius:12px;padding:16px 20px;border:1px solid var(--border)}
+.errbox.sev-crit{background:#fff0ee;border-left:5px solid #DA251D}
+.errbox.sev-warn{background:#fffaf0;border-left:5px solid #E8A400}
+.errbox.sev-minor{background:#f0faf3;border-left:5px solid #2e9c5a}
+.err-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.err-tag{font-weight:800;font-size:.72rem;padding:3px 9px;border-radius:6px;background:rgba(0,0,0,.06)}
+.err-title{font-weight:700;font-family:'Cascadia Code',monospace;font-size:.92rem}
+.err-row{font-size:.87rem;margin:6px 0}
+
+.quiz-block{display:flex;flex-direction:column;gap:14px;margin:16px 0}
+.quiz{background:#fffbea;border:1px solid var(--gold);border-radius:12px;padding:16px 20px}
+.quiz-q{font-weight:700;color:var(--red-dark);margin-bottom:10px}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.quiz-opt{display:flex;align-items:center;gap:10px;background:#fff;padding:8px 12px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--border);font-size:.88rem;transition:.15s}
+.quiz-opt:hover{background:#fff3d6}
+.opt-letter{background:var(--red);color:#fff;font-weight:700;font-size:.72rem;width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.quiz-check{background:var(--red);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem}
+.quiz-check:hover{background:var(--red-dark)}
+.quiz-result{margin-top:10px;font-weight:700;font-size:.88rem}
+.quiz-result.correct{color:#0f5a2e}
+.quiz-result.wrong{color:#DA251D}
+.quiz-explain{display:none;margin-top:10px;background:#fff;padding:10px 14px;border-radius:8px;font-size:.85rem;border-left:3px solid var(--gold)}
+.quiz-explain.show{display:block}
+
+.sumbox{background:linear-gradient(135deg,#fff8e6,#fff);border:2px solid var(--gold);border-radius:12px;padding:18px 22px;margin:22px 0}
+.sum-title{font-weight:800;color:var(--red-dark);margin-bottom:10px;font-size:1rem}
+.sumbox ul{margin:0;padding-left:20px}
+.sumbox li{margin:6px 0;font-size:.9rem}
+
+.lab{background:#eef7ff;border:1px solid #b8d9f5;border-radius:12px;padding:18px 22px;margin:16px 0}
+.lab-title{font-weight:800;color:#1a5a96;margin-bottom:10px;font-size:1rem}
+.lab ol{margin:0;padding-left:20px}
+.lab li{margin:8px 0;font-size:.9rem}
+
+.footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:.82rem;border-top:1px solid var(--border);margin-top:40px}
+.footer b{color:var(--red-dark)}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .content{padding:20px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<div class="topbar">
+  <div class="brand">VIET<span>DBA</span> · Quản trị Linux Toàn diện</div>
+  <div class="sub">Bám sát chương trình LPI (LPIC-1/LPIC-2) · Hotline/Zalo: 0902 912 888</div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-title">Mục lục 10 Module</div>
+    <a href="#m1" class="nav-link" data-target="m1">Kiến trúc Hệ thống Linux & Quy trình Boot</a><a href="#m2" class="nav-link" data-target="m2">Quản lý Gói Phần mềm</a><a href="#m3" class="nav-link" data-target="m3">Dòng lệnh GNU/Unix & Xử lý Văn bản</a><a href="#m4" class="nav-link" data-target="m4">Hệ thống Tập tin, Partition, LVM & RAID</a><a href="#m5" class="nav-link" data-target="m5">Shell Scripting & Automation</a><a href="#m6" class="nav-link" data-target="m6">Quản lý Process, Job Control & Performance</a><a href="#m7" class="nav-link" data-target="m7">Quản lý User, Group, Permissions & sudo</a><a href="#m8" class="nav-link" data-target="m8">Networking — Cấu hình & Troubleshooting</a><a href="#m9" class="nav-link" data-target="m9">systemd, Service Management & Logging</a><a href="#m10" class="nav-link" data-target="m10">Bảo mật Hệ thống & Backup</a>
+  </nav>
+
+  <main class="content">
+    <div class="hero">
+      <h1>🐧 Quản trị Linux Toàn diện — Từ Cơ bản đến Nâng cao</h1>
+      <p>Giáo trình biên soạn bởi chuyên gia Linux với 20+ năm kinh nghiệm, bám sát đề cương chính thức
+      của Linux Professional Institute (LPIC-1: 101-102, LPIC-2: 201-202), tích hợp các lỗi thực chiến
+      thường gặp và cách xử lý cho từng chủ đề.</p>
+      <div class="badges">
+        <span class="badge">10 Module</span>
+        <span class="badge">50 Ví dụ thực hành</span>
+        <span class="badge">30 Case lỗi thường gặp</span>
+        <span class="badge">50 Câu hỏi ôn tập</span>
+        <span class="badge">30 Bài tập thực hành</span>
+      </div>
+    </div>
+
+    
+<section class="module" id="m1">
+  <div class="mod-head">
+    <span class="mod-badge">M1</span>
+    <h1>Kiến trúc Hệ thống Linux &amp; Quy trình Boot</h1>
+    <p class="mod-sub">LPIC-1 101.1-101.2 · BIOS/UEFI, GRUB2, Kernel, systemd targets</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Hiểu rõ toàn bộ chuỗi khởi động của một hệ thống Linux — từ lúc bật nguồn đến khi có màn hình login — là nền tảng bắt buộc để chẩn đoán mọi sự cố boot, tối ưu thời gian khởi động, và quản trị hệ thống ở mức chuyên gia. Chương này bám sát đề cương LPIC-1 Topic 101 (System Architecture) và 101.2 (Boot the system).</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">1. Chuỗi khởi động tổng quan</h3>
+<p class="txt">Firmware (BIOS/UEFI) → Bootloader (GRUB2) → Kernel (vmlinuz) → initramfs → systemd (PID 1) → targets/units → getty (login prompt). Mỗi giai đoạn có công cụ chẩn đoán riêng khi gặp sự cố.</p>
+<pre class="code"><code class="lang-text">BIOS/UEFI (POST) 
+   │  chọn thiết bị boot theo boot order
+   ▼
+GRUB2 (bootloader) — đọc /boot/grub2/grub.cfg
+   │  load kernel (vmlinuz) + initramfs (initrd)
+   ▼
+Kernel khởi tạo phần cứng, mount initramfs làm root tạm
+   │  pivot_root sang filesystem thật
+   ▼
+systemd (PID 1) — đọc default.target
+   │  khởi động unit theo dependency graph
+   ▼
+multi-user.target / graphical.target → getty/display manager</code></pre>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Xem trạng thái GRUB2 hiện tại và cấu hình</span></div><p class="ex-desc">Kiểm tra file cấu hình GRUB2 đã sinh ra (không sửa trực tiếp file này).</p><pre class="code"><code class="lang-bash">cat /boot/grub2/grub.cfg | grep -E 'menuentry|linux16|vmlinuz'
+grub2-editenv list   # xem entry mặc định hiện tại</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">Regenerate GRUB2 config sau khi sửa /etc/default/grub</span></div><p class="ex-desc">Sau khi thay đổi tham số kernel mặc định (ví dụ thêm 'quiet' hoặc bỏ), cần build lại grub.cfg.</p><pre class="code"><code class="lang-bash">vi /etc/default/grub
+# sửa dòng GRUB_CMDLINE_LINUX="crashkernel=auto rhgb quiet"
+grub2-mkconfig -o /boot/grub2/grub.cfg</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Xem toàn bộ target hiện tại và target mặc định của systemd</span></div><p class="ex-desc">systemd thay thế khái niệm runlevel SysV bằng 'target' — mapping tương đương: runlevel 3 ~ multi-user.target, runlevel 5 ~ graphical.target.</p><pre class="code"><code class="lang-bash">systemctl get-default
+systemctl list-units --type=target
+systemctl list-dependencies multi-user.target</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Chuyển đổi giữa target (đổi 'runlevel' không cần reboot)</span></div><p class="ex-desc">Chuyển từ giao diện đồ họa sang chế độ dòng lệnh ngay lập tức, hoặc đặt mặc định lâu dài.</p><pre class="code"><code class="lang-bash">systemctl isolate multi-user.target      # chuyển ngay, không cần reboot
+systemctl set-default multi-user.target  # đặt mặc định cho lần boot sau</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Boot vào chế độ rescue/emergency để sửa lỗi hệ thống</span></div><p class="ex-desc">Khi hệ thống không boot được bình thường (ví dụ do fstab lỗi - xem Case 14), cần vào rescue mode.</p><pre class="code"><code class="lang-bash"># Tại màn hình GRUB, nhấn 'e' để sửa dòng linux, thêm vào cuối:
+systemd.unit=rescue.target
+# hoặc với emergency shell:
+systemd.unit=emergency.target
+# Sau khi vào được, remount root ở chế độ rw để sửa file:
+mount -o remount,rw /</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Boot</h2>
+<div class="err-block">
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">GRUB rescue&gt; — không tìm thấy grub.cfg/kernel</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Bootloader bị hỏng do ghi đè MBR/EFI (thường sau khi cài dual-boot Windows), hoặc partition /boot bị xóa/format nhầm.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Boot từ Live USB, chroot vào hệ thống rồi cài lại GRUB
+mount /dev/sda2 /mnt
+chroot /mnt
+grub2-install /dev/sda
+grub2-mkconfig -o /boot/grub2/grub.cfg</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn backup MBR/EFI partition trước khi cài hệ điều hành thứ hai; tách /boot ra partition riêng có kích thước đủ dùng.</div>
+  </div>
+</div>
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">Kernel panic - not syncing: VFS: Unable to mount root fs</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> initramfs không chứa đúng driver cho storage controller (thường sau khi đổi chế độ RAID/AHCI trong BIOS), hoặc UUID trong grub.cfg không khớp filesystem thật.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Từ rescue mode, kiểm tra UUID thật và rebuild initramfs
+blkid
+vi /etc/default/grub   # sửa lại root=UUID=...
+grub2-mkconfig -o /boot/grub2/grub.cfg
+dracut -f --regenerate-all</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Không thay đổi chế độ SATA/RAID trong BIOS sau khi đã cài OS mà không kiểm tra driver tương thích trước.</div>
+  </div>
+</div>
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">Boot treo ở 'A start job is running for...' rất lâu</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Một systemd unit đang chờ timeout (thường là mount network storage thiếu 'nofail' — xem Case 14 tài liệu Linux deep dive, hoặc service phụ thuộc network chưa sẵn sàng).</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Nhấn Ctrl+C có thể skip qua đợi hoặc xem chi tiết đang treo ở đâu:
+systemctl list-jobs
+journalctl -xb | tail -50</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn thêm 'nofail' và 'x-systemd.mount-timeout' cho mọi mount network storage trong fstab.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q1">
+  <div class="quiz-q">❓ Thành phần nào chịu trách nhiệm load kernel vào bộ nhớ đầu tiên sau giai đoạn firmware (BIOS/UEFI)?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q1" value="0"><span class="opt-letter">A</span>systemd</label><label class="quiz-opt"><input type="radio" name="q1" value="1" data-correct='1'><span class="opt-letter">B</span>GRUB2 (bootloader)</label><label class="quiz-opt"><input type="radio" name="q1" value="2"><span class="opt-letter">C</span>initramfs</label><label class="quiz-opt"><input type="radio" name="q1" value="3"><span class="opt-letter">D</span>getty</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q1')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q1-result"></div>
+  <div class="quiz-explain" id="q1-explain">💡 <b>Giải thích:</b> GRUB2 là bootloader — nó đọc grub.cfg, tìm kernel image (vmlinuz) và initramfs, rồi load chúng vào RAM trước khi trao quyền điều khiển cho kernel.</div>
+</div>
+<div class="quiz" id="q2">
+  <div class="quiz-q">❓ Lệnh nào dùng để chuyển 'runlevel' tương đương multi-user (không đồ họa) mà KHÔNG cần reboot?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q2" value="0"><span class="opt-letter">A</span>systemctl reboot multi-user.target</label><label class="quiz-opt"><input type="radio" name="q2" value="1"><span class="opt-letter">B</span>systemctl set-default multi-user.target</label><label class="quiz-opt"><input type="radio" name="q2" value="2" data-correct='1'><span class="opt-letter">C</span>systemctl isolate multi-user.target</label><label class="quiz-opt"><input type="radio" name="q2" value="3"><span class="opt-letter">D</span>init 3 --now</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q2')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q2-result"></div>
+  <div class="quiz-explain" id="q2-explain">💡 <b>Giải thích:</b> 'systemctl isolate <target>' chuyển ngay lập tức sang target chỉ định. 'set-default' chỉ đổi mặc định cho lần boot SAU, không tác động ngay.</div>
+</div>
+<div class="quiz" id="q3">
+  <div class="quiz-q">❓ PID của tiến trình đầu tiên được kernel khởi tạo (thường là systemd) là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q3" value="0"><span class="opt-letter">A</span>0</label><label class="quiz-opt"><input type="radio" name="q3" value="1" data-correct='1'><span class="opt-letter">B</span>1</label><label class="quiz-opt"><input type="radio" name="q3" value="2"><span class="opt-letter">C</span>init</label><label class="quiz-opt"><input type="radio" name="q3" value="3"><span class="opt-letter">D</span>100</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q3')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q3-result"></div>
+  <div class="quiz-explain" id="q3-explain">💡 <b>Giải thích:</b> PID 1 luôn dành cho tiến trình init đầu tiên (systemd trên các distro hiện đại) — đây là tiến trình cha của mọi tiến trình khác.</div>
+</div>
+<div class="quiz" id="q4">
+  <div class="quiz-q">❓ Tham số nào thêm vào dòng kernel tại GRUB để boot thẳng vào emergency shell?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q4" value="0"><span class="opt-letter">A</span>single</label><label class="quiz-opt"><input type="radio" name="q4" value="1" data-correct='1'><span class="opt-letter">B</span>systemd.unit=emergency.target</label><label class="quiz-opt"><input type="radio" name="q4" value="2"><span class="opt-letter">C</span>recovery=1</label><label class="quiz-opt"><input type="radio" name="q4" value="3"><span class="opt-letter">D</span>-s</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q4')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q4-result"></div>
+  <div class="quiz-explain" id="q4-explain">💡 <b>Giải thích:</b> systemd.unit=emergency.target boot vào shell tối thiểu chỉ mount root read-only, dùng để sửa lỗi nghiêm trọng nhất.</div>
+</div>
+<div class="quiz" id="q5">
+  <div class="quiz-q">❓ Sau khi sửa /etc/default/grub, lệnh nào BẮT BUỘC phải chạy để thay đổi có hiệu lực?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q5" value="0"><span class="opt-letter">A</span>reboot ngay</label><label class="quiz-opt"><input type="radio" name="q5" value="1" data-correct='1'><span class="opt-letter">B</span>grub2-mkconfig -o /boot/grub2/grub.cfg</label><label class="quiz-opt"><input type="radio" name="q5" value="2"><span class="opt-letter">C</span>systemctl restart grub</label><label class="quiz-opt"><input type="radio" name="q5" value="3"><span class="opt-letter">D</span>update-initramfs</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q5')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q5-result"></div>
+  <div class="quiz-explain" id="q5-explain">💡 <b>Giải thích:</b> /etc/default/grub chỉ là file cấu hình nguồn — grub2-mkconfig mới thực sự sinh ra grub.cfg mà GRUB đọc lúc boot.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 1</div><ul><li>Chuỗi boot: Firmware → GRUB2 → Kernel+initramfs → systemd (PID 1) → targets → login</li><li>systemd 'target' thay thế khái niệm 'runlevel' của SysV init, dùng systemctl isolate/set-default để quản lý</li><li>Luôn có kế hoạch B (Live USB, rescue mode) sẵn sàng cho mọi sự cố boot</li><li>Phần lớn lỗi boot nghiêm trọng liên quan đến: GRUB bị ghi đè, initramfs thiếu driver, hoặc fstab có entry không khả dụng</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 1</div><ol><li>Trên máy ảo test, thử đổi target mặc định sang multi-user.target, reboot và xác nhận không vào giao diện đồ họa.</li><li>Cố tình thêm một dòng sai vào /etc/fstab (ví dụ mount NFS không tồn tại, thiếu nofail), reboot và quan sát hành vi treo — sau đó vào rescue mode để sửa.</li><li>Backup grub.cfg, sau đó xóa thử để mô phỏng sự cố mất bootloader config, dùng grub2-mkconfig để phục hồi.</li></ol></div>
+</section>
+
+<section class="module" id="m2">
+  <div class="mod-head">
+    <span class="mod-badge">M2</span>
+    <h1>Quản lý Gói Phần mềm</h1>
+    <p class="mod-sub">LPIC-1 101.3, 102.4 · RPM/YUM/DNF (RHEL/OL) &amp; DEB/APT (Debian/Ubuntu)</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Nắm vững cả hai hệ sinh thái quản lý gói phổ biến nhất (RPM-based và DEB-based) — vì môi trường doanh nghiệp Việt Nam thường vận hành song song cả RHEL/Oracle Linux (cho Oracle Database) và Ubuntu (cho ứng dụng/container) — bao gồm cài đặt, gỡ bỏ, quản lý dependency, và xây dựng repository nội bộ.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">So sánh hai hệ sinh thái</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Khái niệm</th><th>RHEL/Oracle Linux/CentOS</th><th>Debian/Ubuntu</th></tr></thead><tbody><tr><td>Định dạng gói</td><td>.rpm</td><td>.deb</td></tr><tr><td>Công cụ cấp thấp</td><td>rpm</td><td>dpkg</td></tr><tr><td>Công cụ giải quyết dependency</td><td>yum / dnf</td><td>apt / apt-get</td></tr><tr><td>File định nghĩa repo</td><td>/etc/yum.repos.d/*.repo</td><td>/etc/apt/sources.list, /etc/apt/sources.list.d/</td></tr><tr><td>Cache metadata</td><td>/var/cache/dnf</td><td>/var/lib/apt/lists</td></tr><tr><td>Query gói đã cài</td><td>rpm -qa</td><td>dpkg -l</td></tr><tr><td>Xem gói cung cấp file nào</td><td>rpm -qf /path/file</td><td>dpkg -S /path/file</td></tr></tbody></table></div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Cài đặt gói và xem thông tin chi tiết (RPM-based)</span></div><p class="ex-desc">dnf là công cụ thế hệ mới thay thế yum trên RHEL/OL 8+, cú pháp tương thích ngược.</p><pre class="code"><code class="lang-bash">dnf install -y postgresql-server
+dnf info postgresql-server
+rpm -qi postgresql-server   # xem thông tin gói đã cài từ RPM database</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">Cài đặt gói và xử lý dependency tự động (Debian-based)</span></div><p class="ex-desc">apt tự động resolve dependency; cần update index trước khi install lần đầu.</p><pre class="code"><code class="lang-bash">apt update
+apt install -y postgresql
+apt show postgresql
+dpkg -L postgresql   # liệt kê toàn bộ file mà gói này cài đặt</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Tạo repository YUM/DNF nội bộ (offline/air-gapped environment)</span></div><p class="ex-desc">Môi trường datacenter không có Internet cần repo nội bộ — dùng createrepo_c để index thư mục chứa RPM.</p><pre class="code"><code class="lang-bash">dnf install -y createrepo_c
+mkdir -p /repo/oraclelinux9
+cp *.rpm /repo/oraclelinux9/
+createrepo_c /repo/oraclelinux9
+
+# File /etc/yum.repos.d/local.repo
+cat &gt; /etc/yum.repos.d/local.repo &lt;&lt; 'EOF'
+[local-repo]
+name=Local Internal Repo
+baseurl=file:///repo/oraclelinux9
+enabled=1
+gpgcheck=0
+EOF</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Khóa phiên bản gói để tránh auto-update ngoài ý muốn (rất quan trọng cho Oracle DB dependency)</span></div><p class="ex-desc">Một số ứng dụng yêu cầu phiên bản glibc/kernel cụ thể — cần 'ghim' để tránh dnf update phá vỡ tương thích.</p><pre class="code"><code class="lang-bash"># RPM-based: dùng versionlock plugin
+dnf install -y dnf-plugin-versionlock
+dnf versionlock add kernel-5.14.0-70.el9
+
+# Debian-based: dùng apt-mark hold
+apt-mark hold postgresql
+apt-mark showhold</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Kiểm tra và sửa dependency bị hỏng (broken package)</span></div><p class="ex-desc">Sau khi cài/gỡ nhiều gói thủ công bằng rpm -i (bỏ qua dependency check), hệ thống có thể ở trạng thái không nhất quán.</p><pre class="code"><code class="lang-bash"># RPM-based
+rpm -Va                          # verify toàn bộ gói đã cài, phát hiện file bị thay đổi/thiếu
+dnf check
+dnf distro-sync                  # đồng bộ lại về đúng phiên bản trong repo
+
+# Debian-based
+apt --fix-broken install
+dpkg --configure -a              # hoàn tất cấu hình các gói bị dở dang</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Quản lý gói</h2>
+<div class="err-block">
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">error: Failed dependencies — package X requires libY.so.2</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Cài gói .rpm trực tiếp bằng 'rpm -ivh' bỏ qua dependency resolution mà YUM/DNF thường tự làm.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Ưu tiên luôn cài qua dnf/yum thay vì rpm trực tiếp để tự resolve dependency
+dnf install -y ./package.rpm
+# Nếu bắt buộc dùng rpm, thêm --nodeps chỉ khi chắc chắn an toàn (rủi ro cao)</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn cài đặt qua dnf/apt thay vì gọi trực tiếp rpm -i/dpkg -i cho gói có nhiều dependency.</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">E: Unable to locate package (Debian/Ubuntu)</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Chưa chạy 'apt update' để làm mới index gói từ repository, hoặc thiếu repository chứa gói đó trong sources.list.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">apt update
+apt-cache search &lt;keyword&gt;   # tìm tên gói chính xác nếu không chắc</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Chạy apt update định kỳ (hoặc trước mỗi lần cài đặt mới) như một thói quen chuẩn.</div>
+  </div>
+</div>
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">Transaction check error: file conflicts between package</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Hai gói (thường từ hai repo khác nhau, ví dụ base OS repo và EPEL) cùng cung cấp một file với nội dung khác nhau.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">dnf provides /path/to/conflicting/file   # xác định gói nào đang cung cấp file này
+dnf remove &lt;goi_thua&gt;
+dnf install --allowerasing &lt;goi_can_cai&gt;</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Hạn chế bật đồng thời nhiều repo bên thứ ba không tương thích rõ ràng; ưu tiên repo chính thức của distro.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q6">
+  <div class="quiz-q">❓ Lệnh nào liệt kê TẤT CẢ các file mà một gói RPM đã cài đặt lên hệ thống?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q6" value="0"><span class="opt-letter">A</span>rpm -qa</label><label class="quiz-opt"><input type="radio" name="q6" value="1"><span class="opt-letter">B</span>rpm -qi &lt;goi&gt;</label><label class="quiz-opt"><input type="radio" name="q6" value="2" data-correct='1'><span class="opt-letter">C</span>rpm -ql &lt;goi&gt;</label><label class="quiz-opt"><input type="radio" name="q6" value="3"><span class="opt-letter">D</span>rpm -qf &lt;goi&gt;</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q6')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q6-result"></div>
+  <div class="quiz-explain" id="q6-explain">💡 <b>Giải thích:</b> 'rpm -ql' (query list) liệt kê toàn bộ file thuộc về gói. -qa liệt kê tất cả gói đã cài, -qi xem info, -qf tìm gói sở hữu một file.</div>
+</div>
+<div class="quiz" id="q7">
+  <div class="quiz-q">❓ Trên Ubuntu, lệnh nào giữ một gói không bị 'apt upgrade' tự động cập nhật?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q7" value="0"><span class="opt-letter">A</span>apt hold</label><label class="quiz-opt"><input type="radio" name="q7" value="1" data-correct='1'><span class="opt-letter">B</span>apt-mark hold &lt;goi&gt;</label><label class="quiz-opt"><input type="radio" name="q7" value="2"><span class="opt-letter">C</span>apt lock &lt;goi&gt;</label><label class="quiz-opt"><input type="radio" name="q7" value="3"><span class="opt-letter">D</span>dpkg --freeze</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q7')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q7-result"></div>
+  <div class="quiz-explain" id="q7-explain">💡 <b>Giải thích:</b> apt-mark hold đánh dấu gói ở trạng thái giữ nguyên phiên bản, apt upgrade sẽ bỏ qua gói này.</div>
+</div>
+<div class="quiz" id="q8">
+  <div class="quiz-q">❓ File nào định nghĩa các repository YUM/DNF trên RHEL/Oracle Linux?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q8" value="0"><span class="opt-letter">A</span>/etc/apt/sources.list</label><label class="quiz-opt"><input type="radio" name="q8" value="1" data-correct='1'><span class="opt-letter">B</span>/etc/yum.repos.d/*.repo</label><label class="quiz-opt"><input type="radio" name="q8" value="2"><span class="opt-letter">C</span>/etc/dnf/dnf.conf</label><label class="quiz-opt"><input type="radio" name="q8" value="3"><span class="opt-letter">D</span>/var/cache/dnf/repo.list</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q8')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q8-result"></div>
+  <div class="quiz-explain" id="q8-explain">💡 <b>Giải thích:</b> Mỗi file .repo trong /etc/yum.repos.d/ định nghĩa một repository, gồm baseurl, gpgcheck, enabled...</div>
+</div>
+<div class="quiz" id="q9">
+  <div class="quiz-q">❓ Công cụ nào dùng để tạo metadata repository từ một thư mục chứa file .rpm?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q9" value="0" data-correct='1'><span class="opt-letter">A</span>createrepo_c</label><label class="quiz-opt"><input type="radio" name="q9" value="1"><span class="opt-letter">B</span>rpmbuild</label><label class="quiz-opt"><input type="radio" name="q9" value="2"><span class="opt-letter">C</span>yum-builddep</label><label class="quiz-opt"><input type="radio" name="q9" value="3"><span class="opt-letter">D</span>reposync</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q9')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q9-result"></div>
+  <div class="quiz-explain" id="q9-explain">💡 <b>Giải thích:</b> createrepo_c quét thư mục chứa .rpm và sinh ra thư mục repodata/ chứa metadata cần thiết để dnf/yum nhận diện đây là một repo hợp lệ.</div>
+</div>
+<div class="quiz" id="q10">
+  <div class="quiz-q">❓ Lệnh nào giúp phát hiện và sửa các gói ở trạng thái 'bị dở dang cấu hình' trên Debian/Ubuntu?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q10" value="0"><span class="opt-letter">A</span>apt clean</label><label class="quiz-opt"><input type="radio" name="q10" value="1" data-correct='1'><span class="opt-letter">B</span>dpkg --configure -a</label><label class="quiz-opt"><input type="radio" name="q10" value="2"><span class="opt-letter">C</span>apt autoremove</label><label class="quiz-opt"><input type="radio" name="q10" value="3"><span class="opt-letter">D</span>dpkg --verify</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q10')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q10-result"></div>
+  <div class="quiz-explain" id="q10-explain">💡 <b>Giải thích:</b> dpkg --configure -a hoàn tất cấu hình cho mọi gói đang ở trạng thái chưa cấu hình xong (thường sau khi cài bị ngắt giữa chừng).</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 2</div><ul><li>Hai hệ sinh thái song song: RPM/DNF (RHEL/Oracle Linux) và DEB/APT (Debian/Ubuntu) — cùng khái niệm, khác cú pháp</li><li>Luôn ưu tiên công cụ giải quyết dependency (dnf/apt) thay vì công cụ cấp thấp (rpm/dpkg) khi cài đặt</li><li>Repository nội bộ (createrepo_c/apt-mirror) là bắt buộc cho môi trường datacenter air-gapped</li><li>Khóa phiên bản (versionlock/apt-mark hold) bảo vệ ứng dụng nhạy cảm về dependency như Oracle Database</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 2</div><ol><li>Tạo một repository DNF nội bộ từ ISO Oracle Linux, cấu hình để một máy khác trong mạng LAN có thể cài đặt qua HTTP.</li><li>Cài một gói bằng rpm -ivh trực tiếp (không qua dnf), sau đó dùng dnf check để phát hiện sự không nhất quán.</li><li>Thực hành versionlock cho gói kernel, thử dnf update và xác nhận kernel không bị nâng cấp.</li></ol></div>
+</section>
+
+<section class="module" id="m3">
+  <div class="mod-head">
+    <span class="mod-badge">M3</span>
+    <h1>Dòng lệnh GNU/Unix &amp; Xử lý Văn bản</h1>
+    <p class="mod-sub">LPIC-1 103.1-103.7 · find, grep, sed, awk, pipe &amp; redirection</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Đây là bộ kỹ năng dùng HÀNG NGÀY nhiều nhất của một DBA/SysAdmin — thành thạo pipe, redirection và bộ ba grep/sed/awk giúp xử lý log, phân tích output lệnh, và viết script tự động hóa nhanh gấp nhiều lần so với chỉ dùng công cụ GUI hay đọc file thủ công.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Redirection &amp; Pipe cơ bản</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ký hiệu</th><th>Ý nghĩa</th></tr></thead><tbody><tr><td><code>&gt;</code></td><td>Ghi đè output vào file (tạo mới nếu chưa có)</td></tr><tr><td><code>&gt;&gt;</code></td><td>Append output vào cuối file</td></tr><tr><td><code>2&gt;</code></td><td>Redirect riêng stderr (lỗi) vào file</td></tr><tr><td><code>2&gt;&amp;1</code></td><td>Gộp stderr vào cùng luồng với stdout</td></tr><tr><td><code>|</code></td><td>Pipe — nối output lệnh này làm input lệnh tiếp theo</td></tr><tr><td><code>&lt;</code></td><td>Đọc input từ file thay vì bàn phím</td></tr></tbody></table></div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Tìm file theo nhiều tiêu chí kết hợp với find</span></div><p class="ex-desc">find là công cụ mạnh nhất để tìm kiếm theo tên, kích thước, thời gian sửa đổi, quyền — kết hợp -exec để hành động ngay.</p><pre class="code"><code class="lang-bash"># Tìm file log lớn hơn 100MB, cũ hơn 30 ngày, xóa luôn
+find /var/log -name '*.log' -size +100M -mtime +30 -exec rm -f {} \;
+
+# Tìm file có quyền SUID (rủi ro bảo mật) trên toàn hệ thống
+find / -perm -4000 -type f 2&gt;/dev/null</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">grep nâng cao: tìm kiếm theo pattern, đếm, hiển thị context</span></div><p class="ex-desc">grep -E cho phép dùng extended regex; -A/-B/-C hiển thị dòng trước/sau để có ngữ cảnh khi điều tra log.</p><pre class="code"><code class="lang-bash"># Tìm lỗi ORA- trong alert log, hiển thị 3 dòng trước và sau mỗi kết quả
+grep -A3 -B3 'ORA-' alert_ORCL.log
+
+# Đếm số lần xuất hiện theo từng loại lỗi, sort giảm dần
+grep -oE 'ORA-[0-9]+' alert_ORCL.log | sort | uniq -c | sort -rn | head -10</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">sed để tìm-thay thế hàng loạt (in-place editing)</span></div><p class="ex-desc">sed -i sửa trực tiếp file — LUÔN backup trước khi dùng -i trên file quan trọng.</p><pre class="code"><code class="lang-bash"># Thay thế IP cũ bằng IP mới trong toàn bộ file cấu hình, backup .bak
+sed -i.bak 's/10\.0\.0\.1/10.0.0.2/g' /etc/hosts
+
+# Xóa toàn bộ dòng comment và dòng trống trong file cấu hình
+sed '/^#/d; /^$/d' httpd.conf &gt; httpd.conf.clean</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">awk để trích xuất và tính toán trên dữ liệu dạng cột</span></div><p class="ex-desc">awk mạnh nhất khi xử lý dữ liệu có cấu trúc cột (log, output df/ps) — có biến $1,$2... và hỗ trợ tính toán.</p><pre class="code"><code class="lang-bash"># Tính tổng dung lượng đang dùng (cột 3) từ output df -h, bỏ dòng header
+df -h | awk 'NR&gt;1 {print $1, $3}'
+
+# Liệt kê top 5 tiến trình dùng RAM cao nhất (cột %MEM từ ps aux)
+ps aux | awk 'NR&gt;1 {print $4, $11}' | sort -rn | head -5</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Kết hợp pipe chain phức tạp cho một tác vụ điều tra thực tế</span></div><p class="ex-desc">Bài toán thực tế: tìm 10 IP gửi nhiều request nhất tới server trong access log Nginx.</p><pre class="code"><code class="lang-bash">awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head -10</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi xử lý văn bản dòng lệnh</h2>
+<div class="err-block">
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">sed: -i sửa nhầm làm hỏng file cấu hình production</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Chạy sed -i trực tiếp trên file production mà không backup, regex sai phạm vi khớp nhiều hơn dự kiến.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Nếu còn file .bak (do dùng -i.bak) — khôi phục ngay
+cp httpd.conf.bak httpd.conf
+systemctl reload httpd
+# Nếu không có backup, kiểm tra version control (git) hoặc backup định kỳ</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> LUÔN dùng sed -i.bak (không phải chỉ -i) trên file quan trọng, test regex trên bản copy trước khi áp dụng thật.</div>
+  </div>
+</div>
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">find với -exec chạy rất chậm trên thư mục có hàng triệu file</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Dùng -exec cmd {} \; gọi lệnh riêng biệt cho TỪNG file tìm thấy (fork process mới mỗi lần), rất tốn kém với số lượng lớn.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Dùng + thay vì \; để gộp nhiều file vào MỘT lần gọi lệnh (nhanh hơn nhiều)
+find /var/log -name '*.log' -mtime +30 -exec rm -f {} +
+# Hoặc dùng xargs với -P để chạy song song
+find /var/log -name '*.log' -mtime +30 -print0 | xargs -0 -P4 rm -f</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Với thao tác trên số lượng file lớn, ưu tiên -exec ... + hoặc xargs thay vì -exec ... \;</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">grep không tìm thấy kết quả dù chắc chắn có trong file</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> File log được nén (.gz) mà vẫn dùng grep thường, hoặc pattern chứa ký tự đặc biệt regex chưa escape đúng.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">zgrep 'ORA-600' alert_ORCL.log.gz   # dùng zgrep cho file .gz
+grep -F 'literal.string[with]brackets' file.log   # -F tắt regex, tìm literal string</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Nhớ dùng zgrep/zcat cho file nén, và -F khi pattern có ký tự đặc biệt không cần regex.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q11">
+  <div class="quiz-q">❓ Ký hiệu nào dùng để gộp stderr vào cùng luồng với stdout?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q11" value="0"><span class="opt-letter">A</span>2&gt;</label><label class="quiz-opt"><input type="radio" name="q11" value="1"><span class="opt-letter">B</span>1&gt;2</label><label class="quiz-opt"><input type="radio" name="q11" value="2" data-correct='1'><span class="opt-letter">C</span>2&gt;&amp;1</label><label class="quiz-opt"><input type="radio" name="q11" value="3"><span class="opt-letter">D</span>&amp;&gt;1</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q11')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q11-result"></div>
+  <div class="quiz-explain" id="q11-explain">💡 <b>Giải thích:</b> '2>&1' nghĩa là 'redirect file descriptor 2 (stderr) tới nơi file descriptor 1 (stdout) đang trỏ tới' — cú pháp chuẩn để gộp hai luồng.</div>
+</div>
+<div class="quiz" id="q12">
+  <div class="quiz-q">❓ Lệnh find nào AN TOÀN VÀ HIỆU QUẢ nhất để xóa hàng loạt file log cũ trên thư mục có rất nhiều file?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q12" value="0"><span class="opt-letter">A</span>find . -name '*.log' -exec rm {} \;</label><label class="quiz-opt"><input type="radio" name="q12" value="1" data-correct='1'><span class="opt-letter">B</span>find . -name '*.log' -exec rm {} +</label><label class="quiz-opt"><input type="radio" name="q12" value="2"><span class="opt-letter">C</span>for f in $(find . -name '*.log'); do rm $f; done</label><label class="quiz-opt"><input type="radio" name="q12" value="3"><span class="opt-letter">D</span>rm $(find . -name '*.log')</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q12')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q12-result"></div>
+  <div class="quiz-explain" id="q12-explain">💡 <b>Giải thích:</b> '-exec ... +' gộp nhiều file vào một lệnh rm duy nhất (giống xargs), nhanh hơn nhiều so với gọi rm riêng lẻ từng file.</div>
+</div>
+<div class="quiz" id="q13">
+  <div class="quiz-q">❓ Trong awk, biến $0 đại diện cho điều gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q13" value="0"><span class="opt-letter">A</span>Cột đầu tiên</label><label class="quiz-opt"><input type="radio" name="q13" value="1"><span class="opt-letter">B</span>Tên script đang chạy</label><label class="quiz-opt"><input type="radio" name="q13" value="2" data-correct='1'><span class="opt-letter">C</span>Toàn bộ dòng hiện tại</label><label class="quiz-opt"><input type="radio" name="q13" value="3"><span class="opt-letter">D</span>Số thứ tự dòng</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q13')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q13-result"></div>
+  <div class="quiz-explain" id="q13-explain">💡 <b>Giải thích:</b> $0 luôn là toàn bộ dòng input hiện tại; $1, $2... là các trường (cột) sau khi tách theo field separator (mặc định là khoảng trắng).</div>
+</div>
+<div class="quiz" id="q14">
+  <div class="quiz-q">❓ Lệnh nào dùng để đọc và tìm kiếm trực tiếp bên trong file log đã nén .gz mà không cần giải nén thủ công?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q14" value="0"><span class="opt-letter">A</span>grep -z</label><label class="quiz-opt"><input type="radio" name="q14" value="1" data-correct='1'><span class="opt-letter">B</span>zgrep</label><label class="quiz-opt"><input type="radio" name="q14" value="2"><span class="opt-letter">C</span>gzgrep</label><label class="quiz-opt"><input type="radio" name="q14" value="3"><span class="opt-letter">D</span>grep --gzip</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q14')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q14-result"></div>
+  <div class="quiz-explain" id="q14-explain">💡 <b>Giải thích:</b> zgrep là công cụ chuyên dụng tự động giải nén tạm thời trong bộ nhớ và tìm kiếm, tương tự cat có zcat.</div>
+</div>
+<div class="quiz" id="q15">
+  <div class="quiz-q">❓ sed -i.bak 's/old/new/g' file.txt thực hiện điều gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q15" value="0"><span class="opt-letter">A</span>Chỉ hiển thị kết quả thay thế ra màn hình, không sửa file</label><label class="quiz-opt"><input type="radio" name="q15" value="1" data-correct='1'><span class="opt-letter">B</span>Sửa trực tiếp file.txt và tạo bản backup file.txt.bak trước khi sửa</label><label class="quiz-opt"><input type="radio" name="q15" value="2"><span class="opt-letter">C</span>Xóa toàn bộ nội dung khớp 'old' trong file</label><label class="quiz-opt"><input type="radio" name="q15" value="3"><span class="opt-letter">D</span>Tạo file mới tên .bak chứa kết quả, giữ nguyên file gốc</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q15')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q15-result"></div>
+  <div class="quiz-explain" id="q15-explain">💡 <b>Giải thích:</b> Tham số -i.bak vừa sửa trực tiếp (in-place) vừa tự động lưu bản gốc thành file.txt.bak trước khi ghi đè.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 3</div><ul><li>Redirection (>, >>, 2>, 2>&1) và Pipe (|) là nền tảng của mọi thao tác dòng lệnh Linux</li><li>find kết hợp -exec {} + hoặc xargs -P để xử lý hàng loạt file hiệu quả</li><li>grep để TÌM, sed để THAY THẾ, awk để TRÍCH XUẤT/TÍNH TOÁN trên dữ liệu dạng cột</li><li>Luôn backup trước khi dùng sed -i trên file cấu hình quan trọng</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 3</div><ol><li>Viết một dòng lệnh pipe chain trích xuất 10 URL bị lỗi 404 nhiều nhất từ access log Nginx.</li><li>Dùng awk tính tổng dung lượng RAM đang dùng bởi các tiến trình có tên 'java' từ output ps aux.</li><li>Viết script find dọn dẹp file .tmp cũ hơn 7 ngày trong /tmp, log lại số lượng file đã xóa vào một file riêng.</li></ol></div>
+</section>
+
+<section class="module" id="m4">
+  <div class="mod-head">
+    <span class="mod-badge">M4</span>
+    <h1>Hệ thống Tập tin, Partition, LVM &amp; RAID</h1>
+    <p class="mod-sub">LPIC-1 104.1-104.7, LPIC-2 203 · fdisk, mkfs, LVM, mdadm, mount</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Quản lý storage là kỹ năng cốt lõi thứ hai (sau boot) của một SysAdmin/DBA — từ tạo partition, format filesystem, đến LVM (Logical Volume Manager) cho phép resize online mà không downtime, và RAID phần mềm (mdadm) cho redundancy khi không có RAID controller phần cứng.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Kiến trúc phân lớp Storage trong Linux</h3>
+<pre class="code"><code class="lang-text">Physical Disk (/dev/sdb)
+   │
+   ▼ partition (fdisk/parted)
+Partition (/dev/sdb1)  ──── hoặc dùng trực tiếp làm PV
+   │
+   ▼ pvcreate
+Physical Volume (PV)
+   │
+   ▼ vgcreate — gộp nhiều PV
+Volume Group (VG)
+   │
+   ▼ lvcreate — cắt VG thành các LV
+Logical Volume (LV) = /dev/vg_name/lv_name
+   │
+   ▼ mkfs.xfs / mkfs.ext4
+Filesystem
+   │
+   ▼ mount
+Mount point (/u01, /data...)</code></pre>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Tạo partition GPT bằng parted (khuyến nghị thay fdisk cho disk &gt;2TB)</span></div><p class="ex-desc">GPT hỗ trợ disk lớn hơn 2TB và nhiều partition hơn MBR truyền thống.</p><pre class="code"><code class="lang-bash">parted /dev/sdb mklabel gpt
+parted /dev/sdb mkpart primary 0% 100%
+partprobe /dev/sdb
+lsblk /dev/sdb</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">Quy trình đầy đủ tạo LVM từ disk mới đến mount point sẵn sàng dùng</span></div><p class="ex-desc">Đây là quy trình chuẩn khi thêm disk mới cho Oracle datafile hoặc dữ liệu ứng dụng.</p><pre class="code"><code class="lang-bash">pvcreate /dev/sdb1
+vgcreate vg_data /dev/sdb1
+lvcreate -L 100G -n lv_oracle vg_data
+mkfs.xfs /dev/vg_data/lv_oracle
+mkdir -p /u01/oradata
+echo '/dev/vg_data/lv_oracle /u01/oradata xfs defaults,noatime 0 0' &gt;&gt; /etc/fstab
+mount -a</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Mở rộng LV và filesystem ONLINE — không downtime (ưu điểm lớn nhất của LVM)</span></div><p class="ex-desc">Đây là lý do chính vì sao LVM được ưa chuộng cho database server — có thể mở rộng disk mà không cần unmount.</p><pre class="code"><code class="lang-bash"># Thêm disk vật lý mới vào VG hiện có
+pvcreate /dev/sdc1
+vgextend vg_data /dev/sdc1
+# Mở rộng LV thêm 50GB và resize filesystem NGAY LẬP TỨC (XFS)
+lvextend -L +50G -r /dev/vg_data/lv_oracle
+# Với ext4 thay vì XFS, dùng resize2fs riêng nếu -r không tự động:
+# resize2fs /dev/vg_data/lv_oracle</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Tạo RAID 1 (mirror) bằng mdadm cho redundancy phần mềm</span></div><p class="ex-desc">Khi không có RAID controller phần cứng, mdadm cung cấp RAID software đáng tin cậy ở tầng OS.</p><pre class="code"><code class="lang-bash">mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdc /dev/sdd
+mdadm --detail /dev/md0
+# Lưu cấu hình để RAID tự nhận diện sau reboot
+mdadm --detail --scan &gt;&gt; /etc/mdadm.conf
+mkfs.xfs /dev/md0</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Kiểm tra và xử lý filesystem gần đầy — tìm thủ phạm nhanh</span></div><p class="ex-desc">Kỹ năng chẩn đoán disk đầy: từ tổng quan (df) xuống chi tiết (du) để xác định chính xác thư mục chiếm dụng.</p><pre class="code"><code class="lang-bash">df -hT                                    # tổng quan các filesystem, % đã dùng
+du -sh /var/log/* | sort -rh | head -10   # top 10 thư mục con lớn nhất trong /var/log
+lsof +L1                                  # tìm file đã bị xóa nhưng vẫn bị process giữ (deleted but still open)</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Quản lý Storage</h2>
+<div class="err-block">
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">Disk đầy dù du/df không khớp nhau (đã đề cập trong tài liệu case09b)</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> File đã bị xóa nhưng vẫn có tiến trình đang giữ file handle mở (deleted but open), dung lượng chưa được giải phóng thực sự.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">lsof +L1 | grep deleted   # tìm process đang giữ file đã xóa
+# Xác định PID rồi restart service tương ứng để giải phóng handle
+systemctl restart &lt;service_name&gt;</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Với log file lớn, dùng logrotate với 'copytruncate' hoặc gửi tín hiệu USR1 cho service để nó tự đóng/mở lại file handle thay vì xóa trực tiếp file đang mở.</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">vgextend/pvcreate báo 'device is excluded by a filter'</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> LVM filter trong /etc/lvm/lvm.conf loại trừ device đó (thường do đã từng có LVM signature cũ từ lần dùng trước).</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">wipefs -a /dev/sdc1              # xóa mọi signature cũ trên partition (CẨN THẬN - mất dữ liệu)
+pvcreate /dev/sdc1</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Kiểm tra kỹ 'wipefs -n' (dry-run) trước để xác nhận đúng device, tránh xóa nhầm dữ liệu đang dùng.</div>
+  </div>
+</div>
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">mdadm RAID chuyển trạng thái 'degraded' sau khi một disk lỗi</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Một thành viên RAID bị lỗi vật lý — RAID vẫn hoạt động (nếu RAID1/5/6) nhưng mất khả năng chịu lỗi thêm lần nữa.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">mdadm --detail /dev/md0              # xác nhận disk nào failed
+mdadm /dev/md0 --remove /dev/sdd     # gỡ disk lỗi
+# Sau khi thay disk vật lý mới:
+mdadm /dev/md0 --add /dev/sdd        # thêm disk mới, RAID tự rebuild</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Giám sát trạng thái mdadm qua /proc/mdstat hoặc mdadm --monitor với email alert, thay đĩa NGAY khi degraded, không chờ đĩa thứ hai hỏng.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q16">
+  <div class="quiz-q">❓ Thứ tự phân lớp ĐÚNG của LVM là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q16" value="0"><span class="opt-letter">A</span>LV → VG → PV</label><label class="quiz-opt"><input type="radio" name="q16" value="1" data-correct='1'><span class="opt-letter">B</span>PV → VG → LV</label><label class="quiz-opt"><input type="radio" name="q16" value="2"><span class="opt-letter">C</span>VG → LV → PV</label><label class="quiz-opt"><input type="radio" name="q16" value="3"><span class="opt-letter">D</span>PV → LV → VG</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q16')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q16-result"></div>
+  <div class="quiz-explain" id="q16-explain">💡 <b>Giải thích:</b> Physical Volume (PV, thường là 1 partition) được gộp vào Volume Group (VG), rồi VG được cắt thành các Logical Volume (LV) để format và mount.</div>
+</div>
+<div class="quiz" id="q17">
+  <div class="quiz-q">❓ Lệnh nào mở rộng CẢ Logical Volume VÀ filesystem XFS bên trong nó trong MỘT lệnh duy nhất?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q17" value="0"><span class="opt-letter">A</span>lvextend -L +10G /dev/vg/lv</label><label class="quiz-opt"><input type="radio" name="q17" value="1"><span class="opt-letter">B</span>resize2fs /dev/vg/lv</label><label class="quiz-opt"><input type="radio" name="q17" value="2" data-correct='1'><span class="opt-letter">C</span>lvextend -L +10G -r /dev/vg/lv</label><label class="quiz-opt"><input type="radio" name="q17" value="3"><span class="opt-letter">D</span>xfs_growfs -L +10G</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q17')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q17-result"></div>
+  <div class="quiz-explain" id="q17-explain">💡 <b>Giải thích:</b> Tham số -r (--resizefs) của lvextend tự động gọi lệnh resize filesystem phù hợp (xfs_growfs cho XFS, resize2fs cho ext4) ngay sau khi mở rộng LV.</div>
+</div>
+<div class="quiz" id="q18">
+  <div class="quiz-q">❓ RAID 1 (mirror) với 2 disk cung cấp khả năng chịu lỗi tối đa bao nhiêu disk hỏng đồng thời?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q18" value="0"><span class="opt-letter">A</span>0</label><label class="quiz-opt"><input type="radio" name="q18" value="1" data-correct='1'><span class="opt-letter">B</span>1</label><label class="quiz-opt"><input type="radio" name="q18" value="2"><span class="opt-letter">C</span>2</label><label class="quiz-opt"><input type="radio" name="q18" value="3"><span class="opt-letter">D</span>Không giới hạn</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q18')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q18-result"></div>
+  <div class="quiz-explain" id="q18-explain">💡 <b>Giải thích:</b> RAID 1 chỉ có 1 bản sao dự phòng (mirror) — chịu được tối đa 1 disk hỏng; nếu cả 2 disk cùng hỏng, dữ liệu mất hoàn toàn.</div>
+</div>
+<div class="quiz" id="q19">
+  <div class="quiz-q">❓ Công cụ nào phù hợp nhất để xác định thư mục con nào đang chiếm dụng dung lượng lớn nhất bên trong /var/log?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q19" value="0"><span class="opt-letter">A</span>df -h /var/log</label><label class="quiz-opt"><input type="radio" name="q19" value="1" data-correct='1'><span class="opt-letter">B</span>du -sh /var/log/* | sort -rh</label><label class="quiz-opt"><input type="radio" name="q19" value="2"><span class="opt-letter">C</span>lsblk</label><label class="quiz-opt"><input type="radio" name="q19" value="3"><span class="opt-letter">D</span>fdisk -l</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q19')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q19-result"></div>
+  <div class="quiz-explain" id="q19-explain">💡 <b>Giải thích:</b> 'du -sh' liệt kê kích thước từng thư mục con, kết hợp sort -rh để sắp xếp giảm dần theo kích thước dễ đọc (human-readable).</div>
+</div>
+<div class="quiz" id="q20">
+  <div class="quiz-q">❓ Tại sao dung lượng disk trống báo bởi 'df' có thể khác với thực tế sau khi xóa một file log lớn?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q20" value="0"><span class="opt-letter">A</span>df bị lỗi cache, cần chạy sync</label><label class="quiz-opt"><input type="radio" name="q20" value="1" data-correct='1'><span class="opt-letter">B</span>Có tiến trình vẫn đang giữ file handle mở dù file đã bị xóa (deleted but open)</label><label class="quiz-opt"><input type="radio" name="q20" value="2"><span class="opt-letter">C</span>Filesystem cần được format lại</label><label class="quiz-opt"><input type="radio" name="q20" value="3"><span class="opt-letter">D</span>Cần chạy fsck để cập nhật</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q20')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q20-result"></div>
+  <div class="quiz-explain" id="q20-explain">💡 <b>Giải thích:</b> Trên Linux, xóa file (unlink) chỉ gỡ tên khỏi thư mục — dung lượng chỉ thực sự giải phóng khi TẤT CẢ file descriptor đang mở tới file đó được đóng.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 4</div><ul><li>LVM cho phép resize online (mở rộng LV+filesystem không downtime) — ưu điểm lớn nhất so với partition cứng truyền thống</li><li>mdadm cung cấp RAID phần mềm khi không có RAID controller phần cứng, cần giám sát chủ động trạng thái degraded</li><li>Luôn dùng du -sh kết hợp sort để tìm chính xác thủ phạm chiếm dụng disk</li><li>'File đã xóa nhưng disk chưa giải phóng' luôn liên quan đến file handle còn mở — dùng lsof +L1 để xác nhận</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 4</div><ol><li>Tạo VG mới từ 2 disk ảo, cắt thành 2 LV, format XFS và ext4 để so sánh, sau đó thực hành mở rộng cả hai online.</li><li>Mô phỏng RAID1 bằng mdadm với 2 file loopback device, sau đó 'fail' một thiết bị và thực hành quy trình rebuild.</li><li>Tạo một file lớn, mở nó bằng 'tail -f' ở terminal khác, xóa file, quan sát df không giảm dung lượng cho đến khi đóng tail.</li></ol></div>
+</section>
+
+<section class="module" id="m5">
+  <div class="mod-head">
+    <span class="mod-badge">M5</span>
+    <h1>Shell Scripting &amp; Automation</h1>
+    <p class="mod-sub">LPIC-1 105.1-105.3 · Bash scripting, biến, vòng lặp, cron/at</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Khả năng viết Bash script đúng chuẩn (có error handling, exit code, logging) là ranh giới phân biệt SysAdmin nghiệp dư và chuyên nghiệp — một script tự động hóa viết tốt tiết kiệm hàng giờ công việc lặp lại mỗi ngày và giảm thiểu sai sót do thao tác thủ công.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Cấu trúc một script Bash chuẩn production</h3>
+<pre class="code"><code class="lang-bash">#!/bin/bash
+set -euo pipefail   # BẮT BUỘC cho mọi script production — xem giải thích bên dưới
+#   -e : thoát ngay nếu bất kỳ lệnh nào lỗi (exit code != 0)
+#   -u : báo lỗi nếu dùng biến chưa được định nghĩa
+#   -o pipefail : pipe trả về exit code của lệnh lỗi ĐẦU TIÊN, không phải lệnh cuối cùng
+
+LOG_FILE="/var/log/myscript.log"
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"; }
+
+trap 'log "LỖI tại dòng $LINENO — script dừng"; exit 1' ERR</code></pre>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Biến, tham số dòng lệnh và kiểm tra input</span></div><p class="ex-desc">$1, $2... là tham số truyền vào; $# là số lượng tham số; $0 là tên script.</p><pre class="code"><code class="lang-bash">#!/bin/bash
+if [ $# -lt 2 ]; then
+    echo "Cách dùng: $0 &lt;database&gt; &lt;tablespace&gt;"
+    exit 1
+fi
+DB_NAME="$1"
+TABLESPACE="$2"
+echo "Đang kiểm tra tablespace $TABLESPACE trên database $DB_NAME"</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">Vòng lặp for/while xử lý danh sách và điều kiện</span></div><p class="ex-desc">for dùng khi có danh sách cố định; while dùng khi lặp theo điều kiện (đọc file, chờ trạng thái).</p><pre class="code"><code class="lang-bash"># Lặp qua danh sách server, kiểm tra kết nối SSH
+for server in db01 db02 db03; do
+    if ssh -o ConnectTimeout=5 "$server" 'echo OK' &amp;&gt;/dev/null; then
+        echo "$server: OK"
+    else
+        echo "$server: KHÔNG kết nối được"
+    fi
+done
+
+# while đọc từng dòng file cấu hình
+while IFS= read -r line; do
+    echo "Xử lý: $line"
+done &lt; server_list.txt</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Hàm (function), exit code và kiểm tra lỗi đúng chuẩn</span></div><p class="ex-desc">Mọi lệnh Linux trả về exit code (0=thành công, khác 0=lỗi) — kiểm tra $? hoặc dùng if trực tiếp.</p><pre class="code"><code class="lang-bash">check_disk_space() {
+    local threshold=90
+    local usage
+    usage=$(df /u01 | awk 'NR==2 {print $5}' | tr -d '%')
+    if [ "$usage" -gt "$threshold" ]; then
+        return 1   # trả về exit code khác 0 = có vấn đề
+    fi
+    return 0
+}
+
+if check_disk_space; then
+    echo "Disk OK"
+else
+    echo "CẢNH BÁO: Disk vượt ngưỡng!" &gt;&amp;2
+    exit 1
+fi</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Lập lịch tự động với cron — cú pháp và ví dụ thực tế</span></div><p class="ex-desc">cron chạy job theo lịch định kỳ; crontab -e để sửa lịch của user hiện tại.</p><pre class="code"><code class="lang-bash"># Cú pháp: phút giờ ngày tháng thứ lệnh
+# Chạy health check Oracle mỗi ngày lúc 6:00 sáng
+0 6 * * * /u01/scripts/daily_health_check.sh &gt;&gt; /var/log/health_check.log 2&gt;&amp;1
+
+# Chạy backup mỗi Chủ nhật lúc 2:00 sáng
+0 2 * * 0 /u01/scripts/weekly_backup.sh
+
+# Chạy mỗi 15 phút trong giờ hành chính (8h-18h), thứ 2-6
+*/15 8-18 * * 1-5 /u01/scripts/check_alert_log.sh</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">at — lập lịch chạy MỘT LẦN vào thời điểm cụ thể (khác cron là lặp lại)</span></div><p class="ex-desc">at phù hợp cho tác vụ một lần (ví dụ deploy lúc nửa đêm) thay vì lịch lặp lại như cron.</p><pre class="code"><code class="lang-bash">echo '/u01/scripts/deploy_patch.sh' | at 02:00 tomorrow
+atq                    # xem danh sách job đang chờ
+at -c 1                # xem nội dung job có ID=1
+atrm 1                 # hủy job ID=1 nếu cần</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Viết Script</h2>
+<div class="err-block">
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">Script chạy đúng khi test thủ công nhưng LỖI khi chạy qua cron</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> cron chạy với PATH và environment tối thiểu (không load .bashrc/.bash_profile như session tương tác), script dùng lệnh không có full path hoặc biến môi trường bị thiếu.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Luôn dùng full path cho mọi lệnh trong script chạy qua cron
+#!/bin/bash
+export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
+source /home/oracle/.bash_profile   # load ORACLE_HOME, ORACLE_SID nếu cần
+/usr/bin/sqlplus ...   # dùng full path thay vì chỉ 'sqlplus'</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Test script bằng cách chạy qua 'env -i bash script.sh' để mô phỏng môi trường tối thiểu giống cron trước khi đưa vào crontab.</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">[: unexpected operator hoặc lỗi so sánh biến rỗng</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> So sánh biến chưa có giá trị hoặc chuỗi chứa khoảng trắng mà không đặt trong dấu ngoặc kép, gây lỗi cú pháp so sánh.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># SAI: if [ $USAGE -gt 90 ]; then   (lỗi nếu $USAGE rỗng)
+# ĐÚNG:
+if [ "${USAGE:-0}" -gt 90 ]; then
+    echo "Vượt ngưỡng"
+fi</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn đặt biến trong dấu ngoặc kép "$VAR" khi so sánh, dùng ${VAR:-default} để có giá trị mặc định an toàn khi biến rỗng.</div>
+  </div>
+</div>
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">Script bị 'treo' vô thời hạn khi gọi lệnh cần tương tác (ví dụ ssh yêu cầu password)</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Script tự động hóa gọi ssh/scp mà chưa cấu hình key-based authentication, lệnh chờ nhập password vô thời hạn không có timeout.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Cấu hình SSH key trước khi tự động hóa
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
+ssh-copy-id user@remote_server
+# Luôn thêm timeout cho lệnh remote trong script
+ssh -o ConnectTimeout=10 -o BatchMode=yes user@server 'command'</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> BatchMode=yes buộc ssh thất bại ngay thay vì chờ password nếu key-auth chưa sẵn sàng — phát hiện lỗi ngay thay vì treo vô thời hạn.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q21">
+  <div class="quiz-q">❓ 'set -e' ở đầu script Bash có tác dụng gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q21" value="0"><span class="opt-letter">A</span>Bật chế độ debug hiển thị từng lệnh</label><label class="quiz-opt"><input type="radio" name="q21" value="1" data-correct='1'><span class="opt-letter">B</span>Script tự động thoát ngay khi có lệnh bất kỳ trả về lỗi (exit code khác 0)</label><label class="quiz-opt"><input type="radio" name="q21" value="2"><span class="opt-letter">C</span>Cho phép dùng biến chưa khai báo</label><label class="quiz-opt"><input type="radio" name="q21" value="3"><span class="opt-letter">D</span>Chạy script ở chế độ nền (background)</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q21')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q21-result"></div>
+  <div class="quiz-explain" id="q21-explain">💡 <b>Giải thích:</b> 'set -e' là 'errexit' — script dừng ngay lập tức nếu bất kỳ lệnh nào thất bại, tránh script tiếp tục chạy trên trạng thái lỗi đã xảy ra.</div>
+</div>
+<div class="quiz" id="q22">
+  <div class="quiz-q">❓ Trong crontab, dòng '*/15 8-18 * * 1-5 command' nghĩa là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q22" value="0"><span class="opt-letter">A</span>Chạy mỗi 15 giờ, từ ngày 8 đến 18</label><label class="quiz-opt"><input type="radio" name="q22" value="1" data-correct='1'><span class="opt-letter">B</span>Chạy mỗi 15 phút, trong khung giờ 8h-18h, các ngày thứ 2 đến thứ 6</label><label class="quiz-opt"><input type="radio" name="q22" value="2"><span class="opt-letter">C</span>Chạy lúc 15 giờ, các ngày 8 và 18 hàng tháng</label><label class="quiz-opt"><input type="radio" name="q22" value="3"><span class="opt-letter">D</span>Chạy 15 lần mỗi ngày</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q22')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q22-result"></div>
+  <div class="quiz-explain" id="q22-explain">💡 <b>Giải thích:</b> Cú pháp cron: phút(*/15=mỗi 15p) giờ(8-18=khung giờ) ngày(*) tháng(*) thứ(1-5=T2-T6).</div>
+</div>
+<div class="quiz" id="q23">
+  <div class="quiz-q">❓ Vì sao script chạy đúng khi gõ tay trên terminal nhưng lỗi khi chạy qua cron là hiện tượng phổ biến?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q23" value="0"><span class="opt-letter">A</span>cron chạy chậm hơn terminal</label><label class="quiz-opt"><input type="radio" name="q23" value="1" data-correct='1'><span class="opt-letter">B</span>cron cung cấp môi trường (PATH, biến env) tối thiểu, không giống session tương tác đầy đủ</label><label class="quiz-opt"><input type="radio" name="q23" value="2"><span class="opt-letter">C</span>cron không hỗ trợ Bash</label><label class="quiz-opt"><input type="radio" name="q23" value="3"><span class="opt-letter">D</span>Cron job luôn chạy với quyền root</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q23')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q23-result"></div>
+  <div class="quiz-explain" id="q23-explain">💡 <b>Giải thích:</b> cron không load .bashrc/.bash_profile như shell tương tác — cần khai báo PATH/biến môi trường tường minh trong chính script.</div>
+</div>
+<div class="quiz" id="q24">
+  <div class="quiz-q">❓ Sự khác biệt chính giữa 'cron' và 'at' là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q24" value="0"><span class="opt-letter">A</span>cron chạy nhanh hơn at</label><label class="quiz-opt"><input type="radio" name="q24" value="1" data-correct='1'><span class="opt-letter">B</span>cron dùng cho lịch LẶP LẠI định kỳ, at dùng để chạy MỘT LẦN vào thời điểm cụ thể</label><label class="quiz-opt"><input type="radio" name="q24" value="2"><span class="opt-letter">C</span>at chỉ chạy được lệnh root</label><label class="quiz-opt"><input type="radio" name="q24" value="3"><span class="opt-letter">D</span>Không có khác biệt, hai lệnh tương đương nhau</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q24')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q24-result"></div>
+  <div class="quiz-explain" id="q24-explain">💡 <b>Giải thích:</b> cron phù hợp cho job lặp lại theo lịch (hàng ngày/tuần), at phù hợp cho một tác vụ chạy đúng một lần vào thời điểm định trước.</div>
+</div>
+<div class="quiz" id="q25">
+  <div class="quiz-q">❓ Cách viết AN TOÀN để so sánh một biến có thể đang rỗng trong câu lệnh test [ ]?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q25" value="0"><span class="opt-letter">A</span>if [ $VAR -gt 90 ]</label><label class="quiz-opt"><input type="radio" name="q25" value="1" data-correct='1'><span class="opt-letter">B</span>if [ "${VAR:-0}" -gt 90 ]</label><label class="quiz-opt"><input type="radio" name="q25" value="2"><span class="opt-letter">C</span>if VAR &gt; 90</label><label class="quiz-opt"><input type="radio" name="q25" value="3"><span class="opt-letter">D</span>if ($VAR &gt; 90)</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q25')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q25-result"></div>
+  <div class="quiz-explain" id="q25-explain">💡 <b>Giải thích:</b> Đặt biến trong ngoặc kép và dùng cú pháp ${VAR:-default} tránh lỗi cú pháp 'unexpected operator' khi biến rỗng hoặc chưa định nghĩa.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 5</div><ul><li>'set -euo pipefail' là chuẩn bắt buộc cho mọi script Bash production, giúp phát hiện lỗi sớm thay vì chạy tiếp trên trạng thái sai</li><li>cron cho lịch lặp lại định kỳ, at cho tác vụ chạy một lần — chọn đúng công cụ theo nhu cầu</li><li>Luôn dùng full path và khai báo PATH tường minh trong script chạy qua cron</li><li>Đặt biến trong ngoặc kép "$VAR" và dùng ${VAR:-default} để tránh lỗi so sánh biến rỗng</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 5</div><ol><li>Viết script health check kiểm tra CPU/RAM/Disk, log kết quả có timestamp, gửi email nếu vượt ngưỡng, thêm set -euo pipefail và trap ERR.</li><li>Lập lịch script đó chạy mỗi 5 phút qua cron, xác nhận log ghi đúng dù không có ai đăng nhập terminal.</li><li>Cố tình gây lỗi PATH trong script (xóa export PATH), chạy qua cron để tự quan sát hiện tượng lỗi rồi tự sửa.</li></ol></div>
+</section>
+
+<section class="module" id="m6">
+  <div class="mod-head">
+    <span class="mod-badge">M6</span>
+    <h1>Quản lý Process, Job Control &amp; Performance</h1>
+    <p class="mod-sub">LPIC-1 103.5, 106.1 · ps, top, kill, nice, systemd-cgtop</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Chẩn đoán một hệ thống 'chậm' luôn bắt đầu từ việc hiểu đúng process nào đang chiếm tài nguyên gì — kỹ năng đọc đúng output của ps/top/vmstat và biết cách can thiệp (kill, nice, renice) đúng cách là yêu cầu cơ bản để xử lý sự cố hiệu năng trong môi trường production.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Các trạng thái (state) của một process</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ký hiệu</th><th>Trạng thái</th><th>Ý nghĩa</th></tr></thead><tbody><tr><td>R</td><td>Running</td><td>Đang chạy hoặc sẵn sàng chạy (trong run queue)</td></tr><tr><td>S</td><td>Sleeping</td><td>Đang chờ sự kiện (interruptible sleep) — bình thường</td></tr><tr><td>D</td><td>Uninterruptible sleep</td><td>Đang chờ I/O, KHÔNG thể bị kill/ngắt — nếu kéo dài là dấu hiệu storage có vấn đề</td></tr><tr><td>Z</td><td>Zombie</td><td>Đã kết thúc nhưng cha chưa reap — xem Case 1 tài liệu Linux deep dive</td></tr><tr><td>T</td><td>Stopped</td><td>Bị tạm dừng (Ctrl+Z hoặc SIGSTOP)</td></tr></tbody></table></div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Xem process theo nhiều tiêu chí khác nhau với ps</span></div><p class="ex-desc">ps aux là cú pháp phổ biến nhất; kết hợp sort để tìm nhanh tiến trình 'nặng' nhất.</p><pre class="code"><code class="lang-bash">ps aux --sort=-%cpu | head -10     # top 10 CPU
+ps aux --sort=-%mem | head -10     # top 10 RAM
+ps -eLf | grep &lt;pid&gt;               # xem tất cả thread của một process cụ thể
+ps -o pid,ppid,cmd,stat -p &lt;pid&gt;   # xem trạng thái chi tiết một PID</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">top/htop tương tác — đọc đúng chỉ số quan trọng nhất</span></div><p class="ex-desc">Load average, %wa (I/O wait), và cột RES (RAM thực) là ba chỉ số cần nhìn đầu tiên khi vào top.</p><pre class="code"><code class="lang-bash">top
+# Trong top, các phím tắt hữu ích:
+#   M : sort theo %MEM
+#   P : sort theo %CPU (mặc định)
+#   k : kill process, nhập PID
+#   1 : xem chi tiết từng CPU core riêng lẻ (quan trọng để phát hiện mất cân bằng CPU/NUMA)</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Gửi tín hiệu (signal) đúng cách để dừng process an toàn</span></div><p class="ex-desc">SIGTERM (15) cho phép process tự dọn dẹp trước khi thoát; SIGKILL (9) buộc dừng ngay lập tức, không có cơ hội cleanup.</p><pre class="code"><code class="lang-bash">kill -15 &lt;pid&gt;          # SIGTERM - yêu cầu lịch sự, ưu tiên dùng trước
+kill -9 &lt;pid&gt;           # SIGKILL - chỉ dùng khi SIGTERM không có tác dụng sau vài giây
+killall -15 java         # gửi SIGTERM cho MỌI process tên 'java'
+pkill -f 'backup_script' # kill theo pattern trong command line đầy đủ</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Điều chỉnh độ ưu tiên CPU với nice/renice</span></div><p class="ex-desc">nice value từ -20 (ưu tiên cao nhất) đến 19 (ưu tiên thấp nhất); chỉ root mới đặt được giá trị âm.</p><pre class="code"><code class="lang-bash"># Chạy batch job với độ ưu tiên THẤP để không ảnh hưởng ứng dụng production
+nice -n 19 /u01/scripts/heavy_report.sh
+
+# Đổi độ ưu tiên của process đang chạy (không cần khởi động lại)
+renice -n 10 -p &lt;pid&gt;
+
+# Giới hạn I/O priority (cần cài ionice, thuộc gói util-linux)
+ionice -c 3 -p &lt;pid&gt;     # class 3 = idle, chỉ dùng I/O khi hệ thống rảnh</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Chẩn đoán process ở trạng thái D (uninterruptible sleep) kéo dài</span></div><p class="ex-desc">Process ở trạng thái D không thể bị kill -9 — cần tìm nguyên nhân I/O gốc thay vì cố kill.</p><pre class="code"><code class="lang-bash">ps aux | awk '$8 ~ /D/ {print}'    # tìm mọi process đang ở trạng thái D
+cat /proc/&lt;pid&gt;/stack               # xem process đang chờ ở đâu trong kernel (cần quyền root)
+iostat -x 2 5                       # kiểm tra %util của disk — D kéo dài thường do storage chậm/treo</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Quản lý Process</h2>
+<div class="err-block">
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">kill -9 không có tác dụng, process vẫn còn trong ps</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Process đang ở trạng thái D (uninterruptible sleep, chờ I/O kernel) — SIGKILL không thể ngắt process khi đang trong system call chờ I/O.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Không thể kill trực tiếp — cần xử lý nguyên nhân I/O gốc (storage treo/NFS server down)
+iostat -x 2 5
+# Nếu do NFS server không phản hồi, khôi phục kết nối NFS thường giải phóng process D</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Với mount NFS, luôn dùng tùy chọn 'soft,timeo=' thay vì 'hard' mặc định nếu chấp nhận đánh đổi để tránh process bị kẹt D vô thời hạn.</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">Load average cao nhưng %CPU idle vẫn cao (nghịch lý thường gặp)</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Load average trên Linux tính CẢ tiến trình đang chờ I/O (trạng thái D), không chỉ tiến trình chờ CPU — load cao có thể do I/O bottleneck, không phải CPU.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">vmstat 1 5     # xem cột 'b' (blocked, chờ I/O) và 'wa' (%CPU time chờ I/O)
+iostat -x 2 5  # xác nhận disk có %util cao gây nghẽn</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn phân tích load average CÙNG với vmstat/iostat, không kết luận vội 'CPU quá tải' chỉ từ con số load average một mình.</div>
+  </div>
+</div>
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">Job chạy nền (&amp;) bị kill khi đóng terminal SSH</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Process con nhận SIGHUP khi shell cha (terminal) đóng, mặc định sẽ bị terminate theo tiến trình cha.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Dùng nohup để process 'miễn nhiễm' với SIGHUP
+nohup /u01/scripts/long_task.sh &amp;
+# Hoặc dùng disown sau khi đã chạy background
+/u01/scripts/long_task.sh &amp;
+disown
+# Giải pháp tốt nhất cho tác vụ dài: dùng tmux/screen thay vì chỉ chạy nền</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Với tác vụ chạy rất lâu, ưu tiên dùng tmux/screen (có thể detach/attach lại) thay vì chỉ dựa vào nohup &.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q26">
+  <div class="quiz-q">❓ Process ở trạng thái 'D' (uninterruptible sleep) có đặc điểm gì khiến nó khác biệt nguy hiểm so với 'S'?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q26" value="0"><span class="opt-letter">A</span>Đang dùng CPU 100%</label><label class="quiz-opt"><input type="radio" name="q26" value="1" data-correct='1'><span class="opt-letter">B</span>Không thể bị dừng bằng kill -9 vì đang chờ I/O trong kernel</label><label class="quiz-opt"><input type="radio" name="q26" value="2"><span class="opt-letter">C</span>Đã kết thúc nhưng chưa được dọn</label><label class="quiz-opt"><input type="radio" name="q26" value="3"><span class="opt-letter">D</span>Đang chạy với độ ưu tiên cao nhất</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q26')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q26-result"></div>
+  <div class="quiz-explain" id="q26-explain">💡 <b>Giải thích:</b> Trạng thái D là process đang thực hiện system call chờ I/O (thường là disk/NFS) — kernel không cho phép ngắt process giữa lúc này, kể cả bằng SIGKILL.</div>
+</div>
+<div class="quiz" id="q27">
+  <div class="quiz-q">❓ Tín hiệu nào NÊN được thử TRƯỚC khi dùng SIGKILL (-9) để dừng một tiến trình?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q27" value="0"><span class="opt-letter">A</span>SIGSTOP</label><label class="quiz-opt"><input type="radio" name="q27" value="1" data-correct='1'><span class="opt-letter">B</span>SIGTERM (-15)</label><label class="quiz-opt"><input type="radio" name="q27" value="2"><span class="opt-letter">C</span>SIGHUP</label><label class="quiz-opt"><input type="radio" name="q27" value="3"><span class="opt-letter">D</span>SIGCONT</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q27')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q27-result"></div>
+  <div class="quiz-explain" id="q27-explain">💡 <b>Giải thích:</b> SIGTERM cho phép process tự dọn dẹp (đóng file, rollback transaction) trước khi thoát — SIGKILL buộc dừng ngay không có cơ hội cleanup, có thể gây mất dữ liệu/corrupt file.</div>
+</div>
+<div class="quiz" id="q28">
+  <div class="quiz-q">❓ Giá trị nice nào biểu thị độ ưu tiên CPU CAO NHẤT cho một process?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q28" value="0"><span class="opt-letter">A</span>19</label><label class="quiz-opt"><input type="radio" name="q28" value="1"><span class="opt-letter">B</span>0</label><label class="quiz-opt"><input type="radio" name="q28" value="2" data-correct='1'><span class="opt-letter">C</span>-20</label><label class="quiz-opt"><input type="radio" name="q28" value="3"><span class="opt-letter">D</span>100</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q28')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q28-result"></div>
+  <div class="quiz-explain" id="q28-explain">💡 <b>Giải thích:</b> Thang nice value từ -20 (ưu tiên cao nhất, chỉ root mới đặt được) đến 19 (ưu tiên thấp nhất) — ngược với trực giác thông thường 'số lớn = ưu tiên cao'.</div>
+</div>
+<div class="quiz" id="q29">
+  <div class="quiz-q">❓ Tại sao một job chạy nền bằng '&amp;' có thể bị dừng đột ngột khi đóng terminal SSH?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q29" value="0"><span class="opt-letter">A</span>Do hết thời gian timeout mặc định của SSH</label><label class="quiz-opt"><input type="radio" name="q29" value="1" data-correct='1'><span class="opt-letter">B</span>Process con nhận tín hiệu SIGHUP khi shell cha (terminal) kết thúc</label><label class="quiz-opt"><input type="radio" name="q29" value="2"><span class="opt-letter">C</span>SSH tự động giới hạn thời gian chạy job</label><label class="quiz-opt"><input type="radio" name="q29" value="3"><span class="opt-letter">D</span>Do thiếu quyền sudo</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q29')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q29-result"></div>
+  <div class="quiz-explain" id="q29-explain">💡 <b>Giải thích:</b> Mặc định, khi shell cha đóng, nó gửi SIGHUP cho các tiến trình con — dùng nohup hoặc disown để tiến trình 'miễn nhiễm' với tín hiệu này.</div>
+</div>
+<div class="quiz" id="q30">
+  <div class="quiz-q">❓ Load average cao kèm %CPU idle cũng cao thường là dấu hiệu của vấn đề gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q30" value="0"><span class="opt-letter">A</span>RAM đã đầy hoàn toàn</label><label class="quiz-opt"><input type="radio" name="q30" value="1" data-correct='1'><span class="opt-letter">B</span>I/O bottleneck (nhiều process đang ở trạng thái D chờ disk/network storage)</label><label class="quiz-opt"><input type="radio" name="q30" value="2"><span class="opt-letter">C</span>CPU governor đặt sai</label><label class="quiz-opt"><input type="radio" name="q30" value="3"><span class="opt-letter">D</span>Quá nhiều zombie process</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q30')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q30-result"></div>
+  <div class="quiz-explain" id="q30-explain">💡 <b>Giải thích:</b> Load average trên Linux tính cả process ở trạng thái D (chờ I/O), nên load cao mà CPU vẫn idle thường trỏ tới vấn đề I/O, cần kiểm tra thêm iostat/vmstat để xác nhận.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 6</div><ul><li>Trạng thái process D (uninterruptible sleep) không thể kill -9, luôn liên quan đến I/O — cần xử lý nguyên nhân storage gốc</li><li>SIGTERM (lịch sự, cho cleanup) nên thử trước SIGKILL (buộc dừng ngay, không cleanup)</li><li>Load average Linux bao gồm cả process chờ I/O, không chỉ chờ CPU — luôn đối chiếu với iostat/vmstat</li><li>nohup/disown/tmux bảo vệ tiến trình chạy nền khỏi bị kill khi đóng SSH session</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 6</div><ol><li>Chạy một tiến trình 'sleep 300 &' rồi đóng terminal SSH, quan sát nó có bị kill không; lặp lại với nohup và so sánh.</li><li>Dùng dd để mô phỏng tải I/O nặng, quan sát process ở trạng thái D qua ps, đối chiếu với iostat -x.</li><li>Thực hành renice một tiến trình đang chạy, xác nhận qua top rằng độ ưu tiên đã thay đổi.</li></ol></div>
+</section>
+
+<section class="module" id="m7">
+  <div class="mod-head">
+    <span class="mod-badge">M7</span>
+    <h1>Quản lý User, Group, Permissions &amp; sudo</h1>
+    <p class="mod-sub">LPIC-1 107.1-107.3 · useradd, chmod/chown, ACL, sudoers, PAM</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Phân quyền đúng chuẩn là nền tảng bảo mật cơ bản nhất — hiểu rõ mô hình permission truyền thống (owner/group/other), ACL (Access Control List) cho các trường hợp phức tạp hơn, và cấu hình sudo đúng nguyên tắc least-privilege (tương tự nguyên tắc minimum-privilege đã áp dụng cho user giám sát database).</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Mô hình Permission truyền thống</h3>
+<pre class="code"><code class="lang-text">-rwxr-xr-- 1 oracle dba 4096 Jul 1 10:00 script.sh
+│││││││││
+│└┴┴┴┴┴┴┴─ owner(rwx) group(r-x) other(r--)
+└────────── loại file: - file thường, d thư mục, l symlink
+
+Số hệ 8 (octal):  r=4  w=2  x=1
+rwxr-xr--  =  (4+2+1)(4+0+1)(4+0+0)  =  754</code></pre>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Tạo user/group đúng chuẩn cho ứng dụng/database (giống setup Oracle)</span></div><p class="ex-desc">Chuẩn tạo user cho Oracle: group osdba/oinstall riêng biệt, user oracle không cần login shell nếu chỉ chạy service.</p><pre class="code"><code class="lang-bash">groupadd -g 54321 oinstall
+groupadd -g 54322 dba
+useradd -u 54321 -g oinstall -G dba -d /home/oracle -s /bin/bash oracle
+passwd oracle
+id oracle   # xác nhận UID/GID và các group phụ</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">chmod/chown và ý nghĩa của Sticky bit, SUID, SGID</span></div><p class="ex-desc">Ba bit đặc biệt này thường bị hiểu sai — SUID cho phép chạy với quyền OWNER thay vì người gọi, sticky bit bảo vệ file trong thư mục dùng chung.</p><pre class="code"><code class="lang-bash">chmod 750 script.sh                # rwxr-x---
+chown oracle:dba /u01/oradata        # đổi cả owner và group
+chmod 4755 /usr/bin/passwd           # SUID - chạy với quyền root dù user thường gọi
+chmod 1777 /tmp                      # Sticky bit - user chỉ được xóa file CHÍNH MÌNH tạo trong /tmp</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">ACL (Access Control List) cho phân quyền linh hoạt hơn owner/group/other</span></div><p class="ex-desc">ACL cần thiết khi nhiều user/group khác nhau cần quyền khác nhau trên CÙNG một file/thư mục — điều mô hình truyền thống không làm được.</p><pre class="code"><code class="lang-bash">setfacl -m u:appuser:rwx /u01/shared_data     # cấp quyền rwx riêng cho user appuser
+setfacl -m g:devteam:r-x /u01/shared_data     # cấp quyền r-x riêng cho group devteam
+getfacl /u01/shared_data                       # xem toàn bộ ACL đang áp dụng
+setfacl -d -m u:appuser:rwx /u01/shared_data  # default ACL - áp dụng tự động cho file MỚI tạo trong thư mục</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Cấu hình sudo đúng nguyên tắc least-privilege (không dùng NOPASSWD ALL tùy tiện)</span></div><p class="ex-desc">Luôn giới hạn CHÍNH XÁC lệnh được phép chạy qua sudo, tránh cấp quyền root toàn bộ khi chỉ cần một vài lệnh cụ thể.</p><pre class="code"><code class="lang-bash"># visudo (LUÔN dùng visudo, không sửa trực tiếp /etc/sudoers - tự kiểm tra syntax)
+# Cho phép user 'appdeploy' restart MỘT service cụ thể, không cần password
+appdeploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart myapp.service
+
+# Cho phép group dbagroup chạy các lệnh Oracle cụ thể với quyền oracle
+%dbagroup ALL=(oracle) NOPASSWD: /u01/scripts/health_check.sh</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Khóa/mở khóa tài khoản và quản lý password policy</span></div><p class="ex-desc">Kiểm soát vòng đời tài khoản là yêu cầu bảo mật cơ bản, đặc biệt cho tài khoản service account.</p><pre class="code"><code class="lang-bash">usermod -L username           # khóa tài khoản (lock) - không cho login
+usermod -U username           # mở khóa (unlock)
+chage -M 90 -W 7 username      # mật khẩu hết hạn sau 90 ngày, cảnh báo trước 7 ngày
+chage -l username               # xem chi tiết password policy hiện tại của user</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Phân quyền</h2>
+<div class="err-block">
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">Permission denied dù chmod 777 (đã cấp quyền tối đa)</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Vấn đề nằm ở SELinux context (xem Case 17 tài liệu Linux deep dive) hoặc quyền của THƯ MỤC CHA không cho phép truy cập (thiếu execute bit trên path), không phải permission của chính file.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">ls -Zd /path/to/dir              # kiểm tra SELinux context
+namei -l /path/to/deep/file       # kiểm tra quyền TỪNG CẤP thư mục trong đường dẫn
+restorecon -Rv /path/to/dir       # khôi phục SELinux context đúng nếu cần</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Không dùng chmod 777 như phản xạ 'chữa cháy' — luôn điều tra đúng nguyên nhân (SELinux, quyền thư mục cha, ACL) trước.</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">sudo: command not found dù lệnh chạy được khi gõ trực tiếp bằng root</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> sudo mặc định chạy với PATH giới hạn (secure_path trong sudoers), không thấy lệnh nằm ở path tùy chỉnh không có trong secure_path.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">sudo -l                          # xem các lệnh và path được phép
+visudo   # kiểm tra dòng Defaults secure_path, thêm path cần thiết nếu hợp lý
+# Hoặc dùng full path khi gọi qua sudo
+sudo /opt/custom/bin/mytool</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn dùng full path trong sudoers rule và khi gọi lệnh qua sudo, tránh phụ thuộc vào PATH không chắc chắn.</div>
+  </div>
+</div>
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">Xóa nhầm quyền execute trên thư mục làm mất khả năng truy cập toàn bộ nội dung bên trong</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Với thư mục, execute bit (x) quyết định khả năng 'đi vào' (cd/truy cập file bên trong), khác với file thường (x nghĩa là chạy được) — nhầm lẫn phổ biến giữa hai ngữ cảnh.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">chmod +x /path/to/directory     # khôi phục lại execute bit cho thư mục
+# Kiểm tra toàn bộ cây thư mục nếu chmod -R vô tình áp dụng sai
+find /path -type d -exec chmod +x {} \;</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Cẩn trọng với chmod -R — luôn tách riêng logic cho file (không cần +x mặc định) và thư mục (luôn cần +x để truy cập được).</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q31">
+  <div class="quiz-q">❓ Giá trị octal 750 tương ứng với chuỗi quyền nào?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q31" value="0" data-correct='1'><span class="opt-letter">A</span>rwxr-x---</label><label class="quiz-opt"><input type="radio" name="q31" value="1"><span class="opt-letter">B</span>rwx-w----</label><label class="quiz-opt"><input type="radio" name="q31" value="2"><span class="opt-letter">C</span>rw-r-xr--</label><label class="quiz-opt"><input type="radio" name="q31" value="3"><span class="opt-letter">D</span>r-xrwx---</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q31')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q31-result"></div>
+  <div class="quiz-explain" id="q31-explain">💡 <b>Giải thích:</b> 7=rwx (owner), 5=r-x (group), 0=--- (other) → rwxr-x---.</div>
+</div>
+<div class="quiz" id="q32">
+  <div class="quiz-q">❓ SUID bit trên một file thực thi có tác dụng gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q32" value="0"><span class="opt-letter">A</span>Cho phép mọi user đọc file</label><label class="quiz-opt"><input type="radio" name="q32" value="1" data-correct='1'><span class="opt-letter">B</span>Chương trình chạy với quyền của OWNER file, bất kể ai là người gọi thực thi</label><label class="quiz-opt"><input type="radio" name="q32" value="2"><span class="opt-letter">C</span>Bảo vệ file khỏi bị xóa</label><label class="quiz-opt"><input type="radio" name="q32" value="3"><span class="opt-letter">D</span>Nén file tự động</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q32')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q32-result"></div>
+  <div class="quiz-explain" id="q32-explain">💡 <b>Giải thích:</b> SUID (Set User ID) khiến chương trình thực thi với UID của chủ sở hữu file (thường là root cho các lệnh như passwd), không phải UID của user đang chạy nó.</div>
+</div>
+<div class="quiz" id="q33">
+  <div class="quiz-q">❓ Công cụ nào cho phép cấp quyền RIÊNG cho một user cụ thể trên một file, mà KHÔNG cần thay đổi owner/group truyền thống?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q33" value="0"><span class="opt-letter">A</span>chmod</label><label class="quiz-opt"><input type="radio" name="q33" value="1"><span class="opt-letter">B</span>chown</label><label class="quiz-opt"><input type="radio" name="q33" value="2" data-correct='1'><span class="opt-letter">C</span>setfacl (ACL)</label><label class="quiz-opt"><input type="radio" name="q33" value="3"><span class="opt-letter">D</span>chattr</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q33')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q33-result"></div>
+  <div class="quiz-explain" id="q33-explain">💡 <b>Giải thích:</b> ACL (Access Control List) qua setfacl cho phép gán quyền chi tiết cho nhiều user/group khác nhau trên cùng một file/thư mục, vượt ra ngoài giới hạn owner/group/other truyền thống.</div>
+</div>
+<div class="quiz" id="q34">
+  <div class="quiz-q">❓ Lệnh nào NÊN dùng để sửa file /etc/sudoers thay vì sửa trực tiếp bằng vi/nano?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q34" value="0"><span class="opt-letter">A</span>sudoedit /etc/sudoers</label><label class="quiz-opt"><input type="radio" name="q34" value="1" data-correct='1'><span class="opt-letter">B</span>visudo</label><label class="quiz-opt"><input type="radio" name="q34" value="2"><span class="opt-letter">C</span>vi /etc/sudoers</label><label class="quiz-opt"><input type="radio" name="q34" value="3"><span class="opt-letter">D</span>nano /etc/sudoers</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q34')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q34-result"></div>
+  <div class="quiz-explain" id="q34-explain">💡 <b>Giải thích:</b> visudo khóa file trong lúc sửa VÀ tự động kiểm tra cú pháp trước khi lưu — sửa trực tiếp bằng vi có nguy cơ gây lỗi cú pháp khiến MỌI lệnh sudo trên hệ thống ngừng hoạt động.</div>
+</div>
+<div class="quiz" id="q35">
+  <div class="quiz-q">❓ Với một THƯ MỤC (không phải file), execute permission (x) có ý nghĩa gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q35" value="0"><span class="opt-letter">A</span>Cho phép chạy thư mục như một chương trình</label><label class="quiz-opt"><input type="radio" name="q35" value="1" data-correct='1'><span class="opt-letter">B</span>Cho phép 'đi vào' (cd) và truy cập nội dung file bên trong thư mục</label><label class="quiz-opt"><input type="radio" name="q35" value="2"><span class="opt-letter">C</span>Cho phép xóa thư mục</label><label class="quiz-opt"><input type="radio" name="q35" value="3"><span class="opt-letter">D</span>Không có ý nghĩa gì với thư mục</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q35')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q35-result"></div>
+  <div class="quiz-explain" id="q35-explain">💡 <b>Giải thích:</b> Với thư mục, execute bit kiểm soát khả năng truy cập (traverse) vào bên trong nó — thiếu bit này, dù có quyền đọc (r) vẫn không thể truy cập file cụ thể bên trong.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 7</div><ul><li>Mô hình permission owner/group/other (rwx = 4+2+1) là nền tảng, ACL (setfacl) mở rộng khi cần linh hoạt hơn</li><li>SUID/SGID/Sticky bit là ba bit đặc biệt dễ bị hiểu sai — cần nắm chính xác ý nghĩa từng loại</li><li>sudo cần cấu hình theo nguyên tắc least-privilege (giới hạn lệnh cụ thể), luôn sửa qua visudo</li><li>'Permission denied' dù chmod 777 thường là do SELinux hoặc quyền thư mục cha, không phải quyền chính file đó</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 7</div><ol><li>Tạo 2 user và 1 group dùng chung, thực hành ACL để một user có quyền rwx và user còn lại chỉ r-x trên cùng thư mục.</li><li>Cấu hình sudoers cho một user chỉ được restart MỘT service cụ thể, xác nhận user đó không thể chạy lệnh sudo khác.</li><li>Cố tình xóa execute bit của một thư mục (chmod -x), quan sát lỗi khi cố truy cập file bên trong, rồi khôi phục.</li></ol></div>
+</section>
+
+<section class="module" id="m8">
+  <div class="mod-head">
+    <span class="mod-badge">M8</span>
+    <h1>Networking — Cấu hình &amp; Troubleshooting</h1>
+    <p class="mod-sub">LPIC-1 109.1-109.3, LPIC-2 204 · ip, nmcli, DNS, firewall, bonding</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Networking là lớp hạ tầng mà mọi thứ khác phụ thuộc vào — thành thạo bộ công cụ 'ip' hiện đại (thay thế ifconfig/route đã deprecated), chẩn đoán DNS, và cấu hình firewall đúng cách là kỹ năng bắt buộc để tự xử lý phần lớn sự cố kết nối mà không cần chờ team network.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Bộ công cụ 'ip' hiện đại thay thế lệnh cũ</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Lệnh cũ (deprecated)</th><th>Lệnh mới ('ip' — iproute2)</th><th>Chức năng</th></tr></thead><tbody><tr><td>ifconfig</td><td>ip addr / ip a</td><td>Xem/cấu hình địa chỉ IP</td></tr><tr><td>route</td><td>ip route / ip r</td><td>Xem/cấu hình bảng định tuyến</td></tr><tr><td>arp</td><td>ip neigh</td><td>Xem ARP table (neighbor)</td></tr><tr><td>netstat -tulnp</td><td>ss -tulnp</td><td>Xem port đang lắng nghe (ss nhanh hơn nhiều)</td></tr><tr><td>ifconfig eth0 up/down</td><td>ip link set eth0 up/down</td><td>Bật/tắt interface</td></tr></tbody></table></div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Xem và cấu hình địa chỉ IP với ip/nmcli</span></div><p class="ex-desc">nmcli (NetworkManager CLI) là công cụ khuyến nghị trên RHEL/OL 8+ để cấu hình PERSISTENT (giữ qua reboot).</p><pre class="code"><code class="lang-bash">ip addr show                                   # xem toàn bộ interface và IP
+ip addr add 10.0.0.5/24 dev eth0               # gán IP TẠM THỜI (mất khi reboot)
+
+# Cấu hình PERSISTENT qua NetworkManager
+nmcli con add type ethernet con-name eth0-static ifname eth0 ip4 10.0.0.5/24 gw4 10.0.0.1
+nmcli con mod eth0-static ipv4.dns "8.8.8.8 1.1.1.1"
+nmcli con up eth0-static</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">Chẩn đoán kết nối theo đúng thứ tự lớp OSI (từ thấp lên cao)</span></div><p class="ex-desc">Quy trình chẩn đoán chuẩn: Link (cáp/interface) → IP (ping) → Routing → DNS → Port/Service → Application.</p><pre class="code"><code class="lang-bash">ip link show eth0              # 1. Interface có UP không? (Layer 2)
+ping -c3 &lt;gateway_ip&gt;          # 2. Có kết nối tới gateway? (Layer 3)
+ip route get 8.8.8.8            # 3. Route đi ra Internet đúng path nào?
+dig google.com                  # 4. DNS resolve được không? (xem Module Case 11 - Linux deep dive)
+ss -tulnp | grep :1521          # 5. Port cần kết nối có đang LISTEN không?
+telnet dbhost 1521               # 6. Kết nối được tới đúng port từ xa không?</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Cấu hình firewalld — zone-based firewall management</span></div><p class="ex-desc">firewalld (mặc định trên RHEL/OL) dùng khái niệm 'zone' thay vì rule tuyến tính như iptables thuần.</p><pre class="code"><code class="lang-bash">firewall-cmd --get-active-zones
+firewall-cmd --zone=public --add-port=1521/tcp --permanent   # mở port Oracle Listener
+firewall-cmd --zone=public --add-service=https --permanent
+firewall-cmd --reload                                          # áp dụng thay đổi permanent
+firewall-cmd --zone=public --list-all                          # xem toàn bộ rule đang active</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Network bonding cho High Availability (redundancy NIC)</span></div><p class="ex-desc">Bonding kết hợp nhiều NIC vật lý thành một interface logic, cần cấu hình miimon đúng để failover hoạt động (xem Case 9 tài liệu Linux deep dive).</p><pre class="code"><code class="lang-bash">nmcli con add type bond con-name bond0 ifname bond0 bond.options "mode=active-backup,miimon=100"
+nmcli con add type ethernet con-name bond0-eth0 ifname eth0 master bond0
+nmcli con add type ethernet con-name bond0-eth1 ifname eth1 master bond0
+nmcli con mod bond0 ipv4.addresses 10.0.0.5/24 ipv4.gateway 10.0.0.1 ipv4.method manual
+nmcli con up bond0</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Phân tích traffic network với tcpdump khi cần điều tra sâu</span></div><p class="ex-desc">tcpdump là công cụ 'cuối cùng' khi các bước chẩn đoán ở trên không đủ — bắt gói tin thực tế để xem chính xác điều gì đang xảy ra.</p><pre class="code"><code class="lang-bash">tcpdump -i eth0 host 10.0.0.10 and port 1521 -w capture.pcap   # ghi lại traffic tới database
+tcpdump -i eth0 icmp                                             # chỉ xem gói ping
+tcpdump -nn -i eth0 'tcp[tcpflags] &amp; tcp-syn != 0' -c 20         # chỉ xem gói SYN (bắt đầu kết nối TCP)</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Cấu hình Network</h2>
+<div class="err-block">
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">ip addr add gán IP thành công nhưng mất sau khi reboot</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Lệnh 'ip addr add' chỉ thay đổi cấu hình RUNTIME (trong bộ nhớ), không ghi vào file cấu hình persistent — đây là nhầm lẫn rất phổ biến giữa 'ip' (tạm thời) và 'nmcli'/file config (vĩnh viễn).</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Luôn dùng nmcli để cấu hình PERSISTENT thay vì chỉ 'ip addr add'
+nmcli con add type ethernet con-name eth0-static ifname eth0 ip4 &lt;ip&gt;/24 gw4 &lt;gateway&gt;
+nmcli con up eth0-static</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Ghi nhớ nguyên tắc: 'ip' command = thay đổi tạm thời để test nhanh; 'nmcli'/network script = thay đổi vĩnh viễn cho production.</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">Không ping được ra ngoài dù IP/Gateway đã đúng</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Thiếu DNS resolver hoặc file /etc/resolv.conf trỏ sai DNS server, hoặc iptables/firewalld chặn ICMP/outbound traffic.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">ping -c3 8.8.8.8              # test bằng IP trực tiếp, loại trừ nguyên nhân DNS
+cat /etc/resolv.conf           # kiểm tra DNS server đang cấu hình
+firewall-cmd --list-all        # kiểm tra rule firewall có chặn outbound không</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn tách riêng test 'ping IP' (kiểm tra network layer) và 'ping domain' (kiểm tra thêm cả DNS) để định vị đúng lớp gặp vấn đề.</div>
+  </div>
+</div>
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">Đổi cấu hình firewalld nhưng rule không có tác dụng ngay</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Quên thêm '--permanent' (chỉ áp dụng runtime, mất khi reload) hoặc thêm --permanent nhưng quên chạy --reload để áp dụng.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">firewall-cmd --zone=public --add-port=1521/tcp --permanent
+firewall-cmd --reload    # BẮT BUỘC để áp dụng thay đổi permanent
+firewall-cmd --zone=public --list-ports   # xác nhận rule đã có hiệu lực</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn nhớ cặp đôi --permanent + --reload; hoặc test runtime trước (không --permanent) rồi mới thêm permanent khi đã xác nhận đúng.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q36">
+  <div class="quiz-q">❓ Lệnh hiện đại nào thay thế 'netstat -tulnp' để xem các port đang lắng nghe?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q36" value="0"><span class="opt-letter">A</span>ip port</label><label class="quiz-opt"><input type="radio" name="q36" value="1" data-correct='1'><span class="opt-letter">B</span>ss -tulnp</label><label class="quiz-opt"><input type="radio" name="q36" value="2"><span class="opt-letter">C</span>nmcli port</label><label class="quiz-opt"><input type="radio" name="q36" value="3"><span class="opt-letter">D</span>iproute list</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q36')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q36-result"></div>
+  <div class="quiz-explain" id="q36-explain">💡 <b>Giải thích:</b> 'ss' (socket statistics) là công cụ hiện đại thay thế netstat, nhanh hơn đáng kể vì đọc trực tiếp từ kernel thay vì /proc/net.</div>
+</div>
+<div class="quiz" id="q37">
+  <div class="quiz-q">❓ Sự khác biệt chính giữa 'ip addr add' và 'nmcli con add' khi cấu hình IP là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q37" value="0"><span class="opt-letter">A</span>Không có khác biệt, hai lệnh tương đương</label><label class="quiz-opt"><input type="radio" name="q37" value="1" data-correct='1'><span class="opt-letter">B</span>'ip addr add' chỉ thay đổi tạm thời (mất khi reboot); 'nmcli' lưu cấu hình vĩnh viễn</label><label class="quiz-opt"><input type="radio" name="q37" value="2"><span class="opt-letter">C</span>'nmcli' chỉ dùng được cho IPv6</label><label class="quiz-opt"><input type="radio" name="q37" value="3"><span class="opt-letter">D</span>'ip addr add' nhanh hơn nên luôn được ưu tiên</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q37')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q37-result"></div>
+  <div class="quiz-explain" id="q37-explain">💡 <b>Giải thích:</b> 'ip' là công cụ runtime (thay đổi ngay lập tức nhưng không persistent), 'nmcli' quản lý qua NetworkManager và lưu cấu hình bền vững qua reboot.</div>
+</div>
+<div class="quiz" id="q38">
+  <div class="quiz-q">❓ Thứ tự chẩn đoán ĐÚNG khi một ứng dụng không kết nối được tới database qua network là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q38" value="0"><span class="opt-letter">A</span>Chỉ cần kiểm tra port bằng telnet là đủ</label><label class="quiz-opt"><input type="radio" name="q38" value="1" data-correct='1'><span class="opt-letter">B</span>Interface (link) → IP/Gateway (ping) → Routing → DNS → Port (ss/telnet) → Application</label><label class="quiz-opt"><input type="radio" name="q38" value="2"><span class="opt-letter">C</span>Kiểm tra Application trước, network sau</label><label class="quiz-opt"><input type="radio" name="q38" value="3"><span class="opt-letter">D</span>Không có thứ tự cụ thể, kiểm tra ngẫu nhiên</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q38')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q38-result"></div>
+  <div class="quiz-explain" id="q38-explain">💡 <b>Giải thích:</b> Chẩn đoán nên theo đúng lớp OSI từ thấp lên cao — xác nhận từng lớp hoạt động trước khi chuyển sang lớp tiếp theo, tránh bỏ sót nguyên nhân gốc.</div>
+</div>
+<div class="quiz" id="q39">
+  <div class="quiz-q">❓ Trong firewalld, sau khi thêm rule với --permanent, lệnh nào BẮT BUỘC cần chạy để rule có hiệu lực ngay?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q39" value="0"><span class="opt-letter">A</span>firewall-cmd --restart</label><label class="quiz-opt"><input type="radio" name="q39" value="1" data-correct='1'><span class="opt-letter">B</span>firewall-cmd --reload</label><label class="quiz-opt"><input type="radio" name="q39" value="2"><span class="opt-letter">C</span>systemctl restart NetworkManager</label><label class="quiz-opt"><input type="radio" name="q39" value="3"><span class="opt-letter">D</span>Không cần lệnh gì thêm, tự động áp dụng</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q39')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q39-result"></div>
+  <div class="quiz-explain" id="q39-explain">💡 <b>Giải thích:</b> '--permanent' chỉ ghi rule vào cấu hình lưu trữ, chưa áp dụng vào runtime — cần '--reload' để nạp lại và áp dụng ngay.</div>
+</div>
+<div class="quiz" id="q40">
+  <div class="quiz-q">❓ Tham số 'miimon' trong cấu hình network bonding có chức năng gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q40" value="0"><span class="opt-letter">A</span>Giới hạn băng thông tối đa</label><label class="quiz-opt"><input type="radio" name="q40" value="1" data-correct='1'><span class="opt-letter">B</span>Khoảng thời gian (ms) kiểm tra trạng thái link của từng NIC thành viên để phát hiện lỗi và failover</label><label class="quiz-opt"><input type="radio" name="q40" value="2"><span class="opt-letter">C</span>Mã hóa traffic giữa các NIC</label><label class="quiz-opt"><input type="radio" name="q40" value="3"><span class="opt-letter">D</span>Số lượng NIC tối đa trong bond</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q40')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q40-result"></div>
+  <div class="quiz-explain" id="q40-explain">💡 <b>Giải thích:</b> miimon (Media Independent Interface monitoring) quyết định tần suất bonding driver kiểm tra carrier status — thiếu tham số này, bonding không thể tự động failover khi một NIC gặp sự cố (xem Case 9, tài liệu Linux deep dive).</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 8</div><ul><li>Bộ công cụ 'ip'/'ss'/'nmcli' (iproute2) đã thay thế hoàn toàn ifconfig/route/netstat trên các distro hiện đại</li><li>Chẩn đoán network luôn đi theo thứ tự lớp OSI: Link → IP → Routing → DNS → Port → Application</li><li>'ip addr add' = thay đổi tạm thời để test; 'nmcli' = cấu hình vĩnh viễn cho production</li><li>firewalld luôn cần cặp --permanent + --reload để thay đổi có hiệu lực bền vững</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 8</div><ol><li>Cấu hình một static IP bằng nmcli, reboot máy ảo và xác nhận IP vẫn giữ nguyên.</li><li>Mở một port tùy chỉnh qua firewalld, dùng ss và telnet từ máy khác để xác nhận đã mở đúng.</li><li>Dùng tcpdump bắt traffic ping giữa 2 máy ảo, phân tích file .pcap bằng Wireshark hoặc tcpdump -r.</li></ol></div>
+</section>
+
+<section class="module" id="m9">
+  <div class="mod-head">
+    <span class="mod-badge">M9</span>
+    <h1>systemd, Service Management &amp; Logging</h1>
+    <p class="mod-sub">LPIC-2 205 · unit file, journald, timer, dependency management</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">systemd đã trở thành init system chuẩn trên hầu hết distro hiện đại (RHEL/OL/Ubuntu/Debian/SUSE) — thành thạo viết unit file đúng chuẩn, quản lý dependency, và khai thác journald cho việc tra cứu log là kỹ năng nâng cao bắt buộc để tự triển khai và vận hành mọi custom service/ứng dụng trên Linux hiện đại.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Cấu trúc một Unit File hoàn chỉnh</h3>
+<pre class="code"><code class="lang-ini">[Unit]
+Description=My Custom Application Service
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=appuser
+Group=appuser
+WorkingDirectory=/opt/myapp
+ExecStart=/opt/myapp/bin/start.sh
+ExecStop=/opt/myapp/bin/stop.sh
+Restart=on-failure
+RestartSec=5s
+StartLimitIntervalSec=300
+StartLimitBurst=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">Tạo và kích hoạt một custom service hoàn chỉnh</span></div><p class="ex-desc">Unit file custom đặt tại /etc/systemd/system/, luôn daemon-reload sau khi tạo/sửa.</p><pre class="code"><code class="lang-bash">vi /etc/systemd/system/myapp.service   # nội dung như ví dụ trên
+systemctl daemon-reload
+systemctl enable --now myapp.service   # vừa enable (tự khởi động lúc boot) vừa start ngay
+systemctl status myapp.service</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">systemd Timer — thay thế cron cho các tác vụ quan trọng (có nhiều ưu điểm hơn)</span></div><p class="ex-desc">Timer tích hợp tốt hơn với systemd (log qua journald, dependency, xem lịch sử chạy) so với cron truyền thống.</p><pre class="code"><code class="lang-bash"># /etc/systemd/system/backup.timer
+cat &gt; /etc/systemd/system/backup.timer &lt;&lt; 'EOF'
+[Unit]
+Description=Chạy backup hàng ngày lúc 2h sáng
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+systemctl enable --now backup.timer
+systemctl list-timers   # xem lịch chạy tiếp theo của TẤT CẢ timer</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Truy vấn journald hiệu quả — thay thế grep trên nhiều file log rời rạc</span></div><p class="ex-desc">journald tập trung log của MỌI service vào một nơi, hỗ trợ filter mạnh hơn nhiều so với đọc file text rời rạc.</p><pre class="code"><code class="lang-bash">journalctl -u myapp.service --since "1 hour ago"    # log của 1 service trong 1 giờ qua
+journalctl -u myapp.service -f                        # follow real-time, giống tail -f
+journalctl -p err -b                                   # chỉ xem log mức lỗi (error) trong lần boot hiện tại
+journalctl --since "2026-07-01 09:00" --until "2026-07-01 10:00"   # filter theo khoảng thời gian chính xác</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Quản lý dependency phức tạp giữa nhiều service</span></div><p class="ex-desc">Đảm bảo thứ tự khởi động đúng khi có nhiều service phụ thuộc lẫn nhau (đã phân tích ở Case 13, tài liệu Linux deep dive).</p><pre class="code"><code class="lang-bash">systemctl list-dependencies myapp.service           # xem cây dependency của một service
+systemctl list-dependencies myapp.service --reverse   # xem service NÀO phụ thuộc vào service này
+systemd-analyze blame                                  # xem service nào làm chậm quá trình boot nhất
+systemd-analyze critical-chain                          # xem chuỗi dependency dài nhất quyết định tổng thời gian boot</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Giới hạn tài nguyên cho service qua systemd (thay thế ulimit truyền thống)</span></div><p class="ex-desc">systemd có thể áp dụng cgroup resource limit trực tiếp trong unit file, hiện đại hơn /etc/security/limits.conf.</p><pre class="code"><code class="lang-bash"># Thêm vào [Service] section
+[Service]
+MemoryMax=2G
+CPUQuota=200%
+TasksMax=4096
+
+# Áp dụng động cho service đang chạy không cần sửa file
+systemctl set-property myapp.service MemoryMax=2G
+systemctl show myapp.service -p MemoryMax</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Quản lý systemd/Log</h2>
+<div class="err-block">
+<div class="errbox sev-minor">
+  <div class="err-head"><span class="err-tag">🟢 NHẸ</span><span class="err-title">Sửa unit file nhưng thay đổi không có tác dụng</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Quên chạy 'systemctl daemon-reload' sau khi sửa file — systemd vẫn dùng bản cache cũ trong bộ nhớ, không tự động đọc lại file đã thay đổi.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">systemctl daemon-reload
+systemctl restart myapp.service
+systemctl status myapp.service   # xác nhận đã áp dụng thay đổi</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Luôn nhớ cặp thao tác: sửa file → daemon-reload → restart service, thành một thói quen không thể bỏ sót.</div>
+  </div>
+</div>
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">journalctl báo 'No journal files were found' hoặc log biến mất sau reboot</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> journald đang chạy ở chế độ volatile (chỉ lưu trong RAM, /run/log/journal), không có persistent storage tại /var/log/journal.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">mkdir -p /var/log/journal
+systemd-tmpfiles --create --prefix /var/log/journal
+systemctl restart systemd-journald</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Cấu hình 'Storage=persistent' trong /etc/systemd/journald.conf ngay từ đầu để log tồn tại qua các lần reboot, hữu ích cho điều tra sự cố sau này.</div>
+  </div>
+</div>
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">Service restart liên tục thất bại, systemd ngừng thử lại (StartLimitBurst)</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Service crash liên tục do lỗi thực sự chưa khắc phục, systemd tự động dừng cố gắng restart sau khi vượt StartLimitBurst trong StartLimitIntervalSec để tránh vòng lặp vô hạn.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">systemctl status myapp.service    # xem lý do fail cụ thể qua journalctl
+journalctl -u myapp.service -n 50 --no-pager
+# Sau khi xác nhận đã sửa nguyên nhân gốc, reset lại bộ đếm start limit
+systemctl reset-failed myapp.service
+systemctl start myapp.service</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Đặt StartLimitBurst/StartLimitIntervalSec hợp lý (không quá thấp gây dừng sớm, không quá cao gây restart loop vô ích) và luôn điều tra journalctl trước khi reset-failed.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q41">
+  <div class="quiz-q">❓ Sau khi tạo hoặc sửa một unit file trong /etc/systemd/system/, lệnh nào BẮT BUỘC phải chạy trước khi start service?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q41" value="0"><span class="opt-letter">A</span>systemctl reboot</label><label class="quiz-opt"><input type="radio" name="q41" value="1" data-correct='1'><span class="opt-letter">B</span>systemctl daemon-reload</label><label class="quiz-opt"><input type="radio" name="q41" value="2"><span class="opt-letter">C</span>systemctl refresh</label><label class="quiz-opt"><input type="radio" name="q41" value="3"><span class="opt-letter">D</span>systemctl update</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q41')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q41-result"></div>
+  <div class="quiz-explain" id="q41-explain">💡 <b>Giải thích:</b> daemon-reload buộc systemd đọc lại toàn bộ unit file từ đĩa, nạp thay đổi vào bộ nhớ — thiếu bước này, systemd vẫn dùng cấu hình cũ đã cache.</div>
+</div>
+<div class="quiz" id="q42">
+  <div class="quiz-q">❓ Ưu điểm chính của systemd Timer so với cron truyền thống là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q42" value="0"><span class="opt-letter">A</span>Timer chạy nhanh hơn cron</label><label class="quiz-opt"><input type="radio" name="q42" value="1" data-correct='1'><span class="opt-letter">B</span>Tích hợp tốt với journald (log tập trung), dependency management, và xem lịch sử qua list-timers</label><label class="quiz-opt"><input type="radio" name="q42" value="2"><span class="opt-letter">C</span>Timer không cần quyền root</label><label class="quiz-opt"><input type="radio" name="q42" value="3"><span class="opt-letter">D</span>Cron đã bị loại bỏ hoàn toàn khỏi Linux hiện đại</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q42')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q42-result"></div>
+  <div class="quiz-explain" id="q42-explain">💡 <b>Giải thích:</b> systemd Timer tận dụng toàn bộ hạ tầng systemd: log qua journalctl, dependency với service khác, và systemctl list-timers cho biết lần chạy tiếp theo — cron không có các tích hợp này.</div>
+</div>
+<div class="quiz" id="q43">
+  <div class="quiz-q">❓ Lệnh nào cho biết service nào làm CHẬM quá trình boot của hệ thống nhất?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q43" value="0"><span class="opt-letter">A</span>systemctl list-units</label><label class="quiz-opt"><input type="radio" name="q43" value="1" data-correct='1'><span class="opt-letter">B</span>systemd-analyze blame</label><label class="quiz-opt"><input type="radio" name="q43" value="2"><span class="opt-letter">C</span>journalctl -b</label><label class="quiz-opt"><input type="radio" name="q43" value="3"><span class="opt-letter">D</span>systemctl status</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q43')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q43-result"></div>
+  <div class="quiz-explain" id="q43-explain">💡 <b>Giải thích:</b> systemd-analyze blame liệt kê thời gian khởi động của từng unit, sắp xếp giảm dần — giúp xác định ngay 'thủ phạm' làm chậm boot.</div>
+</div>
+<div class="quiz" id="q44">
+  <div class="quiz-q">❓ Khi một service liên tục crash và systemd ngừng tự động restart (do vượt StartLimitBurst), lệnh nào cần chạy SAU KHI đã sửa lỗi để cho phép service start lại?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q44" value="0"><span class="opt-letter">A</span>systemctl daemon-reload</label><label class="quiz-opt"><input type="radio" name="q44" value="1" data-correct='1'><span class="opt-letter">B</span>systemctl reset-failed &lt;service&gt;</label><label class="quiz-opt"><input type="radio" name="q44" value="2"><span class="opt-letter">C</span>systemctl reload &lt;service&gt;</label><label class="quiz-opt"><input type="radio" name="q44" value="3"><span class="opt-letter">D</span>reboot</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q44')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q44-result"></div>
+  <div class="quiz-explain" id="q44-explain">💡 <b>Giải thích:</b> reset-failed xóa bộ đếm số lần fail đã tích lũy, cho phép systemd thử start lại service từ đầu — nếu không reset, systemd vẫn từ chối start dù lỗi gốc đã được khắc phục.</div>
+</div>
+<div class="quiz" id="q45">
+  <div class="quiz-q">❓ Tại sao log trong journald có thể biến mất hoàn toàn sau khi reboot server?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q45" value="0"><span class="opt-letter">A</span>journald bị lỗi</label><label class="quiz-opt"><input type="radio" name="q45" value="1" data-correct='1'><span class="opt-letter">B</span>journald mặc định chạy ở chế độ volatile (chỉ lưu RAM) nếu không có thư mục /var/log/journal</label><label class="quiz-opt"><input type="radio" name="q45" value="2"><span class="opt-letter">C</span>Log tự động bị mã hóa</label><label class="quiz-opt"><input type="radio" name="q45" value="3"><span class="opt-letter">D</span>Cần cấu hình rsyslog riêng mới lưu được log</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q45')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q45-result"></div>
+  <div class="quiz-explain" id="q45-explain">💡 <b>Giải thích:</b> Nếu /var/log/journal không tồn tại, journald lưu log tạm trong /run (tmpfs, mất khi reboot) — cần tạo thư mục này và cấu hình Storage=persistent để log tồn tại lâu dài.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 9</div><ul><li>Quy trình chuẩn khi sửa unit file: sửa file → daemon-reload → restart → status kiểm tra</li><li>systemd Timer là lựa chọn hiện đại thay thế cron cho tác vụ quan trọng cần tích hợp log/dependency</li><li>journalctl thay thế việc grep nhiều file log rời rạc, hỗ trợ filter mạnh theo thời gian/mức độ/unit</li><li>Cấu hình Storage=persistent và tạo /var/log/journal để log không bị mất sau reboot</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 9</div><ol><li>Viết một custom service chạy một script sleep vô hạn, cấu hình Restart=on-failure, sau đó kill -9 process và quan sát systemd tự restart.</li><li>Tạo một systemd timer chạy mỗi 5 phút thay thế cho một cron job, dùng systemctl list-timers để xác nhận.</li><li>Cấu hình journald persistent storage, reboot server, xác nhận log của lần boot trước vẫn truy vấn được qua journalctl -b -1.</li></ol></div>
+</section>
+
+<section class="module" id="m10">
+  <div class="mod-head">
+    <span class="mod-badge">M10</span>
+    <h1>Bảo mật Hệ thống &amp; Backup</h1>
+    <p class="mod-sub">LPIC-2 210 · SSH hardening, SELinux/firewalld, tar/rsync, encryption</p>
+  </div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Mục đích</h2>
+<p class="txt">Module cuối cùng tổng hợp các biện pháp bảo mật thực chiến (SSH hardening, SELinux, mã hóa) và chiến lược backup đáng tin cậy — đây là những gì phân biệt một hệ thống 'chạy được' với một hệ thống 'sẵn sàng cho production' theo đúng tinh thần security-by-default và defense-in-depth.</p>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Giải thích &amp; Ví dụ</h2>
+<h3 class="subsec-h">Nguyên tắc Defense in Depth cho SSH</h3>
+<p class="txt">Không có MỘT biện pháp bảo mật nào là đủ — cần nhiều lớp bảo vệ chồng lên nhau: key-based auth, đổi port mặc định, fail2ban chống brute-force, và giới hạn user được phép SSH.</p>
+<div class="example"><div class="ex-head"><span class="ex-num">VD1</span><span class="ex-title">SSH Hardening toàn diện — /etc/ssh/sshd_config</span></div><p class="ex-desc">Đây là checklist bảo mật SSH cơ bản cần áp dụng cho MỌI server production.</p><pre class="code"><code class="lang-bash"># /etc/ssh/sshd_config
+PermitRootLogin no                 # không cho root login trực tiếp qua SSH
+PasswordAuthentication no          # chỉ cho phép key-based auth, tắt password
+PubkeyAuthentication yes
+AllowUsers oracle appdeploy dbagroup   # chỉ định rõ user nào được SSH
+Port 2222                           # đổi port mặc định (giảm bot scan tự động, không thay thế cho các biện pháp khác)
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+systemctl restart sshd</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD2</span><span class="ex-title">Cài đặt fail2ban chống brute-force SSH</span></div><p class="ex-desc">fail2ban tự động ban IP sau số lần đăng nhập thất bại vượt ngưỡng, giảm đáng kể rủi ro brute-force.</p><pre class="code"><code class="lang-bash">dnf install -y fail2ban
+cat &gt; /etc/fail2ban/jail.local &lt;&lt; 'EOF'
+[sshd]
+enabled = true
+port = 2222
+maxretry = 3
+bantime = 3600
+findtime = 600
+EOF
+systemctl enable --now fail2ban
+fail2ban-client status sshd   # xem danh sách IP đang bị ban</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD3</span><span class="ex-title">Mã hóa dữ liệu khi lưu trữ (at-rest) với LUKS</span></div><p class="ex-desc">LUKS (Linux Unified Key Setup) mã hóa toàn bộ partition/volume — quan trọng cho dữ liệu nhạy cảm hoặc backup mang ra ngoài datacenter.</p><pre class="code"><code class="lang-bash">cryptsetup luksFormat /dev/sdb1        # tạo LUKS encryption trên partition (XÓA TOÀN BỘ dữ liệu cũ)
+cryptsetup luksOpen /dev/sdb1 secure_data
+mkfs.xfs /dev/mapper/secure_data
+mount /dev/mapper/secure_data /secure
+# Khi cần dùng lại sau reboot
+cryptsetup luksOpen /dev/sdb1 secure_data
+mount /dev/mapper/secure_data /secure</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD4</span><span class="ex-title">Backup chuẩn với rsync (incremental) và tar (archive đầy đủ)</span></div><p class="ex-desc">rsync hiệu quả cho backup gia tăng (chỉ copy phần thay đổi); tar phù hợp cho archive hoàn chỉnh có thể di chuyển/lưu trữ lâu dài.</p><pre class="code"><code class="lang-bash"># Backup incremental hàng ngày qua rsync (chỉ đồng bộ phần thay đổi, tiết kiệm băng thông/thời gian)
+rsync -avz --delete /u01/oradata/ backup-server:/backup/oradata/
+
+# Archive đầy đủ có nén, kèm timestamp để dễ quản lý version
+tar -czf /backup/etc_config_$(date +%Y%m%d).tar.gz /etc
+
+# Backup với exclude pattern (bỏ qua file tạm/cache không cần thiết)
+tar --exclude='*.tmp' --exclude='cache/*' -czf app_backup.tar.gz /opt/myapp</code></pre>
+</div>
+<div class="example"><div class="ex-head"><span class="ex-num">VD5</span><span class="ex-title">Kiểm tra tính toàn vẹn backup — bước THƯỜNG BỊ BỎ QUÊN nhất</span></div><p class="ex-desc">Một backup chưa từng được test restore không thể coi là backup đáng tin cậy — đây là nguyên tắc vàng của mọi chiến lược backup.</p><pre class="code"><code class="lang-bash"># Kiểm tra checksum để xác nhận file backup không bị corrupt trong quá trình truyền/lưu trữ
+sha256sum /backup/oradata_full.tar.gz &gt; /backup/oradata_full.sha256
+sha256sum -c /backup/oradata_full.sha256   # verify lại bất cứ lúc nào
+
+# Test restore ĐỊNH KỲ vào môi trường riêng biệt (không phải chỉ tin tưởng job 'chạy thành công')
+mkdir /tmp/restore_test
+tar -xzf /backup/oradata_full.tar.gz -C /tmp/restore_test
+diff -rq /tmp/restore_test/oradata /u01/oradata | head -20</code></pre>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Lỗi thường gặp khi Bảo mật/Backup</h2>
+<div class="err-block">
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">Đổi Port SSH nhưng bị khóa hoàn toàn ngoài server (lockout)</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Restart sshd với cấu hình sai (port mới bị firewall chặn, hoặc syntax lỗi) TRONG KHI đây là session SSH duy nhất đang mở, mất kết nối và không thể vào lại.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Luôn mở firewall CHO PORT MỚI trước khi đổi port SSH, và test bằng session THỨ HAI song song
+firewall-cmd --add-port=2222/tcp --permanent &amp;&amp; firewall-cmd --reload
+# Test bằng terminal MỚI trước khi đóng session hiện tại:
+ssh -p 2222 user@server
+# Nếu bị lockout hoàn toàn: cần truy cập qua console vật lý/iLO/iDRAC để sửa lại</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Nguyên tắc bất di bất dịch: KHÔNG BAO GIỜ đóng session SSH hiện tại cho đến khi đã xác nhận thành công kết nối bằng cấu hình MỚI qua một session khác.</div>
+  </div>
+</div>
+<div class="errbox sev-crit">
+  <div class="err-head"><span class="err-tag">🔴 NGHIÊM TRỌNG</span><span class="err-title">Backup 'chạy thành công' hàng tháng nhưng khi cần restore thì file bị corrupt</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Không bao giờ test restore thực tế — job backup chỉ được coi là 'thành công' nếu exit code = 0, không đảm bảo tính toàn vẹn/khả năng phục hồi thực sự của dữ liệu.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash"># Không thể 'sửa' được sau khi phát hiện — chỉ có thể phòng ngừa từ trước
+# Nếu phát hiện corrupt lúc cần restore khẩn cấp, tìm bản backup gần nhất còn nguyên vẹn
+for f in /backup/*.tar.gz; do tar -tzf "$f" &amp;&gt;/dev/null || echo "CORRUPT: $f"; done</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Lên lịch test restore ĐỊNH KỲ (hàng tháng/quý) vào môi trường riêng biệt như một quy trình bắt buộc, không chỉ tin tưởng vào exit code của job backup.</div>
+  </div>
+</div>
+<div class="errbox sev-warn">
+  <div class="err-head"><span class="err-tag">🟡 CẢNH BÁO</span><span class="err-title">SELinux chặn dịch vụ mới cài dù quyền file (rwx) hoàn toàn đúng</span></div>
+  <div class="err-body">
+    <div class="err-row"><b>Nguyên nhân:</b> Đã phân tích chi tiết ở Case 17 (tài liệu Linux deep dive) — dịch vụ/thư mục mới không khớp SELinux context đã định nghĩa sẵn cho loại tiến trình đó.</div>
+    <div class="err-row"><b>Xử lý:</b></div>
+<pre class="code"><code class="lang-bash">ausearch -m avc -ts recent
+restorecon -Rv /path/to/app
+# Nếu cần custom policy cho nhu cầu hợp lệ mới:
+audit2allow -a -M myapp_policy &amp;&amp; semodule -i myapp_policy.pp</code></pre>
+    <div class="err-row"><b>Phòng ngừa:</b> Không tắt SELinux làm giải pháp — luôn cấp quyền chính xác qua policy module hoặc restorecon.</div>
+  </div>
+</div>
+</div>
+<h2 class="sec-h"><span class="sec-ic">▸</span>Câu hỏi ôn tập</h2>
+<div class="quiz-block">
+<div class="quiz" id="q46">
+  <div class="quiz-q">❓ Biện pháp nào được coi là QUAN TRỌNG NHẤT trong việc bảo vệ SSH khỏi tấn công brute-force?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q46" value="0"><span class="opt-letter">A</span>Chỉ cần đổi port mặc định 22</label><label class="quiz-opt"><input type="radio" name="q46" value="1" data-correct='1'><span class="opt-letter">B</span>Tắt Password Authentication, chỉ cho phép key-based authentication</label><label class="quiz-opt"><input type="radio" name="q46" value="2"><span class="opt-letter">C</span>Cài antivirus trên server</label><label class="quiz-opt"><input type="radio" name="q46" value="3"><span class="opt-letter">D</span>Tăng độ dài password tối thiểu lên 8 ký tự</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q46')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q46-result"></div>
+  <div class="quiz-explain" id="q46-explain">💡 <b>Giải thích:</b> Tắt password authentication loại bỏ hoàn toàn khả năng brute-force password — đây là biện pháp có tác động lớn nhất, đổi port chỉ giảm nhiễu từ bot scan tự động chứ không phải biện pháp bảo mật cốt lõi.</div>
+</div>
+<div class="quiz" id="q47">
+  <div class="quiz-q">❓ Nguyên tắc vàng nào của một chiến lược backup thường bị bỏ qua nhất trong thực tế?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q47" value="0"><span class="opt-letter">A</span>Nén dữ liệu để tiết kiệm dung lượng</label><label class="quiz-opt"><input type="radio" name="q47" value="1" data-correct='1'><span class="opt-letter">B</span>Test restore định kỳ để xác nhận backup thực sự khôi phục được, không chỉ tin vào exit code</label><label class="quiz-opt"><input type="radio" name="q47" value="2"><span class="opt-letter">C</span>Đặt tên file backup có timestamp</label><label class="quiz-opt"><input type="radio" name="q47" value="3"><span class="opt-letter">D</span>Chạy backup vào ban đêm</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q47')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q47-result"></div>
+  <div class="quiz-explain" id="q47-explain">💡 <b>Giải thích:</b> Một backup 'chạy thành công' (exit code 0) không đảm bảo dữ liệu bên trong toàn vẹn và thực sự khôi phục được — chỉ có test restore thực tế mới xác nhận điều này.</div>
+</div>
+<div class="quiz" id="q48">
+  <div class="quiz-q">❓ Khi đổi port SSH trên server production, hành động AN TOÀN NHẤT trước khi đóng session hiện tại là gì?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q48" value="0"><span class="opt-letter">A</span>Reboot server ngay để áp dụng thay đổi</label><label class="quiz-opt"><input type="radio" name="q48" value="1" data-correct='1'><span class="opt-letter">B</span>Mở một session SSH THỨ HAI với port mới để xác nhận kết nối thành công trước khi đóng session cũ</label><label class="quiz-opt"><input type="radio" name="q48" value="2"><span class="opt-letter">C</span>Chỉ cần restart sshd là đủ an toàn</label><label class="quiz-opt"><input type="radio" name="q48" value="3"><span class="opt-letter">D</span>Ghi chú lại port mới vào tài liệu</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q48')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q48-result"></div>
+  <div class="quiz-explain" id="q48-explain">💡 <b>Giải thích:</b> Nguyên tắc 'never close your only working session' — luôn xác nhận cấu hình mới hoạt động qua một kết nối độc lập trước khi mất quyền truy cập qua session hiện tại.</div>
+</div>
+<div class="quiz" id="q49">
+  <div class="quiz-q">❓ LUKS được dùng để làm gì trong bảo mật hệ thống Linux?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q49" value="0"><span class="opt-letter">A</span>Quản lý user và group</label><label class="quiz-opt"><input type="radio" name="q49" value="1" data-correct='1'><span class="opt-letter">B</span>Mã hóa toàn bộ partition/volume ở tầng block device (mã hóa dữ liệu at-rest)</label><label class="quiz-opt"><input type="radio" name="q49" value="2"><span class="opt-letter">C</span>Quét virus/malware</label><label class="quiz-opt"><input type="radio" name="q49" value="3"><span class="opt-letter">D</span>Quản lý firewall rule</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q49')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q49-result"></div>
+  <div class="quiz-explain" id="q49-explain">💡 <b>Giải thích:</b> LUKS (Linux Unified Key Setup) cung cấp full-disk/partition encryption ở tầng thấp, bảo vệ dữ liệu khi lưu trữ (at-rest), đặc biệt quan trọng nếu ổ đĩa/backup bị đánh cắp vật lý.</div>
+</div>
+<div class="quiz" id="q50">
+  <div class="quiz-q">❓ fail2ban hoạt động dựa trên cơ chế nào để chống brute-force?</div>
+  <div class="quiz-opts"><label class="quiz-opt"><input type="radio" name="q50" value="0"><span class="opt-letter">A</span>Mã hóa toàn bộ traffic SSH</label><label class="quiz-opt"><input type="radio" name="q50" value="1" data-correct='1'><span class="opt-letter">B</span>Theo dõi log, tự động ban (chặn) IP sau khi vượt số lần đăng nhập thất bại trong khoảng thời gian định trước</label><label class="quiz-opt"><input type="radio" name="q50" value="2"><span class="opt-letter">C</span>Thay đổi password ngẫu nhiên mỗi giờ</label><label class="quiz-opt"><input type="radio" name="q50" value="3"><span class="opt-letter">D</span>Giới hạn băng thông kết nối SSH</label></div>
+  <button class="quiz-check" onclick="checkQuiz('q50')">Kiểm tra đáp án</button>
+  <div class="quiz-result" id="q50-result"></div>
+  <div class="quiz-explain" id="q50-explain">💡 <b>Giải thích:</b> fail2ban parse log (như /var/log/secure), đếm số lần thất bại từ mỗi IP trong 'findtime', và tự động thêm rule firewall chặn IP đó trong khoảng 'bantime' nếu vượt 'maxretry'.</div>
+</div>
+</div>
+<div class="sumbox"><div class="sum-title">📋 Tổng kết Module 10</div><ul><li>Defense in Depth cho SSH: key-based auth (quan trọng nhất) + fail2ban + giới hạn user + đổi port (bổ trợ)</li><li>Nguyên tắc bất di bất dịch khi đổi cấu hình SSH: luôn test qua session thứ hai trước khi đóng session hiện tại</li><li>LUKS mã hóa dữ liệu at-rest, quan trọng cho backup/dữ liệu nhạy cảm mang ra ngoài datacenter</li><li>Backup chỉ đáng tin cậy khi đã qua test restore thực tế định kỳ — không chỉ tin vào exit code thành công</li></ul></div>
+<div class="lab"><div class="lab-title">🧪 Bài tập thực hành Module 10</div><ol><li>Cấu hình SSH key-based authentication, tắt password login, xác nhận qua session thứ hai trước khi đóng session cũ.</li><li>Cài đặt và cấu hình fail2ban cho SSH, cố tình đăng nhập sai nhiều lần để kích hoạt ban, kiểm tra qua fail2ban-client status.</li><li>Tạo một backup bằng tar, sau đó THỰC SỰ restore nó vào một thư mục khác và dùng diff để xác nhận tính toàn vẹn.</li></ol></div>
+</section>
+
+
+    <div class="footer">
+      Biên soạn bởi <b>Trần Văn Bình — VietDBA</b> · Hotline/Zalo: 0902 912 888 · www.tranvanbinh.vn<br>
+      Tài liệu tham khảo: LPI Official Objectives (LPIC-1 101/102, LPIC-2 201/202),
+      Red Hat Enterprise Linux Documentation, systemd/journald Documentation
+    </div>
+  </main>
+</div>
+
+<script>
+// Scroll progress bar
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progress').style.width = scrolled + '%';
+});
+
+// Sidebar active-link highlighting via IntersectionObserver
+const modules = document.querySelectorAll('.module');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.nav-link[data-target="${id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+modules.forEach(m => observer.observe(m));
+
+// Quiz checking logic
+function checkQuiz(qid) {
+  const quizDiv = document.getElementById(qid);
+  const selected = quizDiv.querySelector('input[type=radio]:checked');
+  const resultDiv = document.getElementById(qid + '-result');
+  const explainDiv = document.getElementById(qid + '-explain');
+  if (!selected) {
+    resultDiv.textContent = '⚠️ Vui lòng chọn một đáp án trước khi kiểm tra.';
+    resultDiv.className = 'quiz-result wrong';
+    return;
+  }
+  const isCorrect = selected.hasAttribute('data-correct');
+  if (isCorrect) {
+    resultDiv.textContent = '✅ Chính xác! Bạn đã trả lời đúng.';
+    resultDiv.className = 'quiz-result correct';
+  } else {
+    resultDiv.textContent = '❌ Chưa đúng — hãy xem giải thích bên dưới.';
+    resultDiv.className = 'quiz-result wrong';
+  }
+  explainDiv.classList.add('show');
+}
+</script>
+</body>
+</html>

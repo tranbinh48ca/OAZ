@@ -1,0 +1,89 @@
+Với vai trò là chuyên gia hàng đầu về Database hơn 20 năm kinh nghiệm, dựa trên các tài liệu chính hãng và các blog nổi tiếng trên thế giới (bao gồm cả website của tôi https://www.tranvanbinh.vn), đặc biệt tài liệu tôi gửi kèm Hãy xây dựng 1 framework các skill cho quản trị cơ sơ dữ liệu bao quát được hết:
+
+Cài đặt, patching, upgrading, migration, uninstall Oracle Database single, RAC 11g, 12c, 19c, 26ai
+Quản trị Oracle Database
+SQL và PL-SQL
+Bảo mật Oracle Database
+Tối ưu hiệu năng và SQL cho Oracle Database
+Oracle RAC
+High Avaibility (đảm bảo tính sẵn sàng) với Oracle DataGuard và GoldenGate
+Database khác như PostgreSQL, SQL Server, MariaDB/MySQL, Mongo-DB
+Quy trình giám sát, vận hành, khai thác
+Khắc phục các lỗi liên quan đến database
+
+Cấu trúc Framework — 10 Skill Groups · 120+ Sub-skills
+SK01 · INST — Cài đặt, Patch, Upgrade, Migration (14 sub-skills): Bao phủ toàn bộ từ cài Single Instance đến RAC, OPatch/OPatchAuto, DBUA/AutoUpgrade, DataPump/RMAN Duplicate/GoldenGate migration, Multitenant migration, và Oracle 26ai features.
+SK02 · ADMIN — Quản trị Oracle Database (18 sub-skills): Từ kiến trúc SGA/PGA đến quản lý tablespace, ASM, CDB/PDB, RMAN backup/recovery, Flashback Technologies, session/lock management, Scheduler, OEM.
+SK03 · DEV — SQL & PL/SQL (13 sub-skills): SQL cơ bản đến analytic functions, PL/SQL từ block structure đến bulk operations, collections, built-in packages, XML/JSON, và AI Vector Search (26ai).
+SK04 · SEC — Bảo mật Oracle (13 sub-skills): Unified Auditing, TDE, VPD, Oracle Database Vault, Label Security, Data Masking, SQL Firewall (23ai), Network Encryption, AVDF.
+SK05 · TUNE — Tối ưu hiệu năng (14 sub-skills): AWR/ASH/ADDM analysis, execution plan, index design, SQL Tuning Advisor/SPM, memory/I/O tuning, wait event analysis, partitioning, parallel execution, In-Memory Column Store, Real Application Testing.
+SK06 · RAC — Oracle RAC (12 sub-skills): Architecture, Grid Infrastructure, ASM, RAC services, TAF/FCF, backup, performance tuning, rolling patch, add/remove node, troubleshooting.
+SK07 · HA — DataGuard & GoldenGate (13 sub-skills): Physical/Logical Standby, Active DG, Broker, Switchover/Failover, Gap resolution, GoldenGate architecture/config/cross-platform/MicroServices/troubleshooting, DG+GG combined HA.
+SK08 · MULTI-DB (14 sub-skills): PostgreSQL (admin, backup, streaming replication, Patroni, RLS), SQL Server (AlwaysOn AG, Query Store), MySQL/MariaDB (GTID, Group Replication, ProxySQL), MongoDB (replica set, sharding).
+SK09 · OPS — Giám sát & Vận hành (13 sub-skills): Dựa trực tiếp trên tài liệu QT/DB.01 — daily health check checklist, storage/performance/object/backup monitoring, periodic maintenance, OEM/Zabbix, KPI/SLA, change management, capacity planning, incident management, AI-assisted monitoring.
+SK10 · TSHOOT — Khắc phục lỗi (16 sub-skills): ORA-01555/04031/00257/01653/00020/01000/01578/00060, block corruption, performance degradation, RAC node eviction, DataGuard gap, GoldenGate abend, RMAN failure, multi-DB common errors, Oracle SR escalation.
+
+Bonus trong framework: Self-assessment checklist 30 items tích được, lộ trình 4 giai đoạn (0–6 tháng → 6–18 tháng → 2–4 năm → 4+ năm), sample SQL health check scripts trực tiếp từ tài liệu QT/DB.01, và 3 cấp độ F/I/A cho từng sub-skill.
+
+Created 9 files, ran a command
+Created 9 files, ran a command
+
+Create output directory
+
+Script
+
+SK01 Installation Patching Upgrade Migration skill
+sk01_install_patch_upgrade.md
+
+SK02 Oracle Database Administration skill
+sk02_oracle_admin.md
+
+SK09 Monitoring Operations skill - based on QT/DB.01
+sk09_monitoring_operations.md
+
+SK10 Troubleshooting Database errors skill
+sk10_troubleshooting.md
+
+SK05 Performance Tuning skill
+sk05_performance_tuning.md
+
+SK07 High Availability DataGuard GoldenGate skill
+sk07_high_availability.md
+
+Remaining skills SK03 SK04 SK06 SK08 in one file
+sk03_sql_plsql.md
+
+SK04 Security, SK06 RAC, SK08 Multi-DB combined skill files
+sk04_security.md
+
+SK06 Oracle RAC and SK08 Multi-DB skills
+sk06_oracle_rac.md
+Done
+
+-----troubleshooting
+SK10 · TSHOOT — Khắc phục lỗi : hãy viết tiếp chủ đề với đầy đủ các skill  thành các file skill .md để tôi có thể copy vào trong claude sử dụng: 
+Hãy lấy khoảng 900 case chia thành 9 mảng, phân loại của mỗi mảng như tôi đã nêu ở dưới, mỗi chủ đề 1 file .md, có vẽ rõ kiến trúc mô hình trước khi triển khai các hạng mục để dễ hình dung hơn:
+Cài đặt, patching, upgrading, migration, uninstall Oracle Database single, RAC 11g, 12c, 19c, 26ai
+Quản trị Oracle Database
+SQL và PL-SQL
+Bảo mật Oracle Database
+Tối ưu hiệu năng và SQL cho Oracle Database
+Oracle RAC
+High Avaibility (đảm bảo tính sẵn sàng) với Oracle DataGuard và GoldenGate
+Database khác như PostgreSQL, SQL Server, MariaDB/MySQL, Mongo-DB
+Quy trình giám sát, vận hành, khai thác
+
+--
+Tiếp tục chủ đề 4, nhưng viết bổ sung thêm theo hướng cho mỗi lỗi là:
+1.Vấn đề/lỗi, Mức độ ảnh hưởng
+2.Nguyên nhân
+3.Thủ tục xử lý
+4.Bài học kinh nghiệm
+5.Biện pháp phòng ngừa từ sớm, từ xa
+
+Tiếp tục các lỗi thường xảy ra với chủ đề  7. High Availability (DataGuard & GoldenGate), nhưng viết bổ sung thêm theo hướng cho mỗi lỗi là:
+1.Vấn đề/lỗi, Mức độ ảnh hưởng
+2.Nguyên nhân
+3.Thủ tục xử lý
+4.Bài học kinh nghiệm
+5.Biện pháp phòng ngừa từ sớm, từ xa
