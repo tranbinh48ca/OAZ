@@ -1,0 +1,67 @@
+db19c_cdb_service=
+  (DESCRIPTION =    
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.182.128)(PORT = 1521))    
+    (CONNECT_DATA =
+      (SERVICE_NAME = orcl)
+    )
+  )
+
+db19c_cdb_SID=
+  (DESCRIPTION =    
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.182.128)(PORT = 1521))    
+    (CONNECT_DATA =
+      (SID = orcl)
+    )
+  )  
+  
+db19c_pdb1=
+  (DESCRIPTION =    
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.182.128)(PORT = 1521))    
+    (CONNECT_DATA =
+      (SERVICE_NAME = pdb1)
+    )
+  )
+  
+
+
+--RAC
+
+DBAVIET=
+(DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.186.218)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.186.222)(PORT = 1521))
+      (LOAD_BALANCE = yes)
+      (FAILOVER = yes)
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = dbaviet)
+    )
+  )
+
+  
+DBAVIET1_SID=
+  (DESCRIPTION=
+    (ADDRESS=
+      (PROTOCOL=TCP)
+      (HOST=192.168.186.218)
+      (PORT=1521)
+    )
+    (CONNECT_DATA=
+      (SERVER=dedicated)
+      (SID=dbaviet1)
+    )
+  )
+  
+
+DBAVIET2_SID=
+  (DESCRIPTION=
+    (ADDRESS=
+      (PROTOCOL=TCP)
+      (HOST=192.168.186.222)
+      (PORT=1521)
+    )
+    (CONNECT_DATA=
+      (SERVER=dedicated)
+      (SID=dbaviet2)
+    )    
+  

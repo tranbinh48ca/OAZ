@@ -1,0 +1,54 @@
+﻿Thủ tục backup full Oracle Database
+1. Tạo file backup rcv
+
+$ vi /backup01/scripts/backup_db_level_0.rcv
+RUN
+{
+Crosscheck archivelog all;
+Delete noprompt expired archivelog all;
+#DELETE BACKUP COMPLETED BEFORE 'SYSDATE-4' DEVICE TYPE DISK;
+ALLOCATE CHANNEL c1 DEVICE TYPE DISK  format '/backup01/full0206/c1_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c2 DEVICE TYPE DISK  format '/backup01/full0206/c2_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c3 DEVICE TYPE DISK  format '/backup01/full0206/c3_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c4 DEVICE TYPE DISK  format '/backup01/full0206/c4_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c5 DEVICE TYPE DISK  format '/backup01/full0206/c5_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c6 DEVICE TYPE DISK  format '/backup01/full0206/c6_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c7 DEVICE TYPE DISK  format '/backup01/full0206/c7_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c8 DEVICE TYPE DISK  format '/backup01/full0206/c8_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c9 DEVICE TYPE DISK  format '/backup01/full0206/c9_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c10 DEVICE TYPE DISK  format '/backup01/full0206/c10_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c11 DEVICE TYPE DISK  format '/backup01/full0206/c11_cl_level0_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c12 DEVICE TYPE DISK  format '/backup01/full0206/c12_cl_level0_ora_df%T_s%s_s%p';
+BACKUP AS COMPRESSED BACKUPSET INCREMENTAL LEVEL 0 DATABASE FILESPERSET 4  MAXSETSIZE 40 G TAG LEVEL0;
+BACKUP AS COMPRESSED BACKUPSET ARCHIVELOG ALL FILESPERSET 4 TAG ARCH;
+delete noprompt archivelog until time 'sysdate-1';
+CROSSCHECK BACKUP;
+DELETE NOPROMPT EXPIRED BACKUP;
+DELETE OBSOLETE;
+}
+
+Có thể chạy luôn:
+$ rman target / nolog @/backup01/scripts/backup_db_level_0.rcv
+
+Hoặc muốn chạy từ script thì thực hiện các bước bên dưới:
+
+2. Tạo file sh
+$ vi /backup01/scripts/run_backup_db_level_0.sh 
+target='target /'
+rcvcat='nocatalog'
+freq=24
+#time=`date '+%H%M%S'`
+cmdfile=/backup01/scripts/backup_db_level_0.rcv
+#msglog=/backup01/scripts/backup_db_level_0_$time.log
+#msglog=/backup01/scripts/backup_db_level_0_$time.log
+#rman $target $rcvcat cmdfile $cmdfile msglog $msglog
+rman target / cmdfile=/backup01/scripts/backup_db_level_0.rcv
+#rman $target $rcvcat cmdfile $cmdfile 
+Exit
+
+3. Chạy script sh
+$ cd /backup01/scripts/
+$ nohup ./run_backup_db_level_0.sh
+
+4. Theo dõi
+$ tail -1000f nohup.out

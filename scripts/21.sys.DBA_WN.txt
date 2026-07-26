@@ -1,0 +1,212 @@
+-- Start of DDL Script for Package SYS.DBA_WN
+
+-- Drop the old instance of DBA_WN
+DROP PACKAGE sys.dba_wn
+/
+
+CREATE OR REPLACE 
+PACKAGE sys.dba_wn
+  IS   
+   PROCEDURE pro_active_load;
+   PROCEDURE TBS_WARNING;
+END;
+/
+
+
+CREATE OR REPLACE 
+PACKAGE BODY sys.dba_wn
+IS
+   time_retry number:=1.2;
+/*
+    PROCEDURE fix_lock_dblinks
+    IS
+        CURSOR c1
+        IS
+            SELECT   local_tran_id
+              FROM   DBA_2PC_PENDING
+              where (retry_time-fail_time)*24*60>time_retry AND
+              STATE='committed'
+              and db_user not in ('BINHTVK'); --waiting for longer 4 min
+    BEGIN
+        FOR r1 IN c1
+        LOOP
+            EXECUTE IMMEDIATE 'begin
+            dbms_transaction.purge_lost_db_entry('''
+                     || r1.local_tran_id
+                     || ''');
+            commit;
+            end;';
+
+            COMMIT;
+        END LOOP;
+    END; --*/
+
+
+    PROCEDURE pro_active_load
+    IS
+        nsession   NUMBER := 0;
+        nsession_all NUMBER := 0;
+        nlock      NUMBER := 0;
+        nlocklks   NUMBER := 0;
+        mlocklks   number := 0;
+        n_diskfree number := 0;
+        nsize_dbfs  number := 0;
+        v_err varchar2(1000):='';
+    BEGIN
+         insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+            values(binhtv.dbamf_log_jobs_seq.nextval,'Starting sys.dba_wn.pro_active_load',1,sysdate,'binhtv.dbamf_log_jobs, binhtv.dbamf_log_wn, binhtv.pending_trans_log_vi');
+         commit ;
+        for r1 in (select name,trunc(usable_file_mb/1024) gb from v$asm_diskgroup where name not in('CRS')) loop
+            if (r1.name='DATA' and r1.gb < 1000) then
+                --send_sms_all('DBAVIETDB, vung DATA con: ' || r1.gb || ' GB');
+                ----send_sms_binhtv('DBAVIETDB, vung '||r1.name||' con: ' || r1.gb || ' GB');
+                insert into binhtv.dbamf_log_wn (msg, type, note) values ('DBAVIETDB, vung '||r1.name||' con: ' || r1.gb || ' GB', 'ASM','ASM');
+                commit;
+            elsif (r1.name='RECO' and r1.gb < 1000) then
+                --send_sms_all('DBAVIETDB, vung '||r1.name||' con: ' || r1.gb || ' GB');
+                ----send_sms_binhtv('DBAVIETDB, vung '||r1.name||' con: ' || r1.gb || ' GB');
+                insert into binhtv.dbamf_log_wn (msg, type, note) values ('DBAVIETDB, vung '||r1.name||' con: ' || r1.gb || ' GB', 'ASM','ASM');
+                commit;            
+            end if;
+        end loop;
+
+        SELECT COUNT ( * ) INTO nsession FROM gv$session;
+
+        --IF nsession > 6000, comment ngay 20/12/2016
+        IF nsession > 1000
+        THEN
+            --send_sms_binhtv('DBAVIETDB, session:' || nsession);
+            ----send_sms_binhtv('sys.dba_mn.check_pef: ' || nsession);
+            insert into binhtv.dbamf_log_wn (msg, type, note) values ('DBAVIETDB, session:' || nsession, 'nsession','nsession');
+            commit;
+        END IF;
+
+        SELECT   COUNT ( * ) INTO nsession_all FROM gv$session where status like 'ACTIVE';
+
+        select count(*) into nsession from (SELECT /*1.ActiveSession*/ distinct s.inst_id i#, s.username, s.SID SID, s.osuser, s.machine,DECODE(S.WAIT_TIME, 0, S.EVENT, 'CPU') ACTION,
+        s.sql_id, SUBSTR(DECODE(SS.SQL_TEXT, NULL, AA.NAME, SS.SQL_TEXT), 1, 1000) SQLTEXT,s.logon_time,s.p1text, S.P1, s.p2text, S.P2, s.p3text, S.P3
+        FROM GV$SESSION S, GV$SQLSTATS SS, AUDIT_ACTIONS AA
+        WHERE  S.STATUS = 'ACTIVE' AND  S.SQL_ID = SS.SQL_ID (+) AND AA.ACTION = S.COMMAND and s.type != 'BACKGROUND' AND S.TYPE = 'USER'
+        and s.username  NOT in ('SYS','SYSMAN','DBSNMP','GGATE','GOLDENGATE'));
+
+        IF nsession > 150
+        --IF nsession > 700
+        THEN
+            --send_sms_all('DBAVIETDB, active session:' || nsession || '/'||nsession_all);
+            ----send_sms_binhtv('sys.dba_mn.check_pef: ' || nsession);
+            insert into binhtv.dbamf_log_wn (msg, type, note) values ('DBAVIETDB, active session:' || nsession|| '/'||nsession_all, 'nsession','nsession');
+            commit;
+        END IF;
+
+        ----send_sms_sos
+        IF nsession > 200
+        --IF nsession > 700
+        THEN
+            --send_sms_sos('DBAVIETDB, active session:' || nsession || '/'||nsession_all);
+            ----send_sms_binhtv('sys.dba_mn.check_pef: ' || nsession);
+            insert into binhtv.dbamf_log_wn (msg, type, note) values ('DBAVIETDB, active session:' || nsession|| '/'||nsession_all, 'nsession','nsession');
+            commit;
+        END IF;
+
+        SELECT   COUNT ( * ) INTO nlock FROM   gv$session
+        WHERE   blocking_session IS NOT NULL;
+
+        --IF (nlock > 10)
+        IF (nlock > 10)
+        THEN
+            --send_sms_all('DBAVIETDB, LOCK:' || nlock);
+            ----send_sms_binhtv('sys.dba_mn.check_pef: ' || nlock);
+            insert into binhtv.dbamf_log_wn (msg, type, note) values ('DBAVIETDB, LOCK:' || nlock, 'nlock','nlock');
+            commit;
+        END IF;
+
+        SELECT   COUNT ( * ) INTO nlocklks FROM dba_2pc_pending
+        where (retry_time-fail_time)*24*60>time_retry
+        and db_user not in ('SONTQ','BINHVT','CDR_OWNER','CUS_OWNER','CLOSECYCLE','GIANGNT','TRIEUNV','KHUYENMAI','THAMSOHOA','PCAT_OWNER'); --waiting for longer 4 min;
+
+        IF (nlocklks>0 ) then
+            /*Ghi log lai cac transaction log*/
+            insert into binhtv.pending_trans_log_vi select * from dba_2pc_pending
+            where (retry_time-fail_time)*24*60>time_retry AND STATE='committed';
+
+            SELECT   COUNT ( * ) INTO mlocklks FROM dba_2pc_pending
+            where (retry_time-fail_time)*24*60>time_retry
+            and db_user not in ('SONTQ','BINHVT','CDR_OWNER','CUS_OWNER','CLOSECYCLE','GIANGNT','TRIEUNV','KHUYENMAI','THAMSOHOA','INTERCHANGE','PCAT_OWNER') --waiting for longer 4 min;
+            AND STATE='committed';
+
+            IF (mlocklks>0 ) then
+                send_msg('DBAVIETDB, dblink LOCK:' || nlocklks);
+                insert into binhtv.dbamf_log_wn (msg, type, note) values ('DBAVIETDB, dblink LOCK:' || nlocklks, 'lock_dblink','lock_dblink');
+                commit;
+            null;
+            END IF;
+
+            commit;
+            sys.dba_op.fix_lock_dblinks;
+        END IF;
+
+         insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+            values(binhtv.dbamf_log_jobs_seq.nextval,'Completed sys.dba_wn.pro_active_load',1,sysdate,'binhtv.dbamf_log_jobs, binhtv.dbamf_log_wn, binhtv.pending_trans_log_vi');
+         commit ;
+
+   EXCEPTION
+         WHEN others THEN
+             v_err := substr(SQLERRM,1,200);
+             insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+                 values(binhtv.dbamf_log_jobs_seq.nextval,'Error sys.dba_wn.pro_active_load',-1,sysdate,'Error sys.dba_wn.pro_active_load, ' ||v_err);
+             commit;
+             --send_sms_binhtv('Error sys.dba_wn.pro_active_load, ' ||v_err);
+   END;
+
+
+
+    PROCEDURE TBS_WARNING
+     IS
+       msg VARCHAR2(1000):='';
+       v_err varchar2(1000) :='';
+       CURSOR c_gold
+       IS
+       SELECT   a.tablespace_name , ROUND (b.BYTES / 1024 / 1024, 2) AS mb_free
+            FROM (SELECT   tablespace_name, SUM (BYTES) BYTES
+                  FROM dba_data_files
+              GROUP BY tablespace_name) a,
+             (SELECT   tablespace_name, SUM (BYTES) BYTES, MAX (BYTES) largest
+                  FROM dba_free_space
+              GROUP BY tablespace_name) b
+        WHERE a.tablespace_name = b.tablespace_name
+            AND (lower(a.tablespace_name) in ('data','indx','undotbs1','undotbs2','regb_req_data01','regb_req_data02','regb_req_data03','regb_req_data04','regb_req_data05','regb_req_data06','data','indx' || to_char(sysdate,'YYYYMM'),'data' || to_char(sysdate,'YYYYMM'),'logs' || to_char(sysdate,'YYYYMM')))
+            AND (ROUND (b.BYTES / 1024 / 1024, 2) < 500)
+        ORDER BY ((a.BYTES - b.BYTES) / a.BYTES) DESC;
+
+        TYPE tbs_type IS RECORD (tablespace_name   dba_data_files.tablespace_name%TYPE,
+                                mb_free dba_free_space.bytes%TYPE);
+        rec tbs_type;
+
+    BEGIN
+        insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+        values(binhtv.dbamf_log_jobs_seq.nextval,'Starting sys.dba_wn.TBS_WARNING',1,sysdate,'binhtv.dbamf_log_jobs');
+        commit;
+       OPEN c_gold;
+       LOOP
+          FETCH c_gold INTO rec.tablespace_name, rec.mb_free;
+          EXIT WHEN c_gold%NOTFOUND;
+            --msg:=msg || ';' || rec.tablespace_name ||':'|| rec.mb_free;
+             --dbms_output.put_line(rec.tablespace_name ||':'|| rec.mb_free);
+       END loop;
+       CLOSE c_gold;
+         insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+            values(binhtv.dbamf_log_jobs_seq.nextval,'Completed sys.dba_wn.TBS_WARNING',1,sysdate,'binhtv.dbamf_log_jobs');
+         commit;
+   EXCEPTION
+         WHEN others THEN
+             v_err := substr(SQLERRM,1,200);
+             insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+                 values(binhtv.dbamf_log_jobs_seq.nextval,'Error sys.dba_wn.TBS_WARNING',-1,sysdate,'Error sys.dba_wn.TBS_WARNING, ' ||v_err);
+             commit;
+             --send_sms_binhtv('Error sys.dba_wn.TBS_WARNING, ' ||v_err);
+   END;
+END;
+/
+
+
+-- End of DDL Script for Package SYS.DBA_WN

@@ -1,0 +1,686 @@
+Mục đích: Gói chụp tải định kỳ DBA_CT
+create user binhtv identified by oracle;
+grant connect, resource, dba to binhtv;
+
+--DROP TABLE BINHTV.DBAMF_LOG_JOBS CASCADE CONSTRAINTS;
+
+CREATE TABLE BINHTV.DBAMF_LOG_JOBS
+(
+  ID          NUMBER,
+  NAME        VARCHAR2(4000 BYTE),
+  STATUS      VARCHAR2(50 BYTE),
+  EVENT_DATE  DATE                              DEFAULT sysdate,
+  NOTE        VARCHAR2(2000 BYTE)
+)
+TABLESPACE USERS
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+MONITORING;
+
+
+-- Start of DDL Script for Table BINHTV.DBAMF_CT_TBS_SIZE
+-- Generated 5-Nov-2020 16:12:10 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CT_TBS_SIZE
+DROP TABLE binhtv.dbamf_ct_tbs_size
+/
+
+CREATE TABLE binhtv.dbamf_ct_tbs_size
+    (id                             NUMBER,
+    tbs_name                       VARCHAR2(100 BYTE),
+    size_gb                        NUMBER,
+    event_date                     DATE DEFAULT sysdate,
+    note                           VARCHAR2(1000 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+DROP SEQUENCE BINHTV.DBAMF_LOG_JOBS_SEQ;
+
+CREATE SEQUENCE BINHTV.DBAMF_LOG_JOBS_SEQ
+  START WITH 2156723
+  MAXVALUE 9999999999999999999999999999
+  MINVALUE 1
+  NOCYCLE
+  CACHE 20
+  NOORDER;
+
+-- End of DDL Script for Table BINHTV.DBAMF_CT_TBS_SIZE
+-- Start of DDL Script for Table BINHTV.DBAMF_CT_USER_SIZE
+-- Generated 5-Nov-2020 16:12:14 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CT_USER_SIZE
+DROP TABLE binhtv.dbamf_ct_user_size
+/
+
+CREATE TABLE binhtv.dbamf_ct_user_size
+    (id                             NUMBER,
+    user_name                      VARCHAR2(100 BYTE),
+    size_mb                        NUMBER,
+    event_date                     DATE DEFAULT sysdate,
+    note                           VARCHAR2(1000 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+-- End of DDL Script for Table BINHTV.DBAMF_CT_USER_SIZE
+-- Start of DDL Script for Table BINHTV.DBAMF_CT_VMSTAT
+-- Generated 5-Nov-2020 16:12:18 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CT_VMSTAT
+DROP TABLE binhtv.dbamf_ct_vmstat
+/
+
+CREATE TABLE binhtv.dbamf_ct_vmstat
+    (event_date                     DATE,
+    duration                       NUMBER,
+    server_name                    VARCHAR2(30 BYTE),
+    runque_waits                   NUMBER,
+    swap_in                        NUMBER,
+    swap_out                       NUMBER,
+    cpu_user                       NUMBER,
+    cpu_sys                        NUMBER,
+    cpu_idle                       NUMBER,
+    cpu_wait                       NUMBER,
+    swapd                          NUMBER,
+    ram_free_k                     NUMBER)
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- Grants for Table
+GRANT INSERT ON binhtv.dbamf_ct_vmstat TO monitor
+/
+-- End of DDL Script for Table BINHTV.DBAMF_CT_VMSTAT
+-- Start of DDL Script for Table BINHTV.DBAMF_DISK_USAGE
+-- Generated 5-Nov-2020 16:12:22 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_DISK_USAGE
+DROP TABLE binhtv.dbamf_disk_usage
+/
+
+CREATE TABLE binhtv.dbamf_disk_usage
+    (host_name                      VARCHAR2(40 BYTE),
+    disk_name                      VARCHAR2(50 BYTE),
+    disk_size                      VARCHAR2(20 BYTE),
+    disk_free                      VARCHAR2(20 BYTE),
+    disk_percen                    VARCHAR2(10 BYTE),
+    disk_mount                     VARCHAR2(50 BYTE),
+    db_ip                          VARCHAR2(20 BYTE),
+    event_date                     DATE DEFAULT sysdate)
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+-- End of DDL Script for Table BINHTV.DBAMF_DISK_USAGE
+-- Start of DDL Script for Table BINHTV.DBAMF_LOG_GG
+-- Generated 5-Nov-2020 16:12:26 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_LOG_GG
+DROP TABLE binhtv.dbamf_log_gg
+/
+
+CREATE TABLE binhtv.dbamf_log_gg
+    (id                             NUMBER,
+    program                        VARCHAR2(20 BYTE),
+    status                         VARCHAR2(50 BYTE),
+    gg_group                       VARCHAR2(100 BYTE),
+    lag                            VARCHAR2(50 BYTE),
+    time_since_chkpt               VARCHAR2(50 BYTE),
+    event_date                     DATE DEFAULT sysdate)
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+-- End of DDL Script for Table BINHTV.DBAMF_LOG_GG
+-- Start of DDL Script for Table BINHTV.DBAMF_LOG_JOBS
+-- Generated 5-Nov-2020 16:12:31 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_LOG_JOBS
+DROP TABLE binhtv.dbamf_log_jobs
+/
+
+CREATE TABLE binhtv.dbamf_log_jobs
+    (id                             NUMBER,
+    name                           VARCHAR2(4000 BYTE),
+    status                         VARCHAR2(50 BYTE),
+    event_date                     DATE DEFAULT sysdate,
+    note                           VARCHAR2(2000 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+-- End of DDL Script for Table BINHTV.DBAMF_LOG_JOBS
+-- Start of DDL Script for Table BINHTV.DBAMF_LOG_OP
+-- Generated 5-Nov-2020 16:12:34 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_LOG_OP
+DROP TABLE binhtv.dbamf_log_op
+/
+
+CREATE TABLE binhtv.dbamf_log_op
+    (id                             NUMBER,
+    msg                            VARCHAR2(1000 BYTE),
+    event_date                 TIMESTAMP (6) DEFAULT sysdate,
+    type                           VARCHAR2(1000 BYTE),
+    note                           VARCHAR2(1000 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+CREATE SEQUENCE BINHTV.DBAMF_LOG_OP_SEQ
+  START WITH 1
+  MAXVALUE 9999999999999999999999999999
+  MINVALUE 1
+  NOCYCLE
+  CACHE 20
+  NOORDER;
+
+
+-- End of DDL Script for Table BINHTV.DBAMF_LOG_OP
+-- Start of DDL Script for Table BINHTV.DBAMF_LOG_WN
+-- Generated 5-Nov-2020 16:12:37 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_LOG_WN
+DROP TABLE binhtv.dbamf_log_wn
+/
+
+CREATE TABLE binhtv.dbamf_log_wn
+    (id                             NUMBER,
+    msg                            VARCHAR2(1000 BYTE),
+    event_date                     TIMESTAMP (6) DEFAULT sysdate,
+    type                           VARCHAR2(1000 BYTE),
+    note                           VARCHAR2(1000 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- End of DDL Script for Table BINHTV.DBAMF_LOG_WN
+-- Start of DDL Script for Table BINHTV.DBAMF_TAB_CYCLE
+-- Generated 5-Nov-2020 16:12:42 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_TAB_CYCLE
+DROP TABLE binhtv.dbamf_tab_cycle
+/
+
+CREATE TABLE binhtv.dbamf_tab_cycle
+    (id                             NUMBER,
+    owner                          VARCHAR2(50 BYTE),
+    table_name                     VARCHAR2(200 BYTE),
+    purpose                        VARCHAR2(1000 BYTE),
+    cycle_days                     NUMBER,
+    rw_days                        NUMBER,
+    readonly_days                  NUMBER,
+    size_mb                        NUMBER,
+    num_rows                       NUMBER,
+    note                           VARCHAR2(1000 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- End of DDL Script for Table BINHTV.DBAMF_TAB_CYCLE
+-- Start of DDL Script for Table BINHTV.DBAMF_CT_SQL
+-- Generated 5-Nov-2020 16:12:06 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CT_SQL
+DROP TABLE binhtv.dbamf_ct_sql
+/
+
+CREATE TABLE binhtv.dbamf_ct_sql
+    (inst_id                        NUMBER,
+    username                       VARCHAR2(30 BYTE),
+    sid                            NUMBER,
+    osuser                         VARCHAR2(30 BYTE),
+    machine                        VARCHAR2(64 BYTE),
+    event                          VARCHAR2(64 BYTE),
+    sql_id                         VARCHAR2(13 BYTE),
+    sql_text                       VARCHAR2(3000 BYTE),
+    logon_time                     DATE,
+    event_date                     DATE DEFAULT sysdate)
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- End of DDL Script for Table BINHTV.DBAMF_CT_SQL
+-- Start of DDL Script for Table BINHTV.DBAMF_CT_SESSION
+-- Generated 5-Nov-2020 16:12:01 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CT_SESSION
+DROP TABLE binhtv.dbamf_ct_session
+/
+
+CREATE TABLE binhtv.dbamf_ct_session
+    (username                       VARCHAR2(50 BYTE),
+    status                         VARCHAR2(10 BYTE),
+    count_low                      VARCHAR2(5 BYTE),
+    count_avg                      VARCHAR2(5 BYTE),
+    count_high                     VARCHAR2(5 BYTE),
+    count_critical                 VARCHAR2(5 BYTE),
+    notes                          VARCHAR2(1000 BYTE),
+    event_date                     DATE DEFAULT sysdate,
+    count                          NUMBER)
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- End of DDL Script for Table BINHTV.DBAMF_CT_SESSION
+-- Start of DDL Script for Table BINHTV.DBAMF_CT_OBJ_SIZE
+-- Generated 5-Nov-2020 16:11:56 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CT_OBJ_SIZE
+DROP TABLE binhtv.dbamf_ct_obj_size
+/
+
+CREATE TABLE binhtv.dbamf_ct_obj_size
+    (id                             NUMBER,
+    object_owner                   VARCHAR2(50 BYTE),
+    object_name                    VARCHAR2(200 BYTE),
+    size_gb                        NUMBER,
+    event_date                     DATE DEFAULT sysdate,
+    note                           VARCHAR2(1000 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- End of DDL Script for Table BINHTV.DBAMF_CT_OBJ_SIZE
+-- Start of DDL Script for Table BINHTV.DBAMF_CT_DISK_USAGE
+-- Generated 5-Nov-2020 16:11:52 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CT_DISK_USAGE
+DROP TABLE binhtv.dbamf_ct_disk_usage
+/
+
+CREATE TABLE binhtv.dbamf_ct_disk_usage
+    (host_name                      VARCHAR2(40 BYTE),
+    disk_name                      VARCHAR2(50 BYTE),
+    disk_size                      VARCHAR2(20 BYTE),
+    disk_free                      VARCHAR2(20 BYTE),
+    disk_percen                    VARCHAR2(10 BYTE),
+    disk_mount                     VARCHAR2(50 BYTE),
+    db_ip                          VARCHAR2(20 BYTE),
+    event_date                     DATE DEFAULT sysdate)
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- End of DDL Script for Table BINHTV.DBAMF_CT_DISK_USAGE
+-- Start of DDL Script for Table BINHTV.DBAMF_CPU_MEM_USAGE
+-- Generated 5-Nov-2020 16:11:45 from BINHTV@GOLD
+
+-- Drop the old instance of DBAMF_CPU_MEM_USAGE
+DROP TABLE binhtv.dbamf_cpu_mem_usage
+/
+
+CREATE TABLE binhtv.dbamf_cpu_mem_usage
+    (id                             NUMBER,
+    pct_usage                      NUMBER,
+    type                           VARCHAR2(50 BYTE),
+    event_date                     DATE DEFAULT sysdate,
+    note                           VARCHAR2(100 BYTE))
+  PCTFREE     10
+  INITRANS    1
+  MAXTRANS    255
+  TABLESPACE  users
+  STORAGE   (
+    INITIAL     65536
+    NEXT        1048576
+    MINEXTENTS  1
+    MAXEXTENTS  2147483645
+  )
+  NOCACHE
+  MONITORING
+  NOPARALLEL
+  LOGGING
+/
+
+-- End of DDL Script for Table BINHTV.DBAMF_CPU_MEM_USAGE
+
+-- Start of DDL Script for Package SYS.DBA_CT
+-- Drop the old instance of DBA_CT
+DROP PACKAGE sys.dba_ct
+/
+
+CREATE OR REPLACE 
+PACKAGE     sys.dba_ct
+IS
+    procedure ct_session;
+    procedure ct_sql;
+    procedure ct_obj_size;
+    procedure ct_user_size;
+    procedure ct_tbs_size;
+END; -- Package spec
+/
+
+
+CREATE OR REPLACE 
+PACKAGE BODY sys.dba_ct
+IS
+   free_space_low_level   NUMBER := 80000;                              --2500MB
+
+  
+  procedure ct_session
+  is
+    v_err varchar2(1000);
+  begin
+    -- Check 9h, 11h, 15h, 17h, 18h thi chay cau lenh
+    --if (to_char(sysdate,'hh24')) in ('08','09','11','15','16','17','18') then
+         insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+            values(binhtv.dbamf_log_jobs_seq.nextval,'Starting sys.dba_ct.ct_session',1,sysdate,'binhtv.dbamf_ct_session');
+         commit;
+        insert into binhtv.dbamf_ct_session(username ,status,count)
+        select /* count , status*/ username,status, count(*) from gv$session group by username,status order by count(*) desc;
+        commit;
+         --sys.send_sms_binhtv('sys.dba_ct.ct_session:' || to_char(sysdate,'dd/mm/yyyy hh24:mi:ss'));
+         commit;
+         insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+            values(binhtv.dbamf_log_jobs_seq.nextval,'Completed sys.dba_ct.ct_session',1,sysdate,'binhtv.dbamf_ct_session');
+         commit;
+    --end if;
+   EXCEPTION
+        WHEN others THEN
+            --send_sms_binhtv('Error sys.dba_ct.ct_session:' || SQLERRM);
+            v_err := substr(SQLERRM,1,200);
+            insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+                values(binhtv.dbamf_log_jobs_seq.nextval,'Error sys.dba_ct.ct_session',-1,sysdate,'Error sys.dba_ct.ct_session, '||v_err);
+            commit;
+            send_sms_binhtv('Error sys.dba_ct.ct_session, '||v_err);
+            commit;
+   END;
+
+    procedure ct_sql
+    is
+        v_err varchar2(1000);
+    begin
+     -- Check 9h, 11h, 15h, 17h, 18h thi chay cau lenh
+     --if (to_char(sysdate,'hh24')) in ('08','09','11','15','17','18') then
+         insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+            values(binhtv.dbamf_log_jobs_seq.nextval,'Starting sys.dba_ct.ct_sql',1,sysdate,'binhtv.dbamf_ct_sql');
+         commit;
+         insert into binhtv.dbamf_ct_sql(inst_id ,username,sid,osuser,machine,EVENT,sql_id,SQL_TEXT,logon_time)
+             SELECT distinct s.inst_id inst_id, s.username, s.SID SID, s.osuser, s.machine,DECODE(S.WAIT_TIME, 0, S.EVENT, 'CPU') EVENT,
+             s.sql_id, SUBSTR(DECODE(SS.SQL_TEXT, NULL, AA.NAME, SS.SQL_TEXT), 1, 1000) SQL_TEXT,s.logon_time
+             FROM GV$SESSION S, GV$SQLSTATS SS, AUDIT_ACTIONS AA
+             WHERE  S.STATUS = 'ACTIVE' AND S.SQL_ID = SS.SQL_ID (+) AND AA.ACTION = S.COMMAND and s.type != 'BACKGROUND' AND S.TYPE = 'USER'
+             and s.username  NOT in ('SYS','SYSMAN','DBSNMP','GGATE','GOLDENGATE')
+             --AND username in 'SYS'
+             --and DECODE(S.WAIT_TIME, 0, S.EVENT, 'CPU') like '%cell single block physical read%'
+             --and lower(ss.sql_text) like lower('%parallel%')
+             --and s.sid=1234
+             --and s.machine like '%BINHTV%'
+             --and s.sql_id ='ccwg0nqr1zbu7'
+             ORDER BY username,sql_id;
+          commit;
+           --sys.send_sms_binhtv('sys.dba_ct.ct_sql' || to_char(sysdate,'dd/mm/yyyy hh24:mi:ss'));
+           commit;
+           insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+             values(binhtv.dbamf_log_jobs_seq.nextval,'Completed sys.dba_ct.ct_sql',1,sysdate,'binhtv.dbamf_ct_sql');
+           commit;
+     --end if;
+    EXCEPTION
+         WHEN others THEN
+             --send_sms_binhtv('Error sys.dba_ct.ct_sql: ' || SQLERRM);
+             v_err := substr(SQLERRM,1,200);
+             insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+                 values(binhtv.dbamf_log_jobs_seq.nextval,'Error sys.dba_ct.ct_sql',-1,sysdate,'Error sys.dba_ct.ct_sql'||v_err);
+             commit;
+           send_sms_binhtv('Error sys.dba_ct.ct_sql, '||v_err);
+    END;
+
+    procedure ct_obj_size
+    is
+        v_err varchar2(1000);
+    begin
+     -- Check 9h, 11h, 15h, 17h, 18h thi chay cau lenh
+     --if (to_char(sysdate,'hh24')) in ('08','09','11','15','17','18') then
+     insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+        values(binhtv.dbamf_log_jobs_seq.nextval,'Starting sys.dba_ct.ct_obj_size',1,sysdate,'binhtv.dbamf_obj_size');
+     commit;
+      insert into binhtv.dbamf_ct_obj_size(object_owner,object_name,size_gb)
+          select owner, segment_name, round(sum(bytes)/1024/1024/1024,2)  from dba_segments
+              where segment_name not like '%$%'
+              and segment_name not like '%XX%'
+              and segment_name not like '%TMP%'
+              group by owner, segment_name
+              having  round(sum(bytes)/1024/1024/1024) >1
+              order by sum(bytes)desc, owner, segment_name
+              ;
+       commit;
+       --sys.send_sms_binhtv('sys.dba_ct.ct_obj_size' || to_char(sysdate,'dd/mm/yyyy hh24:mi:ss'));
+       commit;
+       insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+         values(binhtv.dbamf_log_jobs_seq.nextval,'Completed sys.dba_ct.ct_obj_size',1,sysdate,'binhtv.dbamf_obj_size');
+       commit;
+     --end if;
+    EXCEPTION
+         WHEN others THEN
+             v_err := substr(SQLERRM,1,200);
+             insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+                 values(binhtv.dbamf_log_jobs_seq.nextval,'Error sys.dba_ct.ct_obj_size',-1,sysdate,'Error sys.dba_ct.ct_obj_size'||v_err);
+             commit;
+             send_sms_binhtv('Error sys.dba_ct.ct_obj_size: ' || v_err);
+
+    END;
+
+    procedure ct_user_size
+    is
+    begin
+     -- Check 9h, 11h, 15h, 17h, 18h thi chay cau lenh
+     --if (to_char(sysdate,'hh24')) in ('08','09','11','15','17','18') then
+     insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+        values(binhtv.dbamf_log_jobs_seq.nextval,'Starting sys.dba_ct.ct_user_size',1,sysdate,'binhtv.dbamf_user_size');
+     commit;
+       insert into binhtv.dbamf_ct_user_size(user_name, size_mb)
+        select owner, round(sum(bytes)/1024/1024,2)  from dba_segments
+        group by owner
+        order by round(sum(bytes)/1024/1024)desc, owner;
+       commit;
+       --sys.send_sms_binhtv('sys.dba_ct.ct_user_size' || to_char(sysdate,'dd/mm/yyyy hh24:mi:ss'));
+       commit;
+       insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+         values(binhtv.dbamf_log_jobs_seq.nextval,'Completed sys.dba_ct.ct_user_size',1,sysdate,'binhtv.dbamf_user_size');
+       commit;
+     --end if;
+    EXCEPTION
+         WHEN others THEN
+             send_sms_binhtv('Error sys.dba_ct.ct_user_size: ' || SQLERRM);
+             insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+                 values(binhtv.dbamf_log_jobs_seq.nextval,'Error sys.dba_ct.ct_user_size' ,-1,sysdate,'Error sys.dba_ct.ct_user_size' );
+             commit;
+    END;
+
+    procedure ct_tbs_size
+    is
+    begin
+     -- Check 9h, 11h, 15h, 17h, 18h thi chay cau lenh
+     --if (to_char(sysdate,'hh24')) in ('08','09','11','15','17','18') then
+     insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+        values(binhtv.dbamf_log_jobs_seq.nextval,'Starting sys.dba_ct.ct_tbs_size',1,sysdate,'binhtv.dbamf_ct_tbs_size');
+     commit;
+        insert into binhtv.dbamf_ct_tbs_size(tbs_name, size_gb)
+        select tablespace_name, round(sum(bytes)/1024/1024/1024,2)  from dba_segments
+        group by tablespace_name
+        order by round(sum(bytes)/1024/1024/1024)desc, tablespace_name;
+
+       commit;
+       --sys.send_sms_binhtv('sys.dba_ct.ct_tbs_size' || to_char(sysdate,'dd/mm/yyyy hh24:mi:ss'));
+       commit;
+       insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+         values(binhtv.dbamf_log_jobs_seq.nextval,'Completed sys.dba_ct.ct_tbs_size',1,sysdate,'binhtv.dbamf_ct_tbs_size');
+       commit;
+     --end if;
+    EXCEPTION
+         WHEN others THEN
+             send_sms_binhtv('Error sys.dba_ct.ct_tbs_size: ' || SQLERRM);
+             insert into binhtv.dbamf_log_jobs (id,name,status,event_date, note)
+                 values(binhtv.dbamf_log_jobs_seq.nextval,'Error sys.dba_ct.ct_tbs_size' ,-1,sysdate,'Error sys.dba_ct.ct_tbs_size' );
+             commit;
+    END;
+END;
+/
+
+
+-- End of DDL Script for Package SYS.DBA_CT

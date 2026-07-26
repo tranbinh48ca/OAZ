@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)file:///C:/Users/Hello/Downloads/LPI_Linux_Tutorial_Complete.html -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LPI Linux Certification – Tutorial Toàn Diện</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #f78166;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --code-bg: #0d1117;
+    --highlight: #388bfd26;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 40%, #1a2332 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 40px 24px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, #1f6feb33, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 { font-size: 2rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+  .hero p { color: var(--text-muted); margin-top: 8px; font-size: 0.95rem; }
+  .badge-row { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  .badge {
+    padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    border: 1px solid;
+  }
+  .badge-blue { color: var(--accent); border-color: var(--accent); background: #1f6feb1a; }
+  .badge-green { color: var(--accent2); border-color: var(--accent2); background: #2ea04326; }
+  .badge-orange { color: var(--accent5); border-color: var(--accent5); background: #d2940026; }
+
+  /* LAYOUT */
+  .container { display: flex; min-height: calc(100vh - 160px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 280px; min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar-title {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-muted);
+    padding: 0 16px 12px;
+  }
+  .level-group { margin-bottom: 8px; }
+  .level-label {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; padding: 8px 16px 4px;
+    color: var(--text-muted);
+  }
+  .level-label.l1 { color: var(--accent2); }
+  .level-label.l2 { color: var(--accent5); }
+  .level-label.l3 { color: var(--accent4); }
+
+  .nav-item {
+    display: block; padding: 7px 16px;
+    cursor: pointer; font-size: 0.82rem;
+    color: var(--text-muted);
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active {
+    color: var(--accent); border-left-color: var(--accent);
+    background: var(--highlight); font-weight: 600;
+  }
+  .nav-number {
+    display: inline-block; width: 22px; font-size: 0.7rem;
+    color: var(--text-muted); font-family: monospace;
+  }
+
+  /* MAIN CONTENT */
+  .main { flex: 1; padding: 32px 40px; max-width: 960px; }
+
+  /* MODULE CARD */
+  .module { display: none; }
+  .module.active { display: block; }
+
+  .module-header {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    background: var(--surface);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-header::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent);
+  }
+  .module-tag {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--accent); margin-bottom: 8px;
+  }
+  .module-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+  .module-subtitle { color: var(--text-muted); font-size: 0.9rem; }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 14px 20px;
+    font-weight: 700; font-size: 0.9rem;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+  .section-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .icon-purpose { background: #1f6feb33; }
+  .icon-detail { background: #2ea04326; }
+  .icon-quiz { background: #d2940026; }
+  .icon-summary { background: #6e40c926; }
+  .icon-practice { background: #f7816626; }
+  .section-content { padding: 20px; background: var(--surface); }
+  .section-toggle { margin-left: auto; color: var(--text-muted); font-size: 12px; }
+
+  /* TYPOGRAPHY */
+  h3 { font-size: 1rem; font-weight: 700; color: var(--accent); margin: 18px 0 10px; }
+  h3:first-child { margin-top: 0; }
+  p { margin-bottom: 12px; color: var(--text); font-size: 0.88rem; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { font-size: 0.88rem; margin-bottom: 5px; }
+  strong { color: var(--text); }
+
+  /* CODE */
+  .cmd-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+  .cmd-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem; color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+  }
+  .cmd-dots { display: flex; gap: 5px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-red { background: #f7816680; }
+  .dot-yellow { background: #ffa65780; }
+  .dot-green { background: #3fb95080; }
+  .cmd-body { padding: 14px; }
+  pre {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+    color: var(--text);
+  }
+  .prompt { color: var(--accent2); }
+  .comment { color: var(--text-muted); }
+  .output { color: var(--accent5); }
+  .highlight-line { background: var(--highlight); display: block; margin: 0 -14px; padding: 0 14px; }
+  code {
+    font-family: 'Courier New', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 4px;
+    font-size: 0.82rem; color: var(--accent4);
+  }
+
+  /* QUIZ */
+  .quiz-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .quiz-q { font-weight: 600; font-size: 0.88rem; margin-bottom: 10px; }
+  .quiz-q::before {
+    content: 'Q';
+    display: inline-block;
+    width: 22px; height: 22px;
+    background: var(--accent);
+    color: #000;
+    border-radius: 50%;
+    font-size: 0.7rem; font-weight: 800;
+    text-align: center; line-height: 22px;
+    margin-right: 8px;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+  .quiz-opt {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.84rem;
+    transition: all 0.15s;
+    background: var(--bg);
+  }
+  .quiz-opt:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-opt.correct { border-color: var(--accent2); color: var(--accent2); background: #2ea04310; }
+  .quiz-opt.wrong { border-color: var(--accent3); color: var(--accent3); background: #f7816610; }
+  .quiz-explain {
+    font-size: 0.82rem; color: var(--text-muted);
+    border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px;
+    display: none;
+  }
+  .quiz-explain.show { display: block; }
+
+  /* SUMMARY */
+  .summary-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-top: 12px;
+  }
+  .summary-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.82rem;
+  }
+  .summary-item strong { color: var(--accent); display: block; margin-bottom: 4px; }
+
+  /* PRACTICE */
+  .practice-task {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .practice-task-header {
+    padding: 12px 16px;
+    background: #d2940015;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700; font-size: 0.85rem;
+    color: var(--accent5);
+  }
+  .practice-task-body { padding: 16px; }
+  .solution-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--accent2);
+    margin-top: 10px;
+    transition: all 0.15s;
+  }
+  .solution-toggle:hover { background: var(--surface2); }
+  .solution-box {
+    margin-top: 10px;
+    display: none;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .solution-box.show { display: block; }
+
+  /* INFO BOX */
+  .info-box {
+    border-radius: 8px; padding: 14px 16px; margin: 12px 0;
+    font-size: 0.84rem;
+    border: 1px solid;
+    display: flex; gap: 10px;
+  }
+  .info-box.tip { border-color: var(--accent2); background: #2ea04310; color: var(--accent2); }
+  .info-box.warn { border-color: var(--accent5); background: #d2940015; color: var(--accent5); }
+  .info-box.note { border-color: var(--accent); background: #1f6feb15; color: var(--accent); }
+  .info-box span { color: var(--text); }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    background: var(--surface2);
+    border-radius: 4px; height: 4px;
+    margin: 16px 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  /* NAV BUTTONS */
+  .nav-buttons {
+    display: flex; gap: 12px; margin-top: 32px;
+    justify-content: space-between;
+  }
+  .nav-btn {
+    padding: 10px 20px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem; font-weight: 600;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
+  .nav-btn.primary:hover { background: #79b8ff; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.83rem; }
+  th { background: var(--surface2); padding: 8px 12px; text-align: left; border: 1px solid var(--border); color: var(--accent); }
+  td { padding: 8px 12px; border: 1px solid var(--border); }
+  tr:nth-child(even) td { background: #ffffff05; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 16px; }
+    .summary-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🐧 LPI Linux Certification Tutorial</h1>
+  <p>Hướng dẫn toàn diện từ cơ bản đến nâng cao · Dựa theo LPI Linux Certification in a Nutshell 2nd Ed.</p>
+  <div class="badge-row">
+    <span class="badge badge-green">LPIC-1 (Exam 101 + 102)</span>
+    <span class="badge badge-orange">LPIC-2 (Exam 201 + 202)</span>
+    <span class="badge badge-blue">20+ năm kinh nghiệm thực chiến</span>
+  </div>
+</div>
+
+<div class="container">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-title">📚 Chương trình học</div>
+
+    <div class="level-group">
+      <div class="level-label l1">▶ LPIC-1 · Exam 101</div>
+      <a class="nav-item active" onclick="showModule(0,this)"><span class="nav-number">101</span>Architecture phần cứng</a>
+      <a class="nav-item" onclick="showModule(1,this)"><span class="nav-number">102</span>Cài đặt Linux &amp; quản lý package</a>
+      <a class="nav-item" onclick="showModule(2,this)"><span class="nav-number">103</span>GNU &amp; Unix Commands</a>
+      <a class="nav-item" onclick="showModule(3,this)"><span class="nav-number">104</span>Filesystem &amp; thiết bị</a>
+    </div>
+
+    <div class="level-group">
+      <div class="level-label l1">▶ LPIC-1 · Exam 102</div>
+      <a class="nav-item" onclick="showModule(4,this)"><span class="nav-number">105</span>Shells &amp; Shell Scripts</a>
+      <a class="nav-item" onclick="showModule(5,this)"><span class="nav-number">106</span>Giao diện người dùng &amp; Desktops</a>
+      <a class="nav-item" onclick="showModule(6,this)"><span class="nav-number">107</span>Administrative Tasks</a>
+      <a class="nav-item" onclick="showModule(7,this)"><span class="nav-number">108</span>Hệ thống &amp; Dịch vụ</a>
+      <a class="nav-item" onclick="showModule(8,this)"><span class="nav-number">109</span>Networking Fundamentals</a>
+      <a class="nav-item" onclick="showModule(9,this)"><span class="nav-number">110</span>Bảo mật hệ thống</a>
+    </div>
+
+    <div class="level-group">
+      <div class="level-label l2">▶ LPIC-2 · Exam 201</div>
+      <a class="nav-item" onclick="showModule(10,this)"><span class="nav-number">201</span>Linux Kernel</a>
+      <a class="nav-item" onclick="showModule(11,this)"><span class="nav-number">202</span>System Startup &amp; Boot</a>
+      <a class="nav-item" onclick="showModule(12,this)"><span class="nav-number">203</span>Filesystem &amp; Storage</a>
+      <a class="nav-item" onclick="showModule(13,this)"><span class="nav-number">204</span>Advanced Storage</a>
+      <a class="nav-item" onclick="showModule(14,this)"><span class="nav-number">205</span>Networking Config nâng cao</a>
+    </div>
+
+    <div class="level-group">
+      <div class="level-label l2">▶ LPIC-2 · Exam 202</div>
+      <a class="nav-item" onclick="showModule(15,this)"><span class="nav-number">206</span>Mail &amp; News Server</a>
+      <a class="nav-item" onclick="showModule(16,this)"><span class="nav-number">207</span>DNS (BIND)</a>
+      <a class="nav-item" onclick="showModule(17,this)"><span class="nav-number">208</span>Web Services</a>
+      <a class="nav-item" onclick="showModule(18,this)"><span class="nav-number">209</span>File Sharing (Samba/NFS)</a>
+      <a class="nav-item" onclick="showModule(19,this)"><span class="nav-number">210</span>Network Security nâng cao</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- MODULE 0: Topic 101 - Hardware Architecture        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="module active" id="m0">
+  <div class="module-header">
+    <div class="module-tag">LPIC-1 · Topic 101 · Exam 101</div>
+    <div class="module-title">🖥️ Hardware Architecture</div>
+    <div class="module-subtitle">Nhận biết và cấu hình phần cứng trong Linux</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
+  </div>
+
+  <!-- MENU TỔNG THỂ -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-purpose">📋</div>
+      1. Menu Tổng Thể – Các chủ đề trong Module
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <table>
+        <tbody><tr><th>Sub-topic</th><th>Nội dung chính</th><th>Mức độ quan trọng</th></tr>
+        <tr><td>101.1</td><td>Xác định và cấu hình phần cứng</td><td>⭐⭐⭐</td></tr>
+        <tr><td>101.2</td><td>Boot the system</td><td>⭐⭐⭐</td></tr>
+        <tr><td>101.3</td><td>Thay đổi runlevels / boot targets</td><td>⭐⭐⭐</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <!-- MỤC ĐÍCH -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-purpose">🎯</div>
+      2. Mục Đích Module
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <p>Module này giúp bạn <strong>hiểu cách Linux nhận diện và quản lý phần cứng</strong> – từ CPU, RAM, thiết bị PCI/USB đến quá trình khởi động hệ thống. Đây là nền tảng để debug phần cứng và cấu hình hệ thống.</p>
+      <ul>
+        <li>Biết cách xem thông tin phần cứng mà không cần mở máy</li>
+        <li>Hiểu quá trình boot: BIOS/UEFI → Bootloader → Kernel → Init</li>
+        <li>Quản lý runlevels và systemd targets</li>
+        <li>Nạp và gỡ kernel modules</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- GIẢI THÍCH CHI TIẾT -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-detail">📖</div>
+      3. Giải Thích Chi Tiết &amp; Ví Dụ
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+
+      <h3>🔍 101.1 – Xem thông tin phần cứng</h3>
+      <p>Linux cung cấp nhiều lệnh và file ảo trong <code>/proc</code>, <code>/sys</code> để xem thông tin phần cứng:</p>
+
+      <div class="cmd-block">
+        <div class="cmd-header">
+          <div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+          <span>Terminal – Xem thông tin phần cứng</span>
+        </div>
+        <div class="cmd-body"><pre><span class="prompt">root@server:~#</span> lspci
+<span class="output">00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma]
+00:01.0 ISA bridge: Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
+00:01.1 IDE interface: Intel Corporation 82371AB/EB/MB PIIX4 IDE
+00:02.0 VGA compatible: Cirrus Logic GD 5446
+00:03.0 Ethernet: Red Hat, Inc. Virtio network device</span>
+
+<span class="prompt">root@server:~#</span> lspci -v        <span class="comment"># Chi tiết hơn</span>
+<span class="prompt">root@server:~#</span> lspci -k        <span class="comment"># Hiển thị kernel driver đang dùng</span>
+
+<span class="prompt">root@server:~#</span> lsusb
+<span class="output">Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 001 Device 002: ID 0781:5581 SanDisk Corp. Ultra</span>
+
+<span class="prompt">root@server:~#</span> cat /proc/cpuinfo | head -20
+<span class="output">processor   : 0
+vendor_id   : GenuineIntel
+model name  : Intel(R) Xeon(R) CPU E5-2670 0 @ 2.60GHz
+cpu cores   : 8
+cache size  : 20480 KB</span>
+
+<span class="prompt">root@server:~#</span> cat /proc/meminfo | head -10
+<span class="output">MemTotal:       16384000 kB
+MemFree:         8192000 kB
+MemAvailable:   12288000 kB
+Buffers:          512000 kB
+Cached:          4096000 kB</span>
+
+<span class="prompt">root@server:~#</span> dmidecode -t memory   <span class="comment"># Xem RAM vật lý (cần root)</span></pre></div>
+      </div>
+
+      <h3>🔌 Quản lý Kernel Modules</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Terminal – Kernel Modules</span></div>
+        <div class="cmd-body"><pre><span class="prompt">root@server:~#</span> lsmod
+<span class="output">Module                  Size  Used by
+iptable_nat            16384  1
+nf_nat                 49152  2 iptable_nat
+ext4                  909312  2
+</span>
+<span class="prompt">root@server:~#</span> modinfo ext4     <span class="comment"># Xem chi tiết module</span>
+<span class="output">filename: /lib/modules/5.15.0/kernel/fs/ext4/ext4.ko
+description: Fourth Extended Filesystem
+author: Remy Card, Stephen Tweedie, Andrew Morton...
+</span>
+<span class="prompt">root@server:~#</span> modprobe ext4    <span class="comment"># Nạp module (tự động xử lý dependencies)</span>
+<span class="prompt">root@server:~#</span> modprobe -r ext4 <span class="comment"># Gỡ module</span>
+<span class="prompt">root@server:~#</span> insmod /path/module.ko  <span class="comment"># Nạp thủ công (không xử lý deps)</span>
+<span class="prompt">root@server:~#</span> rmmod ext4       <span class="comment"># Gỡ thủ công</span></pre></div>
+      </div>
+
+      <h3>🚀 101.2 – Quá trình Boot</h3>
+      <div class="info-box note">💡 <span>Thứ tự boot: <strong>BIOS/UEFI → POST → MBR/GPT → Bootloader (GRUB2) → Kernel → initramfs → init/systemd → runlevel/target</strong></span></div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Terminal – Kiểm tra boot messages</span></div>
+        <div class="cmd-body"><pre><span class="prompt">root@server:~#</span> dmesg | head -30
+<span class="output">[    0.000000] Linux version 5.15.0 (gcc version 11.3.0)
+[    0.000000] Command line: BOOT_IMAGE=/vmlinuz root=/dev/sda1
+[    0.001000] BIOS-provided physical RAM map:
+[    0.001000]  BIOS-e820: [mem 0x0000-0x09ffff] usable
+</span>
+<span class="prompt">root@server:~#</span> dmesg -T | grep -i error  <span class="comment"># Tìm lỗi trong boot</span>
+<span class="prompt">root@server:~#</span> journalctl -b             <span class="comment"># Toàn bộ boot log (systemd)</span>
+<span class="prompt">root@server:~#</span> journalctl -b -1          <span class="comment"># Boot log lần trước</span></pre></div>
+      </div>
+
+      <h3>⚙️ 101.3 – Runlevels và Systemd Targets</h3>
+      <table>
+        <tbody><tr><th>Runlevel</th><th>Systemd Target</th><th>Mô tả</th></tr>
+        <tr><td>0</td><td>poweroff.target</td><td>Tắt máy</td></tr>
+        <tr><td>1</td><td>rescue.target</td><td>Single user (recovery)</td></tr>
+        <tr><td>2,3,4</td><td>multi-user.target</td><td>Multi-user, không có GUI</td></tr>
+        <tr><td>5</td><td>graphical.target</td><td>Multi-user với GUI</td></tr>
+        <tr><td>6</td><td>reboot.target</td><td>Khởi động lại</td></tr>
+      </tbody></table>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Terminal – Quản lý Targets</span></div>
+        <div class="cmd-body"><pre><span class="prompt">root@server:~#</span> systemctl get-default
+<span class="output">graphical.target</span>
+
+<span class="prompt">root@server:~#</span> systemctl set-default multi-user.target
+<span class="output">Created symlink /etc/systemd/system/default.target → multi-user.target</span>
+
+<span class="prompt">root@server:~#</span> systemctl isolate rescue.target  <span class="comment"># Chuyển ngay sang rescue</span>
+<span class="prompt">root@server:~#</span> who -r                            <span class="comment"># Xem runlevel hiện tại</span>
+<span class="output">         run-level 5  2024-01-15 08:00</span>
+
+<span class="prompt">root@server:~#</span> runlevel
+<span class="output">N 5</span></pre></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CÂU HỎI ÔN TẬP -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-quiz">❓</div>
+      4. Câu Hỏi Ôn Tập
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content" style="display: block;">
+
+      <div class="quiz-item">
+        <div class="quiz-q">Lệnh nào hiển thị danh sách các thiết bị PCI trong hệ thống?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;lsusb dùng cho thiết bị USB, không phải PCI.&#39;)">A. lsusb</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! lspci liệt kê tất cả thiết bị trên bus PCI.&#39;)">B. lspci</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;dmidecode đọc DMI/BIOS info, không tập trung vào PCI.&#39;)">C. dmidecode</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;hdparm dùng để cấu hình ổ cứng.&#39;)">D. hdparm</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">Lệnh nào nạp module kernel và tự động xử lý các dependency?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;insmod nạp module nhưng không tự xử lý dependencies.&#39;)">A. insmod</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;rmmod dùng để gỡ module, không nạp.&#39;)">B. rmmod</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! modprobe tự động giải quyết và nạp tất cả module phụ thuộc.&#39;)">C. modprobe</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;lsmod chỉ liệt kê module đang chạy.&#39;)">D. lsmod</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">Systemd target nào tương đương với runlevel 3 (multi-user, không GUI)?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;graphical.target tương đương runlevel 5 (có GUI).&#39;)">A. graphical.target</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! multi-user.target tương đương runlevel 2, 3, 4.&#39;)">B. multi-user.target</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;rescue.target tương đương runlevel 1 (single user).&#39;)">C. rescue.target</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;emergency.target là chế độ khẩn cấp, tối thiểu hơn rescue.&#39;)">D. emergency.target</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">File nào trong /proc chứa thông tin về RAM của hệ thống?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;/proc/cpuinfo chứa thông tin CPU.&#39;)">A. /proc/cpuinfo</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! /proc/meminfo hiển thị chi tiết về bộ nhớ RAM.&#39;)">B. /proc/meminfo</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;/proc/version chứa phiên bản kernel.&#39;)">C. /proc/version</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;/proc/mounts hiển thị các filesystem đang mount.&#39;)">D. /proc/mounts</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TỔNG KẾT -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-summary">📌</div>
+      5. Tổng Kết
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <div class="summary-grid">
+        <div class="summary-item"><strong>lspci / lsusb</strong>Liệt kê thiết bị PCI và USB kết nối</div>
+        <div class="summary-item"><strong>/proc/cpuinfo &amp; /proc/meminfo</strong>Thông tin CPU và RAM dạng text</div>
+        <div class="summary-item"><strong>modprobe / lsmod</strong>Quản lý kernel modules với dependency</div>
+        <div class="summary-item"><strong>dmesg / journalctl -b</strong>Đọc boot messages và kernel log</div>
+        <div class="summary-item"><strong>systemctl get/set-default</strong>Cấu hình target mặc định khi boot</div>
+        <div class="summary-item"><strong>Thứ tự boot</strong>BIOS → GRUB2 → Kernel → initramfs → systemd</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BÀI TẬP THỰC HÀNH -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-practice">🔬</div>
+      6. Bài Tập Thực Hành
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+
+      <div class="practice-task">
+        <div class="practice-task-header">Bài 1: Điều tra phần cứng hệ thống</div>
+        <div class="practice-task-body">
+          <p>Tạo một báo cáo phần cứng bằng cách chạy các lệnh sau và lưu kết quả vào file <code>hw_report.txt</code>:</p>
+          <ul>
+            <li>Liệt kê tất cả thiết bị PCI và driver đang sử dụng</li>
+            <li>Xem thông tin CPU (số lõi, tốc độ, model)</li>
+            <li>Xem tổng RAM và RAM còn trống</li>
+            <li>Liệt kê các kernel module đang được nạp</li>
+          </ul>
+          <button class="solution-toggle" onclick="toggleSolution(this)">💡 Xem lời giải</button>
+          <div class="solution-box">
+            <div class="cmd-block">
+              <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Lời giải</span></div>
+              <div class="cmd-body"><pre><span class="comment"># Tạo báo cáo phần cứng</span>
+<span class="prompt">root@server:~#</span> {
+  echo "=== PCI Devices ==="
+  lspci -k
+  echo ""
+  echo "=== CPU Info ==="
+  grep -E "model name|cpu cores|MHz" /proc/cpuinfo | sort -u
+  echo ""
+  echo "=== Memory Info ==="
+  grep -E "MemTotal|MemFree|MemAvailable" /proc/meminfo
+  echo ""
+  echo "=== Loaded Modules ==="
+  lsmod
+} &gt; hw_report.txt
+
+<span class="prompt">root@server:~#</span> cat hw_report.txt | head -30
+<span class="output">=== PCI Devices ===
+00:00.0 Host bridge: Intel Corporation...
+        Kernel driver in use: agpgart-intel
+=== CPU Info ===
+cpu cores       : 8
+model name      : Intel(R) Xeon(R) E5-2670 @ 2.60GHz
+=== Memory Info ===
+MemAvailable:   12288000 kB
+MemFree:         8192000 kB
+MemTotal:       16384000 kB</span></pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-task">
+        <div class="practice-task-header">Bài 2: Thay đổi default boot target</div>
+        <div class="practice-task-body">
+          <p>Thực hiện các bước: (1) Kiểm tra target hiện tại, (2) Đổi sang multi-user.target, (3) Xác nhận thay đổi, (4) Đổi lại graphical.target</p>
+          <button class="solution-toggle" onclick="toggleSolution(this)">💡 Xem lời giải</button>
+          <div class="solution-box">
+            <div class="cmd-block">
+              <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Lời giải</span></div>
+              <div class="cmd-body"><pre><span class="comment"># Bước 1: Kiểm tra target hiện tại</span>
+<span class="prompt">root@server:~#</span> systemctl get-default
+<span class="output">graphical.target</span>
+
+<span class="comment"># Bước 2: Đổi sang multi-user (text mode)</span>
+<span class="prompt">root@server:~#</span> systemctl set-default multi-user.target
+<span class="output">Created symlink /etc/systemd/system/default.target
+ → /lib/systemd/system/multi-user.target</span>
+
+<span class="comment"># Bước 3: Xác nhận</span>
+<span class="prompt">root@server:~#</span> systemctl get-default
+<span class="output">multi-user.target</span>
+
+<span class="comment"># Bước 4: Đổi lại graphical</span>
+<span class="prompt">root@server:~#</span> systemctl set-default graphical.target
+<span class="output">Created symlink /etc/systemd/system/default.target
+ → /lib/systemd/system/graphical.target</span></pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <div></div>
+    <button class="nav-btn primary" onclick="goNext(0)">Module tiếp theo: Package Management →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- MODULE 1: Topic 102 - Package Management           -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="module" id="m1">
+  <div class="module-header" style="--accent:#3fb950">
+    <div class="module-tag" style="color:#3fb950">LPIC-1 · Topic 102 · Exam 101</div>
+    <div class="module-title">📦 Cài đặt Linux &amp; Quản lý Package</div>
+    <div class="module-subtitle">Phân vùng ổ đĩa, bootloader, thư viện chia sẻ, Debian &amp; RPM packaging</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-purpose">📋</div>
+      1. Menu Tổng Thể
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <table>
+        <tbody><tr><th>Sub-topic</th><th>Nội dung</th></tr>
+        <tr><td>102.1</td><td>Thiết kế layout ổ đĩa (disk partitioning)</td></tr>
+        <tr><td>102.2</td><td>Cài đặt Boot Manager (GRUB2)</td></tr>
+        <tr><td>102.3</td><td>Quản lý shared libraries</td></tr>
+        <tr><td>102.4</td><td>Debian package management (dpkg, apt)</td></tr>
+        <tr><td>102.5</td><td>RPM &amp; YUM/DNF package management</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-purpose">🎯</div>
+      2. Mục Đích Module
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <p>Đây là kỹ năng <strong>thiết yếu của một sysadmin</strong>: cài đặt hệ thống từ đầu, phân vùng đĩa khoa học, quản lý phần mềm bằng package manager của từng distro (Debian/Ubuntu dùng dpkg/apt; RHEL/CentOS dùng rpm/dnf).</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-detail">📖</div>
+      3. Giải Thích Chi Tiết &amp; Ví Dụ
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+
+      <h3>💾 102.1 – Disk Partitioning</h3>
+      <div class="info-box tip">✅ <span>Layout khuyến nghị cho server production: <code>/boot</code> 1GB, <code>/</code> 20GB, <code>/home</code> phần còn lại, <code>swap</code> = 1–2x RAM</span></div>
+
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>fdisk – Phân vùng ổ đĩa</span></div>
+        <div class="cmd-body"><pre><span class="prompt">root@server:~#</span> fdisk -l /dev/sda
+<span class="output">Disk /dev/sda: 50 GiB, 53687091200 bytes, 104857600 sectors
+Device     Boot   Start       End   Sectors  Size  Id Type
+/dev/sda1  *       2048   2099199   2097152    1G  83 Linux
+/dev/sda2       2099200  43956223  41857024   20G  83 Linux
+/dev/sda3      43956224 100663295  56707072   27G  83 Linux
+/dev/sda4     100663296 104857599   4194304    2G  82 Linux swap</span>
+
+<span class="prompt">root@server:~#</span> lsblk
+<span class="output">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0   50G  0 disk
+├─sda1   8:1    0    1G  0 part /boot
+├─sda2   8:2    0   20G  0 part /
+├─sda3   8:3    0   27G  0 part /home
+└─sda4   8:4    0    2G  0 part [SWAP]</span>
+
+<span class="prompt">root@server:~#</span> parted /dev/sdb    <span class="comment"># Dùng parted cho GPT (&gt;2TB)</span></pre></div>
+      </div>
+
+      <h3>🔧 102.3 – Shared Libraries</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Quản lý thư viện chia sẻ</span></div>
+        <div class="cmd-body"><pre><span class="prompt">root@server:~#</span> ldd /bin/ls
+<span class="output">        linux-vdso.so.1 (0x00007ffc12345000)
+        libselinux.so.1 =&gt; /lib/x86_64-linux-gnu/libselinux.so.1
+        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6
+        /lib64/ld-linux-x86-64.so.2</span>
+
+<span class="prompt">root@server:~#</span> ldconfig          <span class="comment"># Cập nhật cache thư viện</span>
+<span class="prompt">root@server:~#</span> ldconfig -p | grep libssl  <span class="comment"># Tìm libssl trong cache</span>
+<span class="output">        libssl.so.3 (libc6,x86-64) =&gt; /lib/x86_64-linux-gnu/libssl.so.3</span></pre></div>
+      </div>
+
+      <h3>📦 102.4 – Debian Package Management (apt/dpkg)</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>apt &amp; dpkg commands</span></div>
+        <div class="cmd-body"><pre><span class="comment"># === APT (high-level, xử lý dependencies tự động) ===</span>
+<span class="prompt">root@ubuntu:~#</span> apt update              <span class="comment"># Cập nhật danh sách package</span>
+<span class="prompt">root@ubuntu:~#</span> apt upgrade             <span class="comment"># Nâng cấp tất cả package</span>
+<span class="prompt">root@ubuntu:~#</span> apt install nginx       <span class="comment"># Cài nginx</span>
+<span class="prompt">root@ubuntu:~#</span> apt remove nginx        <span class="comment"># Gỡ nginx (giữ config)</span>
+<span class="prompt">root@ubuntu:~#</span> apt purge nginx         <span class="comment"># Gỡ hoàn toàn kể cả config</span>
+<span class="prompt">root@ubuntu:~#</span> apt search "web server" <span class="comment"># Tìm kiếm package</span>
+<span class="prompt">root@ubuntu:~#</span> apt show nginx          <span class="comment"># Xem chi tiết package</span>
+
+<span class="comment"># === DPKG (low-level, không xử lý dependencies) ===</span>
+<span class="prompt">root@ubuntu:~#</span> dpkg -i package.deb     <span class="comment"># Cài file .deb cục bộ</span>
+<span class="prompt">root@ubuntu:~#</span> dpkg -r nginx           <span class="comment"># Gỡ package</span>
+<span class="prompt">root@ubuntu:~#</span> dpkg -l | grep nginx    <span class="comment"># Kiểm tra đã cài chưa</span>
+<span class="output">ii  nginx  1.18.0-6ubuntu1  amd64  small, powerful web server</span>
+<span class="prompt">root@ubuntu:~#</span> dpkg -L nginx           <span class="comment"># Liệt kê files của package</span>
+<span class="prompt">root@ubuntu:~#</span> dpkg -S /usr/sbin/nginx <span class="comment"># Package nào chứa file này?</span>
+<span class="output">nginx: /usr/sbin/nginx</span></pre></div>
+      </div>
+
+      <h3>🔴 102.5 – RPM &amp; DNF/YUM (RHEL/CentOS)</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>rpm &amp; dnf commands</span></div>
+        <div class="cmd-body"><pre><span class="comment"># === DNF (high-level, xử lý dependencies) ===</span>
+<span class="prompt">root@centos:~#</span> dnf install httpd       <span class="comment"># Cài Apache</span>
+<span class="prompt">root@centos:~#</span> dnf remove httpd        <span class="comment"># Gỡ package</span>
+<span class="prompt">root@centos:~#</span> dnf update              <span class="comment"># Cập nhật tất cả</span>
+<span class="prompt">root@centos:~#</span> dnf search nginx        <span class="comment"># Tìm package</span>
+<span class="prompt">root@centos:~#</span> dnf list installed      <span class="comment"># Liệt kê đã cài</span>
+
+<span class="comment"># === RPM (low-level) ===</span>
+<span class="prompt">root@centos:~#</span> rpm -ivh package.rpm    <span class="comment"># Install verbose với progress bar</span>
+<span class="prompt">root@centos:~#</span> rpm -e httpd            <span class="comment"># Erase (gỡ) package</span>
+<span class="prompt">root@centos:~#</span> rpm -q httpd            <span class="comment"># Query (kiểm tra cài chưa)</span>
+<span class="output">httpd-2.4.51-7.el9.x86_64</span>
+<span class="prompt">root@centos:~#</span> rpm -ql httpd           <span class="comment"># List files của package</span>
+<span class="prompt">root@centos:~#</span> rpm -qf /etc/httpd/conf/httpd.conf  <span class="comment"># File thuộc package nào?</span>
+<span class="output">httpd-2.4.51-7.el9.x86_64</span>
+<span class="prompt">root@centos:~#</span> rpm -V httpd            <span class="comment"># Verify tính toàn vẹn package</span></pre></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-quiz">❓</div>
+      4. Câu Hỏi Ôn Tập
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <div class="quiz-item">
+        <div class="quiz-q">Lệnh nào kiểm tra file nào trong hệ thống thuộc về package "nginx" trên Debian?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;dpkg -l liệt kê danh sách package, không phải file.&#39;)">A. dpkg -l nginx</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! dpkg -L (--listfiles) liệt kê tất cả file thuộc package.&#39;)">B. dpkg -L nginx</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;dpkg -S tìm package chứa một file cụ thể (ngược lại).&#39;)">C. dpkg -S nginx</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;apt show chỉ hiện metadata của package.&#39;)">D. apt show nginx</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">Lệnh ldd được dùng để làm gì?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;ldconfig mới cập nhật cache thư viện.&#39;)">A. Cập nhật cache thư viện hệ thống</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! ldd hiển thị các shared library mà một program cần.&#39;)">B. Hiển thị shared libraries mà một chương trình phụ thuộc vào</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Đây là chức năng của dpkg -L.&#39;)">C. Liệt kê files trong một package</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Đây là chức năng của rpm -V.&#39;)">D. Kiểm tra tính toàn vẹn của package</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">Trên CentOS/RHEL, lệnh nào tìm package chứa file /usr/bin/vim?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;rpm -ql liệt kê file của package đã biết.&#39;)">A. rpm -ql vim</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! rpm -qf (--queryformat) tìm package sở hữu file đó.&#39;)">B. rpm -qf /usr/bin/vim</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;dnf provides cũng có thể dùng nhưng dạng lệnh sai.&#39;)">C. dnf search /usr/bin/vim</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;rpm -q kiểm tra package đã cài chưa, không tìm theo file.&#39;)">D. rpm -q /usr/bin/vim</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-summary">📌</div>
+      5. Tổng Kết
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <div class="summary-grid">
+        <div class="summary-item"><strong>apt / dpkg</strong>Hệ thống package của Debian/Ubuntu. apt xử lý deps, dpkg low-level</div>
+        <div class="summary-item"><strong>dnf / rpm</strong>Hệ thống package của RHEL/CentOS. dnf thay thế yum từ RHEL8+</div>
+        <div class="summary-item"><strong>ldd</strong>Xem shared libraries mà một binary phụ thuộc</div>
+        <div class="summary-item"><strong>ldconfig</strong>Cập nhật cache /etc/ld.so.cache cho dynamic linker</div>
+        <div class="summary-item"><strong>fdisk / parted</strong>Phân vùng ổ đĩa (fdisk cho MBR, parted cho GPT)</div>
+        <div class="summary-item"><strong>lsblk / df -h</strong>Xem layout ổ đĩa và dung lượng đã dùng</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-practice">🔬</div>
+      6. Bài Tập Thực Hành
+      <span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <div class="practice-task">
+        <div class="practice-task-header">Bài 1: Package investigation</div>
+        <div class="practice-task-body">
+          <p>Trên hệ thống Ubuntu: (1) Cài package <code>curl</code>, (2) Xem danh sách files được cài, (3) Tìm package nào cung cấp file <code>/usr/bin/curl</code>, (4) Gỡ hoàn toàn curl kể cả config.</p>
+          <button class="solution-toggle" onclick="toggleSolution(this)">💡 Xem lời giải</button>
+          <div class="solution-box">
+            <div class="cmd-block">
+              <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Lời giải</span></div>
+              <div class="cmd-body"><pre><span class="comment"># (1) Cài curl</span>
+<span class="prompt">root@ubuntu:~#</span> apt update &amp;&amp; apt install -y curl
+
+<span class="comment"># (2) Xem files được cài</span>
+<span class="prompt">root@ubuntu:~#</span> dpkg -L curl
+<span class="output">/usr/bin/curl
+/usr/share/doc/curl/changelog.Debian.gz
+/usr/share/man/man1/curl.1.gz</span>
+
+<span class="comment"># (3) Tìm package chứa file</span>
+<span class="prompt">root@ubuntu:~#</span> dpkg -S /usr/bin/curl
+<span class="output">curl: /usr/bin/curl</span>
+
+<span class="comment"># (4) Gỡ hoàn toàn</span>
+<span class="prompt">root@ubuntu:~#</span> apt purge curl
+<span class="prompt">root@ubuntu:~#</span> apt autoremove  <span class="comment"># Dọn dependencies không còn cần</span></pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="goPrev(1)">← Hardware Architecture</button>
+    <button class="nav-btn primary" onclick="goNext(1)">GNU &amp; Unix Commands →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- MODULE 2: Topic 103 - GNU & Unix Commands          -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="module" id="m2">
+  <div class="module-header">
+    <div class="module-tag">LPIC-1 · Topic 103 · Exam 101</div>
+    <div class="module-title">⌨️ GNU &amp; Unix Commands</div>
+    <div class="module-subtitle">Làm chủ command line: files, text, processes, I/O redirection, regex</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-purpose">📋</div>
+      1. Menu Tổng Thể<span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <table>
+        <tbody><tr><th>Sub-topic</th><th>Nội dung</th></tr>
+        <tr><td>103.1</td><td>Làm việc với command line shell</td></tr>
+        <tr><td>103.2</td><td>Xử lý văn bản (grep, awk, sed, cut, sort)</td></tr>
+        <tr><td>103.3</td><td>Quản lý files và thư mục</td></tr>
+        <tr><td>103.4</td><td>Streams, pipes, và I/O redirection</td></tr>
+        <tr><td>103.5</td><td>Tạo, theo dõi, tắt processes</td></tr>
+        <tr><td>103.6</td><td>Tìm kiếm với find</td></tr>
+        <tr><td>103.7</td><td>Tìm kiếm với locate, which, whereis</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-detail">📖</div>
+      3. Giải Thích Chi Tiết &amp; Ví Dụ<span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+
+      <h3>🔀 103.4 – I/O Redirection &amp; Pipes</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Redirection &amp; Pipes</span></div>
+        <div class="cmd-body"><pre><span class="comment"># Standard streams: stdin(0), stdout(1), stderr(2)</span>
+<span class="prompt">user@linux:~$</span> ls /tmp &gt; output.txt       <span class="comment"># stdout → file (ghi đè)</span>
+<span class="prompt">user@linux:~$</span> ls /tmp &gt;&gt; output.txt      <span class="comment"># stdout → file (thêm vào)</span>
+<span class="prompt">user@linux:~$</span> ls /nonexist 2&gt; err.txt    <span class="comment"># stderr → file</span>
+<span class="prompt">user@linux:~$</span> ls /tmp /nonexist &gt; all.txt 2&gt;&amp;1   <span class="comment"># cả stdout và stderr</span>
+<span class="prompt">user@linux:~$</span> cat &lt; input.txt            <span class="comment"># stdin từ file</span>
+<span class="prompt">user@linux:~$</span> ls /tmp 2&gt;/dev/null        <span class="comment"># Bỏ stderr (null device)</span>
+
+<span class="comment"># Pipes: kết nối stdout của lệnh này → stdin của lệnh khác</span>
+<span class="prompt">user@linux:~$</span> ps aux | grep nginx | grep -v grep
+<span class="prompt">user@linux:~$</span> cat /var/log/auth.log | grep "Failed" | wc -l
+<span class="output">47</span>
+
+<span class="comment"># tee: ghi vào file VÀ tiếp tục pipe</span>
+<span class="prompt">user@linux:~$</span> ls /tmp | tee /tmp/list.txt | wc -l</pre></div>
+      </div>
+
+      <h3>📝 103.2 – Xử lý văn bản</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>grep, awk, sed, cut, sort</span></div>
+        <div class="cmd-body"><pre><span class="comment"># grep – tìm kiếm pattern</span>
+<span class="prompt">user@linux:~$</span> grep "error" /var/log/syslog
+<span class="prompt">user@linux:~$</span> grep -i "error" /var/log/syslog   <span class="comment"># case-insensitive</span>
+<span class="prompt">user@linux:~$</span> grep -r "TODO" /home/user/src/     <span class="comment"># recursive</span>
+<span class="prompt">user@linux:~$</span> grep -v "^#" /etc/fstab            <span class="comment"># loại bỏ dòng comment</span>
+<span class="prompt">user@linux:~$</span> grep -E "^[0-9]{1,3}\." /etc/hosts <span class="comment"># Extended regex</span>
+
+<span class="comment"># cut – cắt cột từ dữ liệu có delimiter</span>
+<span class="prompt">user@linux:~$</span> cut -d: -f1,3 /etc/passwd
+<span class="output">root:0
+daemon:1
+www-data:33</span>
+
+<span class="comment"># sort – sắp xếp</span>
+<span class="prompt">user@linux:~$</span> sort /etc/passwd                   <span class="comment"># ABC</span>
+<span class="prompt">user@linux:~$</span> sort -t: -k3 -n /etc/passwd        <span class="comment"># Theo UID (cột 3, số)</span>
+<span class="prompt">user@linux:~$</span> sort -rn /tmp/numbers.txt          <span class="comment"># Giảm dần số</span>
+<span class="prompt">user@linux:~$</span> sort -u /tmp/list.txt              <span class="comment"># Loại bỏ trùng lặp</span>
+
+<span class="comment"># awk – xử lý cột mạnh mẽ</span>
+<span class="prompt">user@linux:~$</span> awk -F: '{print $1, $3}' /etc/passwd
+<span class="output">root 0
+daemon 1</span>
+<span class="prompt">user@linux:~$</span> awk -F: '$3 &gt; 1000 {print $1}' /etc/passwd  <span class="comment"># UID &gt; 1000</span>
+<span class="prompt">user@linux:~$</span> df -h | awk 'NR&gt;1 {print $5, $6}'  <span class="comment"># % dùng và mount point</span>
+
+<span class="comment"># sed – chỉnh sửa stream</span>
+<span class="prompt">user@linux:~$</span> sed 's/old/new/g' file.txt         <span class="comment"># Thay thế tất cả</span>
+<span class="prompt">user@linux:~$</span> sed -i 's/apache/nginx/g' config   <span class="comment"># Thay trực tiếp trong file</span>
+<span class="prompt">user@linux:~$</span> sed '/^#/d' /etc/ssh/sshd_config   <span class="comment"># Xóa dòng comment</span>
+<span class="prompt">user@linux:~$</span> sed -n '10,20p' bigfile.log        <span class="comment"># In dòng 10-20</span></pre></div>
+      </div>
+
+      <h3>⚙️ 103.5 – Quản lý Processes</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Process management</span></div>
+        <div class="cmd-body"><pre><span class="prompt">user@linux:~$</span> ps aux
+<span class="output">USER       PID %CPU %MEM    VSZ   RSS TTY  STAT START  COMMAND
+root         1  0.0  0.1 225856  9132 ?   Ss   08:00  /sbin/init
+nginx     1234  0.1  0.5 123456 40960 ?   S    08:01  nginx: worker</span>
+
+<span class="prompt">user@linux:~$</span> ps -ef | grep nginx   <span class="comment"># BSD style</span>
+<span class="prompt">user@linux:~$</span> top                   <span class="comment"># Real-time monitor</span>
+<span class="prompt">user@linux:~$</span> htop                  <span class="comment"># Đẹp hơn top (cần cài)</span>
+
+<span class="comment"># Signals</span>
+<span class="prompt">user@linux:~$</span> kill -9 1234          <span class="comment"># SIGKILL – force kill</span>
+<span class="prompt">user@linux:~$</span> kill -15 1234         <span class="comment"># SIGTERM – terminate gracefully</span>
+<span class="prompt">user@linux:~$</span> kill -1 1234          <span class="comment"># SIGHUP – reload config</span>
+<span class="prompt">user@linux:~$</span> killall nginx         <span class="comment"># Kill theo tên</span>
+<span class="prompt">user@linux:~$</span> pkill -u john         <span class="comment"># Kill tất cả process của user john</span>
+
+<span class="comment"># Background jobs</span>
+<span class="prompt">user@linux:~$</span> sleep 100 &amp;           <span class="comment"># Chạy nền</span>
+<span class="prompt">user@linux:~$</span> jobs                  <span class="comment"># Xem background jobs</span>
+<span class="output">[1]+  Running   sleep 100 &amp;</span>
+<span class="prompt">user@linux:~$</span> fg %1                 <span class="comment"># Đưa job 1 ra foreground</span>
+<span class="prompt">user@linux:~$</span> bg %1                 <span class="comment"># Tiếp tục chạy nền</span>
+<span class="prompt">user@linux:~$</span> nohup long_script.sh &amp; <span class="comment"># Chạy không bị kill khi logout</span></pre></div>
+      </div>
+
+      <h3>🔍 103.6 – Tìm kiếm với find</h3>
+      <div class="cmd-block">
+        <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>find – lệnh tìm file linh hoạt nhất</span></div>
+        <div class="cmd-body"><pre><span class="comment"># Cú pháp: find [path] [criteria] [action]</span>
+<span class="prompt">user@linux:~$</span> find /home -name "*.log"
+<span class="prompt">user@linux:~$</span> find /tmp -name "*.tmp" -mtime +7 -delete  <span class="comment"># Xóa file &gt;7 ngày</span>
+<span class="prompt">user@linux:~$</span> find / -perm -4000 2&gt;/dev/null   <span class="comment"># Tìm file SUID (bảo mật)</span>
+<span class="output">/usr/bin/sudo
+/usr/bin/passwd
+/usr/bin/su</span>
+<span class="prompt">user@linux:~$</span> find /var -size +100M             <span class="comment"># Tìm file lớn hơn 100MB</span>
+<span class="prompt">user@linux:~$</span> find /home -user john -type f      <span class="comment"># File của user john</span>
+<span class="prompt">user@linux:~$</span> find /etc -newer /etc/passwd       <span class="comment"># File mới hơn passwd</span>
+<span class="prompt">user@linux:~$</span> find /tmp -name "*.log" -exec rm {} \;  <span class="comment"># Thực thi lệnh</span></pre></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-quiz">❓</div>
+      4. Câu Hỏi Ôn Tập<span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <div class="quiz-item">
+        <div class="quiz-q">Lệnh nào in ra cột 1 và 3 từ /etc/passwd với dấu phân cách là dấu hai chấm (:)?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;awk dùng -F để chỉ field separator.&#39;)">A. awk -d: '{print $1, $3}' /etc/passwd</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! cut -d: -f1,3 cắt cột 1 và 3 với delimiter là dấu :&#39;)">B. cut -d: -f1,3 /etc/passwd</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;grep dùng để tìm kiếm pattern, không cắt cột.&#39;)">C. grep -d: -f1,3 /etc/passwd</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;sed dùng để thay thế hoặc xóa text, không cắt cột trực tiếp như này.&#39;)">D. sed -F: '{print $1, $3}' /etc/passwd</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">Để gửi cả stdout và stderr vào một file all.log, lệnh nào đúng?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Cú pháp này sai, thứ tự redirection quan trọng.&#39;)">A. command 2&gt;&amp;1 &gt; all.log</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! Redirect stdout trước rồi stderr về cùng chỗ với stdout.&#39;)">B. command &gt; all.log 2&gt;&amp;1</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Cú pháp này chỉ redirect stderr vào file.&#39;)">C. command 2&gt; all.log</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Không có cú pháp &amp;&gt; trong sh chuẩn POSIX.&#39;)">D. command &amp;&gt;&gt; all.log</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">Lệnh nào tìm tất cả file có quyền SUID trong hệ thống?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;-perm 4000 tìm file có permission CHÍNH XÁC là 4000, bỏ sót nhiều file.&#39;)">A. find / -perm 4000</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! -perm -4000 (có dấu -) nghĩa là bit SUID được set, bất kể các bit khác.&#39;)">B. find / -perm -4000</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;-type s là socket type, không phải SUID.&#39;)">C. find / -type s -perm 4000</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;locate tìm theo tên trong database, không theo permission.&#39;)">D. locate -perm 4000</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-q">Lệnh sed nào thay thế TẤT CẢ chữ "http" bằng "https" trong file config.txt và lưu trực tiếp vào file?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Thiếu flag g nên chỉ thay thế lần đầu tiên trên mỗi dòng.&#39;)">A. sed -i 's/http/https/' config.txt</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, true, &#39;Đúng! -i để sửa trực tiếp file, /g để thay tất cả.&#39;)">B. sed -i 's/http/https/g' config.txt</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Thiếu -i nên không lưu vào file, kết quả chỉ in ra màn hình.&#39;)">C. sed 's/http/https/g' config.txt</div>
+          <div class="quiz-opt" onclick="answerQuiz(this, false, &#39;Cú pháp sai, không phải -r cho replace.&#39;)">D. sed -r 's/http/https/g' config.txt</div>
+        </div>
+        <div class="quiz-explain"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-summary">📌</div>
+      5. Tổng Kết<span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <div class="summary-grid">
+        <div class="summary-item"><strong>grep / egrep</strong>Tìm kiếm pattern trong text, -i (case), -r (recursive), -v (invert)</div>
+        <div class="summary-item"><strong>cut / sort / uniq</strong>Cắt cột, sắp xếp, loại bỏ trùng lặp trong dữ liệu</div>
+        <div class="summary-item"><strong>awk</strong>Ngôn ngữ xử lý cột mạnh mẽ nhất trên CLI</div>
+        <div class="summary-item"><strong>sed</strong>Stream editor – thay thế, xóa, chèn text</div>
+        <div class="summary-item"><strong>&gt; &gt;&gt; 2&gt;&amp;1</strong>Redirection: stdout, append, stderr vào stdout</div>
+        <div class="summary-item"><strong>find</strong>Tìm file theo name, type, size, permission, thời gian</div>
+        <div class="summary-item"><strong>kill / killall</strong>Gửi signal đến process: SIGTERM(15), SIGKILL(9), SIGHUP(1)</div>
+        <div class="summary-item"><strong>ps aux / top</strong>Xem danh sách và monitor process đang chạy</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-icon icon-practice">🔬</div>
+      6. Bài Tập Thực Hành<span class="section-toggle">▼</span>
+    </div>
+    <div class="section-content">
+      <div class="practice-task">
+        <div class="practice-task-header">Bài 1: Log Analysis – Phân tích access log</div>
+        <div class="practice-task-body">
+          <p>Từ file <code>/var/log/nginx/access.log</code>, hãy: (1) Đếm tổng số request, (2) Tìm 10 IP truy cập nhiều nhất, (3) Tìm tất cả request trả về lỗi 404, (4) Tìm request lớn nhất (theo bytes)</p>
+          <button class="solution-toggle" onclick="toggleSolution(this)">💡 Xem lời giải</button>
+          <div class="solution-box">
+            <div class="cmd-block">
+              <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Lời giải</span></div>
+              <div class="cmd-body"><pre><span class="comment"># (1) Tổng số request</span>
+<span class="prompt">user@linux:~$</span> wc -l /var/log/nginx/access.log
+<span class="output">15234 /var/log/nginx/access.log</span>
+
+<span class="comment"># (2) Top 10 IP truy cập nhiều nhất</span>
+<span class="prompt">user@linux:~$</span> awk '{print $1}' /var/log/nginx/access.log \
+  | sort | uniq -c | sort -rn | head -10
+<span class="output"> 1543 192.168.1.100
+  876 10.0.0.55
+  234 203.0.113.42</span>
+
+<span class="comment"># (3) Tất cả request 404</span>
+<span class="prompt">user@linux:~$</span> grep ' 404 ' /var/log/nginx/access.log | wc -l
+<span class="output">89</span>
+
+<span class="comment"># (4) Request lớn nhất (cột 10 là bytes)</span>
+<span class="prompt">user@linux:~$</span> awk '{print $10, $7}' /var/log/nginx/access.log \
+  | sort -rn | head -5</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-task">
+        <div class="practice-task-header">Bài 2: File Hunt – Tìm files nguy hiểm</div>
+        <div class="practice-task-body">
+          <p>Tìm tất cả file: (1) Có quyền SUID, (2) Thuộc về root và có thể ghi bởi others, (3) Lớn hơn 500MB, (4) Không có owner (orphan files)</p>
+          <button class="solution-toggle" onclick="toggleSolution(this)">💡 Xem lời giải</button>
+          <div class="solution-box">
+            <div class="cmd-block">
+              <div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Lời giải</span></div>
+              <div class="cmd-body"><pre><span class="comment"># (1) SUID files</span>
+<span class="prompt">root@server:~#</span> find / -perm -4000 -type f 2&gt;/dev/null
+
+<span class="comment"># (2) Root-owned world-writable files</span>
+<span class="prompt">root@server:~#</span> find / -user root -perm -002 -type f 2&gt;/dev/null
+
+<span class="comment"># (3) Files lớn hơn 500MB</span>
+<span class="prompt">root@server:~#</span> find / -size +500M -type f 2&gt;/dev/null \
+  -exec ls -lh {} \;
+
+<span class="comment"># (4) Orphan files (không có owner)</span>
+<span class="prompt">root@server:~#</span> find / -nouser -o -nogroup 2&gt;/dev/null</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="goPrev(2)">← Package Management</button>
+    <button class="nav-btn primary" onclick="goNext(2)">Filesystem &amp; Devices →</button>
+  </div>
+</div>
+
+<!-- Remaining modules: placeholder with summary -->
+<div class="module" id="m3">
+  <div class="module-header">
+    <div class="module-tag">LPIC-1 · Topic 104 · Exam 101</div>
+    <div class="module-title">📁 Filesystem &amp; Thiết Bị</div>
+    <div class="module-subtitle">Filesystem, quyền truy cập, links, disk quotas</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
+  </div>
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div>
+    <div class="section-content">
+      <h3>🔒 Permissions &amp; Ownership</h3>
+      <div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>chmod, chown, umask</span></div>
+      <div class="cmd-body"><pre><span class="prompt">root@server:~#</span> ls -la /var/www/html/
+<span class="output">drwxr-xr-x 2 www-data www-data 4096 Jan 15 10:00 .
+-rw-r--r-- 1 www-data www-data 1234 Jan 15 09:00 index.html</span>
+
+<span class="comment"># chmod – thay đổi quyền</span>
+<span class="prompt">root@server:~#</span> chmod 755 /var/www/html        <span class="comment"># Số octal: rwxr-xr-x</span>
+<span class="prompt">root@server:~#</span> chmod u+x,g-w script.sh         <span class="comment"># Symbolic notation</span>
+<span class="prompt">root@server:~#</span> chmod -R 644 /var/www/html/     <span class="comment"># Recursive</span>
+
+<span class="comment"># chown – thay đổi owner</span>
+<span class="prompt">root@server:~#</span> chown www-data:www-data index.html
+<span class="prompt">root@server:~#</span> chown -R nginx:nginx /etc/nginx/
+
+<span class="comment"># umask – mask mặc định khi tạo file</span>
+<span class="prompt">user@linux:~$</span> umask
+<span class="output">0022</span>
+<span class="comment"># File mới: 666 - 022 = 644 (rw-r--r--)</span>
+<span class="comment"># Dir mới:  777 - 022 = 755 (rwxr-xr-x)</span>
+
+<span class="comment"># Special bits</span>
+<span class="prompt">root@server:~#</span> chmod u+s /usr/bin/passwd    <span class="comment"># Set SUID</span>
+<span class="prompt">root@server:~#</span> chmod g+s /shared/project/   <span class="comment"># Set SGID trên thư mục</span>
+<span class="prompt">root@server:~#</span> chmod +t /tmp/               <span class="comment"># Sticky bit</span></pre></div></div>
+
+      <h3>🔗 Hard Links vs Symbolic Links</h3>
+      <div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>ln command</span></div>
+      <div class="cmd-body"><pre><span class="comment"># Hard link: cùng inode, cùng filesystem</span>
+<span class="prompt">user@linux:~$</span> ln file.txt hardlink.txt
+<span class="prompt">user@linux:~$</span> ls -li file.txt hardlink.txt
+<span class="output">1234567 -rw-r--r-- 2 user group 100 Jan 15 file.txt
+1234567 -rw-r--r-- 2 user group 100 Jan 15 hardlink.txt</span>
+<span class="comment"># Cùng inode (1234567), link count = 2</span>
+
+<span class="comment"># Symbolic link: pointer đến path, có thể cross-filesystem</span>
+<span class="prompt">user@linux:~$</span> ln -s /etc/nginx/nginx.conf nginx.conf
+<span class="prompt">user@linux:~$</span> ls -la nginx.conf
+<span class="output">lrwxrwxrwx 1 user group 23 Jan 15 nginx.conf -&gt; /etc/nginx/nginx.conf</span>
+
+<span class="prompt">user@linux:~$</span> stat file.txt    <span class="comment"># Xem inode và link count</span></pre></div></div>
+
+      <h3>💽 Filesystem Operations</h3>
+      <div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>mkfs, mount, fstab</span></div>
+      <div class="cmd-body"><pre><span class="comment"># Tạo filesystem</span>
+<span class="prompt">root@server:~#</span> mkfs.ext4 /dev/sdb1
+<span class="prompt">root@server:~#</span> mkfs.xfs /dev/sdb2
+<span class="prompt">root@server:~#</span> mkswap /dev/sdb3 &amp;&amp; swapon /dev/sdb3
+
+<span class="comment"># Mount / Unmount</span>
+<span class="prompt">root@server:~#</span> mount /dev/sdb1 /mnt/data
+<span class="prompt">root@server:~#</span> mount -t ext4 -o ro /dev/sdb1 /mnt/data  <span class="comment"># read-only</span>
+<span class="prompt">root@server:~#</span> umount /mnt/data
+
+<span class="comment"># /etc/fstab – mount tự động khi boot</span>
+<span class="prompt">root@server:~#</span> cat /etc/fstab
+<span class="output">UUID=abc123  /         ext4  defaults          0 1
+UUID=def456  /boot     ext4  defaults          0 2
+UUID=ghi789  /home     ext4  defaults,noexec   0 2
+tmpfs        /tmp      tmpfs  defaults,size=1G 0 0</span>
+
+<span class="comment"># Kiểm tra filesystem</span>
+<span class="prompt">root@server:~#</span> df -h      <span class="comment"># Disk free (human readable)</span>
+<span class="prompt">root@server:~#</span> du -sh /var/log/  <span class="comment"># Dung lượng thư mục</span>
+<span class="prompt">root@server:~#</span> fsck /dev/sdb1    <span class="comment"># Check và sửa filesystem (phải unmount)</span></pre></div></div>
+    </div>
+  </div>
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="goPrev(3)">← GNU &amp; Unix Commands</button>
+    <button class="nav-btn primary" onclick="goNext(3)">Shell Scripts →</button>
+  </div>
+</div>
+
+<!-- MODULES 4-19: Summary cards -->
+<div class="module" id="m4">
+  <div class="module-header"><div class="module-tag">LPIC-1 · Topic 105 · Exam 102</div><div class="module-title">🐚 Shells &amp; Shell Scripts</div><div class="module-subtitle">Bash scripting, environment variables, aliases</div><div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div></div>
+  <div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div>
+  <div class="section-content">
+    <h3>🌍 Environment Variables</h3>
+    <div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Environment &amp; Shell config</span></div>
+    <div class="cmd-body"><pre><span class="prompt">user@linux:~$</span> echo $PATH
+<span class="output">/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</span>
+
+<span class="prompt">user@linux:~$</span> export MY_VAR="hello"   <span class="comment"># Tạo biến môi trường</span>
+<span class="prompt">user@linux:~$</span> env | grep MY_VAR       <span class="comment"># Xem tất cả env vars</span>
+<span class="prompt">user@linux:~$</span> unset MY_VAR            <span class="comment"># Xóa biến</span>
+
+<span class="comment"># Shell config files (Bash)</span>
+<span class="comment"># Login shell:  /etc/profile → ~/.bash_profile → ~/.bashrc</span>
+<span class="comment"># Non-login:    /etc/bash.bashrc → ~/.bashrc</span>
+
+<span class="prompt">user@linux:~$</span> source ~/.bashrc        <span class="comment"># Reload config</span>
+<span class="prompt">user@linux:~$</span> alias ll='ls -alh'      <span class="comment"># Tạo alias</span>
+<span class="prompt">user@linux:~$</span> type ll                 <span class="comment"># Kiểm tra type của lệnh</span>
+<span class="output">ll is aliased to 'ls -alh'</span></pre></div></div>
+
+    <h3>📜 Bash Scripting cơ bản</h3>
+    <div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>backup.sh – Script ví dụ đầy đủ</span></div>
+    <div class="cmd-body"><pre><span class="comment">#!/bin/bash
+# Script backup thư mục quan trọng</span>
+
+BACKUP_DIR="/backup"
+SOURCE_DIR="/home"
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_FILE="${BACKUP_DIR}/home_${DATE}.tar.gz"
+
+<span class="comment"># Kiểm tra thư mục backup tồn tại</span>
+if [ ! -d "$BACKUP_DIR" ]; then
+    mkdir -p "$BACKUP_DIR"
+    echo "Created backup directory: $BACKUP_DIR"
+fi
+
+<span class="comment"># Tạo backup</span>
+echo "Starting backup of $SOURCE_DIR..."
+tar -czf "$BACKUP_FILE" "$SOURCE_DIR" 2&gt;/dev/null
+
+<span class="comment"># Kiểm tra kết quả</span>
+if [ $? -eq 0 ]; then
+    echo "✓ Backup successful: $BACKUP_FILE"
+    ls -lh "$BACKUP_FILE"
+else
+    echo "✗ Backup failed!" &gt;&amp;2
+    exit 1
+fi
+
+<span class="comment"># Xóa backup cũ hơn 7 ngày</span>
+find "$BACKUP_DIR" -name "home_*.tar.gz" -mtime +7 -delete
+echo "Old backups cleaned."</pre></div></div>
+
+    <h3>🔄 Loops &amp; Conditions</h3>
+    <div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Control structures</span></div>
+    <div class="cmd-body"><pre><span class="comment"># For loop</span>
+for server in web1 web2 web3; do
+    echo "Pinging $server..."
+    ping -c 1 $server &amp;&gt;/dev/null &amp;&amp; echo "  UP" || echo "  DOWN"
+done
+
+<span class="comment"># While loop</span>
+count=0
+while [ $count -lt 5 ]; do
+    echo "Count: $count"
+    ((count++))
+done
+
+<span class="comment"># Case statement</span>
+case "$1" in
+    start)   systemctl start nginx ;;
+    stop)    systemctl stop nginx ;;
+    status)  systemctl status nginx ;;
+    *)       echo "Usage: $0 {start|stop|status}" ;;
+esac
+
+<span class="comment"># Functions</span>
+check_service() {
+    if systemctl is-active --quiet "$1"; then
+        echo "$1 is running"
+    else
+        echo "$1 is stopped"
+        return 1
+    fi
+}
+check_service nginx
+check_service mysql</pre></div></div>
+  </div></div>
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="goPrev(4)">← Filesystem</button>
+    <button class="nav-btn primary" onclick="goNext(4)">User Interfaces →</button>
+  </div>
+</div>
+
+<!-- Modules 5-19 abbreviated -->
+<div class="module" id="m5"><div class="module-header"><div class="module-tag">LPIC-1 · Topic 106 · Exam 102</div><div class="module-title">🖥️ Giao Diện Người Dùng &amp; Desktops</div><div class="module-subtitle">X Window System, display managers, accessibility</div><div class="progress-bar"><div class="progress-fill" style="width:55%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div><div class="section-content"><h3>🪟 X Window System</h3><div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>X11 &amp; Display</span></div><div class="cmd-body"><pre><span class="prompt">user@linux:~$</span> echo $DISPLAY
+<span class="output">:0</span>
+<span class="prompt">user@linux:~$</span> xdpyinfo | grep -E "name|version|dimensions"
+<span class="output">name of display: :0
+X.Org version: 1.21.1.3
+dimensions: 1920x1080 pixels</span>
+<span class="prompt">root@server:~#</span> systemctl start gdm      <span class="comment"># GNOME Display Manager</span>
+<span class="prompt">user@linux:~$</span> DISPLAY=:0 xterm &amp;        <span class="comment"># Mở terminal trên display :0</span></pre></div></div></div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(5)">← Shell Scripts</button><button class="nav-btn primary" onclick="goNext(5)">Admin Tasks →</button></div></div>
+
+<div class="module" id="m6"><div class="module-header"><div class="module-tag">LPIC-1 · Topic 107 · Exam 102</div><div class="module-title">👥 Administrative Tasks</div><div class="module-subtitle">Users, groups, cron jobs, localization</div><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div><div class="section-content">
+<h3>👤 Quản lý Users &amp; Groups</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>useradd, usermod, passwd</span></div><div class="cmd-body"><pre><span class="prompt">root@server:~#</span> useradd -m -s /bin/bash -G sudo,www-data john
+<span class="prompt">root@server:~#</span> passwd john
+<span class="prompt">root@server:~#</span> usermod -aG docker john  <span class="comment"># Thêm vào group docker</span>
+<span class="prompt">root@server:~#</span> userdel -r john          <span class="comment"># Xóa user và home dir</span>
+<span class="prompt">root@server:~#</span> groupadd developers
+<span class="prompt">root@server:~#</span> id john
+<span class="output">uid=1001(john) gid=1001(john) groups=1001(john),27(sudo),33(www-data)</span>
+
+<span class="comment"># Files quan trọng</span>
+<span class="prompt">root@server:~#</span> cat /etc/passwd  <span class="comment"># user:pass:uid:gid:comment:home:shell</span>
+<span class="prompt">root@server:~#</span> cat /etc/shadow  <span class="comment"># Password hash (chỉ root đọc được)</span>
+<span class="prompt">root@server:~#</span> cat /etc/group   <span class="comment"># group:pass:gid:members</span></pre></div></div>
+
+<h3>⏰ Cron Jobs</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Crontab syntax</span></div><div class="cmd-body"><pre><span class="comment"># Format: MIN HOUR DAY MONTH WEEKDAY COMMAND
+# *=any, */n=every n, a-b=range, a,b=list</span>
+
+<span class="prompt">user@linux:~$</span> crontab -e      <span class="comment"># Chỉnh sửa crontab của user</span>
+<span class="prompt">root@server:~#</span> crontab -e -u john  <span class="comment"># Crontab của john</span>
+
+<span class="comment"># Ví dụ crontab entries:</span>
+0 2 * * *       /usr/bin/backup.sh           <span class="comment"># 2:00 AM mỗi ngày</span>
+*/15 * * * *    /usr/local/bin/monitor.sh    <span class="comment"># Mỗi 15 phút</span>
+0 8 * * 1-5     /home/john/workday.sh        <span class="comment"># 8:00 AM Mon-Fri</span>
+0 0 1 * *       /usr/bin/monthly-report.sh   <span class="comment"># Đầu mỗi tháng</span>
+@reboot         /usr/local/bin/startup.sh    <span class="comment"># Khi boot</span>
+
+<span class="prompt">user@linux:~$</span> crontab -l      <span class="comment"># Xem crontab hiện tại</span></pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(6)">← UI &amp; Desktops</button><button class="nav-btn primary" onclick="goNext(6)">System Services →</button></div></div>
+
+<div class="module" id="m7"><div class="module-header"><div class="module-tag">LPIC-1 · Topic 108 · Exam 102</div><div class="module-title">🔧 Hệ Thống &amp; Dịch Vụ</div><div class="module-subtitle">Systemd, logging, MTA, printing, time sync</div><div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div><div class="section-content">
+<h3>🚀 Systemd Service Management</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>systemctl commands</span></div><div class="cmd-body"><pre><span class="prompt">root@server:~#</span> systemctl start nginx
+<span class="prompt">root@server:~#</span> systemctl stop nginx
+<span class="prompt">root@server:~#</span> systemctl restart nginx
+<span class="prompt">root@server:~#</span> systemctl reload nginx       <span class="comment"># Reload config, không restart</span>
+<span class="prompt">root@server:~#</span> systemctl enable nginx        <span class="comment"># Auto-start khi boot</span>
+<span class="prompt">root@server:~#</span> systemctl disable nginx
+<span class="prompt">root@server:~#</span> systemctl status nginx
+<span class="output">● nginx.service - A high performance web server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled)
+     Active: active (running) since Mon 2024-01-15 08:01:23; 2h ago
+    Process: 1234 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)
+   Main PID: 1235 (nginx)
+      Tasks: 5 (limit: 4915)
+     Memory: 12.5M</span>
+
+<span class="prompt">root@server:~#</span> systemctl list-units --type=service --state=running</pre></div></div>
+
+<h3>📋 Logging với journald &amp; rsyslog</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>journalctl &amp; log files</span></div><div class="cmd-body"><pre><span class="prompt">root@server:~#</span> journalctl -f                  <span class="comment"># Follow (như tail -f)</span>
+<span class="prompt">root@server:~#</span> journalctl -u nginx             <span class="comment"># Log của service nginx</span>
+<span class="prompt">root@server:~#</span> journalctl --since "1 hour ago"
+<span class="prompt">root@server:~#</span> journalctl -p err               <span class="comment"># Chỉ hiện lỗi</span>
+
+<span class="comment"># Traditional log files</span>
+<span class="comment">/var/log/syslog      – System messages (Debian)</span>
+<span class="comment">/var/log/messages    – System messages (RHEL)</span>
+<span class="comment">/var/log/auth.log    – Authentication log</span>
+<span class="comment">/var/log/kern.log    – Kernel log</span>
+<span class="comment">/var/log/nginx/      – Web server logs</span></pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(7)">← Admin Tasks</button><button class="nav-btn primary" onclick="goNext(7)">Networking →</button></div></div>
+
+<div class="module" id="m8"><div class="module-header"><div class="module-tag">LPIC-1 · Topic 109 · Exam 102</div><div class="module-title">🌐 Networking Fundamentals</div><div class="module-subtitle">IP configuration, hostname, routing, DNS, SSH</div><div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div><div class="section-content">
+<h3>🔌 Network Configuration</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>ip &amp; legacy net commands</span></div><div class="cmd-body"><pre><span class="comment"># ip command (modern – thay thế ifconfig)</span>
+<span class="prompt">root@server:~#</span> ip addr show
+<span class="output">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;
+    inet 192.168.1.100/24 brd 192.168.1.255 scope global eth0</span>
+
+<span class="prompt">root@server:~#</span> ip addr add 192.168.1.200/24 dev eth0
+<span class="prompt">root@server:~#</span> ip route show
+<span class="output">default via 192.168.1.1 dev eth0
+192.168.1.0/24 dev eth0 proto kernel</span>
+<span class="prompt">root@server:~#</span> ip route add default via 192.168.1.1
+<span class="prompt">root@server:~#</span> ip link set eth0 up/down
+
+<span class="comment"># Kiểm tra kết nối</span>
+<span class="prompt">user@linux:~$</span> ping -c 4 google.com
+<span class="prompt">user@linux:~$</span> traceroute 8.8.8.8
+<span class="prompt">user@linux:~$</span> ss -tuln          <span class="comment"># Socket statistics (thay netstat)</span>
+<span class="output">Netid State  Recv-Q Send-Q  Local Address:Port
+tcp   LISTEN 0      128          0.0.0.0:22
+tcp   LISTEN 0      511          0.0.0.0:80
+tcp   LISTEN 0      511          0.0.0.0:443</span>
+
+<span class="prompt">user@linux:~$</span> host google.com     <span class="comment"># DNS lookup</span>
+<span class="prompt">user@linux:~$</span> dig +short google.com  <span class="comment"># DNS query chi tiết</span>
+<span class="prompt">user@linux:~$</span> nslookup google.com</pre></div></div>
+
+<h3>🔐 SSH Configuration</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div></div><span>SSH client &amp; server</span></div><div class="cmd-body"><pre><span class="comment"># SSH key-based authentication</span>
+<span class="prompt">user@local:~$</span> ssh-keygen -t ed25519 -C "john@company.com"
+<span class="prompt">user@local:~$</span> ssh-copy-id user@remote-server
+<span class="prompt">user@local:~$</span> ssh -i ~/.ssh/id_ed25519 user@192.168.1.100
+
+<span class="comment"># SSH tunnel</span>
+<span class="prompt">user@local:~$</span> ssh -L 8080:localhost:80 user@remote  <span class="comment"># Port forward</span>
+<span class="prompt">user@local:~$</span> ssh -D 1080 user@remote               <span class="comment"># SOCKS proxy</span>
+
+<span class="comment"># /etc/ssh/sshd_config – cấu hình SSH server</span>
+Port 22
+PermitRootLogin no          <span class="comment"># Không cho root SSH</span>
+PasswordAuthentication no   <span class="comment"># Chỉ dùng key</span>
+AllowUsers john admin       <span class="comment"># Chỉ cho phép user cụ thể</span></pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(8)">← System Services</button><button class="nav-btn primary" onclick="goNext(8)">Security →</button></div></div>
+
+<div class="module" id="m9"><div class="module-header"><div class="module-tag">LPIC-1 · Topic 110 · Exam 102</div><div class="module-title">🔐 Bảo Mật Hệ Thống</div><div class="module-subtitle">Security admin, shadow passwords, sudo, PAM, encryption</div><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div><div class="section-content">
+<h3>🛡️ Sudo &amp; Privilege Escalation</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>sudo &amp; sudoers</span></div><div class="cmd-body"><pre><span class="comment"># /etc/sudoers – LUÔN chỉnh bằng visudo!</span>
+<span class="prompt">root@server:~#</span> visudo
+
+<span class="comment"># Cú pháp: user host=(runas) commands</span>
+john    ALL=(ALL:ALL) ALL              <span class="comment"># john có toàn quyền</span>
+deploy  ALL=(www-data) /usr/bin/git   <span class="comment"># deploy chạy git với www-data</span>
+%admin  ALL=(ALL) NOPASSWD: ALL       <span class="comment"># Group admin không cần password</span>
+ops     ALL=(ALL) /bin/systemctl      <span class="comment"># ops chỉ được dùng systemctl</span>
+
+<span class="prompt">user@linux:~$</span> sudo -l           <span class="comment"># Xem quyền sudo của mình</span>
+<span class="prompt">user@linux:~$</span> sudo -u www-data ls /var/www</pre></div></div>
+
+<h3>🔥 Firewall với iptables/nftables</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>iptables basics</span></div><div class="cmd-body"><pre><span class="comment"># Xem rules hiện tại</span>
+<span class="prompt">root@server:~#</span> iptables -L -n -v
+<span class="output">Chain INPUT (policy ACCEPT)
+ pkts bytes target  prot opt in   out  source      destination
+  100  5000 ACCEPT  all  --  lo   any  0.0.0.0/0   0.0.0.0/0
+   50  3000 ACCEPT  tcp  --  any  any  0.0.0.0/0   0.0.0.0/0   tcp dpt:22</span>
+
+<span class="comment"># Thêm rules</span>
+<span class="prompt">root@server:~#</span> iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+<span class="prompt">root@server:~#</span> iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+<span class="prompt">root@server:~#</span> iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+<span class="prompt">root@server:~#</span> iptables -P INPUT DROP   <span class="comment"># Mặc định block</span>
+
+<span class="comment"># Lưu rules</span>
+<span class="prompt">root@server:~#</span> iptables-save &gt; /etc/iptables/rules.v4</pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(9)">← Networking</button><button class="nav-btn primary" onclick="goNext(9)">Linux Kernel →</button></div></div>
+
+<div class="module" id="m10"><div class="module-header"><div class="module-tag" style="color:#d2a8ff">LPIC-2 · Topic 201 · Exam 201</div><div class="module-title">⚡ Linux Kernel</div><div class="module-subtitle">Kernel compilation, modules, kernel options</div><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Nội dung chính<span class="section-toggle">▼</span></div><div class="section-content">
+<h3>🔨 Kernel Build &amp; Management</h3>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Kernel compilation</span></div><div class="cmd-body"><pre><span class="prompt">root@server:~#</span> uname -r
+<span class="output">5.15.0-91-generic</span>
+<span class="prompt">root@server:~#</span> uname -a
+<span class="output">Linux server 5.15.0-91-generic #101-Ubuntu SMP x86_64 GNU/Linux</span>
+
+<span class="comment"># Kernel parameters tại runtime</span>
+<span class="prompt">root@server:~#</span> sysctl -a | head -20
+<span class="prompt">root@server:~#</span> sysctl net.ipv4.ip_forward
+<span class="output">net.ipv4.ip_forward = 0</span>
+<span class="prompt">root@server:~#</span> sysctl -w net.ipv4.ip_forward=1  <span class="comment"># Bật IP forwarding</span>
+
+<span class="comment"># Persistent: thêm vào /etc/sysctl.conf</span>
+net.ipv4.ip_forward = 1
+vm.swappiness = 10
+net.core.somaxconn = 1024
+
+<span class="prompt">root@server:~#</span> sysctl -p    <span class="comment"># Áp dụng từ /etc/sysctl.conf</span>
+
+<span class="comment"># Xem kernel boot params</span>
+<span class="prompt">root@server:~#</span> cat /proc/cmdline
+<span class="output">BOOT_IMAGE=/vmlinuz-5.15.0-91 root=UUID=abc123 ro quiet splash</span></pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(10)">← Security</button><button class="nav-btn primary" onclick="goNext(10)">System Boot →</button></div></div>
+
+<div class="module" id="m11"><div class="module-header"><div class="module-tag" style="color:#d2a8ff">LPIC-2 · Topic 202 · Exam 201</div><div class="module-title">🚀 System Startup &amp; Boot</div><div class="module-subtitle">GRUB2 advanced, init systems, boot troubleshooting</div><div class="progress-bar"><div class="progress-fill" style="width:82%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>GRUB2 Configuration<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>GRUB2 Management</span></div><div class="cmd-body"><pre><span class="comment"># GRUB2 config file locations</span>
+<span class="comment">/etc/default/grub        – Main settings</span>
+<span class="comment">/etc/grub.d/             – Scripts để generate grub.cfg</span>
+<span class="comment">/boot/grub/grub.cfg      – Generated config (KHÔNG edit trực tiếp)</span>
+
+<span class="comment"># Chỉnh /etc/default/grub</span>
+GRUB_TIMEOUT=5
+GRUB_DEFAULT=0
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
+
+<span class="comment"># Sau khi chỉnh, generate lại grub.cfg</span>
+<span class="prompt">root@server:~#</span> update-grub          <span class="comment"># Debian/Ubuntu</span>
+<span class="prompt">root@centos:~#</span> grub2-mkconfig -o /boot/grub2/grub.cfg  <span class="comment"># RHEL</span>
+
+<span class="comment"># Reinstall GRUB vào MBR</span>
+<span class="prompt">root@server:~#</span> grub-install /dev/sda</pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(11)">← Kernel</button><button class="nav-btn primary" onclick="goNext(11)">Advanced Filesystem →</button></div></div>
+
+<div class="module" id="m12"><div class="module-header"><div class="module-tag" style="color:#d2a8ff">LPIC-2 · Topic 203 · Exam 201</div><div class="module-title">💾 Filesystem &amp; Storage Advanced</div><div class="module-subtitle">LVM, RAID, filesystem tuning, iSCSI</div><div class="progress-bar"><div class="progress-fill" style="width:84%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>LVM – Logical Volume Manager<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>LVM Setup</span></div><div class="cmd-body"><pre><span class="comment"># LVM layers: Physical Volume → Volume Group → Logical Volume</span>
+
+<span class="comment"># 1. Tạo Physical Volumes</span>
+<span class="prompt">root@server:~#</span> pvcreate /dev/sdb /dev/sdc
+<span class="prompt">root@server:~#</span> pvdisplay
+
+<span class="comment"># 2. Tạo Volume Group</span>
+<span class="prompt">root@server:~#</span> vgcreate data_vg /dev/sdb /dev/sdc
+<span class="prompt">root@server:~#</span> vgdisplay data_vg
+
+<span class="comment"># 3. Tạo Logical Volumes</span>
+<span class="prompt">root@server:~#</span> lvcreate -L 20G -n web_lv data_vg
+<span class="prompt">root@server:~#</span> lvcreate -L 50G -n db_lv data_vg
+<span class="prompt">root@server:~#</span> mkfs.ext4 /dev/data_vg/web_lv
+<span class="prompt">root@server:~#</span> mount /dev/data_vg/web_lv /var/www
+
+<span class="comment"># Mở rộng LV (khi đầy)</span>
+<span class="prompt">root@server:~#</span> lvextend -L +10G /dev/data_vg/web_lv
+<span class="prompt">root@server:~#</span> resize2fs /dev/data_vg/web_lv  <span class="comment"># Mở rộng filesystem (ext4)</span>
+
+<span class="comment"># Tạo snapshot LVM (backup)</span>
+<span class="prompt">root@server:~#</span> lvcreate -s -L 5G -n web_snap /dev/data_vg/web_lv</pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(12)">← System Boot</button><button class="nav-btn primary" onclick="goNext(12)">Advanced Storage →</button></div></div>
+
+<div class="module" id="m13"><div class="module-header"><div class="module-tag" style="color:#d2a8ff">LPIC-2 · Topic 204 · Exam 201</div><div class="module-title">🗄️ Advanced Storage</div><div class="module-subtitle">RAID, mdadm, hardware RAID, storage protocols</div><div class="progress-bar"><div class="progress-fill" style="width:86%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Software RAID với mdadm<span class="section-toggle">▼</span></div><div class="section-content">
+<table><tbody><tr><th>RAID Level</th><th>Min Disks</th><th>Redundancy</th><th>Performance</th><th>Use case</th></tr>
+<tr><td>RAID 0</td><td>2</td><td>Không</td><td>Ghi/đọc nhanh 2x</td><td>Cần tốc độ, không quan trọng data</td></tr>
+<tr><td>RAID 1</td><td>2</td><td>N-1 disk</td><td>Đọc nhanh 2x</td><td>OS, database quan trọng</td></tr>
+<tr><td>RAID 5</td><td>3</td><td>1 disk</td><td>Đọc nhanh</td><td>File servers, NAS</td></tr>
+<tr><td>RAID 6</td><td>4</td><td>2 disks</td><td>Chậm hơn RAID5</td><td>Large storage farms</td></tr>
+<tr><td>RAID 10</td><td>4</td><td>50% disks</td><td>Nhanh nhất</td><td>Database servers</td></tr></tbody></table>
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>mdadm – Software RAID</span></div><div class="cmd-body"><pre><span class="comment"># Tạo RAID 5 với 3 disks</span>
+<span class="prompt">root@server:~#</span> mdadm --create /dev/md0 --level=5 \
+  --raid-devices=3 /dev/sdb /dev/sdc /dev/sdd
+<span class="prompt">root@server:~#</span> cat /proc/mdstat    <span class="comment"># Xem trạng thái RAID</span>
+<span class="output">md0 : active raid5 sdd[2] sdc[1] sdb[0]
+      20953088 blocks super 1.2 level 5, 512k chunk
+      [====&gt;................]  resync = 22% finish=3.4min</span>
+
+<span class="prompt">root@server:~#</span> mdadm --detail /dev/md0
+<span class="prompt">root@server:~#</span> mdadm /dev/md0 --fail /dev/sdc  <span class="comment"># Simulate disk failure</span>
+<span class="prompt">root@server:~#</span> mdadm /dev/md0 --remove /dev/sdc
+<span class="prompt">root@server:~#</span> mdadm /dev/md0 --add /dev/sde   <span class="comment"># Hot-add new disk</span></pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(13)">← Filesystem</button><button class="nav-btn primary" onclick="goNext(13)">Advanced Networking →</button></div></div>
+
+<div class="module" id="m14"><div class="module-header"><div class="module-tag" style="color:#d2a8ff">LPIC-2 · Topic 205 · Exam 201</div><div class="module-title">🌐 Advanced Networking</div><div class="module-subtitle">Network troubleshooting, packet analysis, VPN basics</div><div class="progress-bar"><div class="progress-fill" style="width:88%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Network Troubleshooting Tools<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Advanced network tools</span></div><div class="cmd-body"><pre><span class="comment"># tcpdump – capture packets</span>
+<span class="prompt">root@server:~#</span> tcpdump -i eth0 port 80 -w capture.pcap
+<span class="prompt">root@server:~#</span> tcpdump -r capture.pcap -A | head -50
+<span class="prompt">root@server:~#</span> tcpdump host 10.0.0.1 and port 443
+
+<span class="comment"># netstat/ss – socket statistics</span>
+<span class="prompt">root@server:~#</span> ss -tuanp    <span class="comment"># All sockets với process info</span>
+<span class="prompt">root@server:~#</span> ss -s         <span class="comment"># Summary statistics</span>
+
+<span class="comment"># iptraf, iftop – bandwidth monitoring</span>
+<span class="prompt">root@server:~#</span> iftop -i eth0
+
+<span class="comment"># Network bonding/teaming</span>
+<span class="prompt">root@server:~#</span> cat /proc/net/bonding/bond0
+<span class="comment"># Bonding modes: 0=balance-rr, 1=active-backup, 4=802.3ad(LACP)</span></pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(14)">← Advanced Storage</button><button class="nav-btn primary" onclick="goNext(14)">Mail Server →</button></div></div>
+
+<div class="module" id="m15"><div class="module-header"><div class="module-tag" style="color:#ffa657">LPIC-2 · Topic 206 · Exam 202</div><div class="module-title">📧 Mail Server</div><div class="module-subtitle">Postfix, Dovecot, SMTP/IMAP/POP3, spam filtering</div><div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Postfix Mail Server<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Postfix configuration</span></div><div class="cmd-body"><pre><span class="comment"># /etc/postfix/main.cf – cấu hình chính</span>
+myhostname = mail.example.com
+mydomain = example.com
+myorigin = $mydomain
+inet_interfaces = all
+mydestination = $myhostname, localhost.$mydomain, $mydomain
+mynetworks = 127.0.0.0/8 192.168.1.0/24
+relay_domains = example.com
+
+<span class="comment"># Khởi động và kiểm tra</span>
+<span class="prompt">root@server:~#</span> systemctl start postfix
+<span class="prompt">root@server:~#</span> postfix check         <span class="comment"># Kiểm tra config</span>
+<span class="prompt">root@server:~#</span> postfix status
+
+<span class="comment"># Test gửi mail</span>
+<span class="prompt">root@server:~#</span> echo "Test email" | mail -s "Test" admin@example.com
+<span class="prompt">root@server:~#</span> tail -f /var/log/mail.log  <span class="comment"># Theo dõi mail log</span>
+
+<span class="comment"># Queue management</span>
+<span class="prompt">root@server:~#</span> mailq              <span class="comment"># Xem hàng đợi</span>
+<span class="prompt">root@server:~#</span> postqueue -f       <span class="comment"># Flush queue</span>
+<span class="prompt">root@server:~#</span> postsuper -d ALL   <span class="comment"># Xóa toàn bộ queue</span></pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(15)">← Advanced Networking</button><button class="nav-btn primary" onclick="goNext(15)">DNS Server →</button></div></div>
+
+<div class="module" id="m16"><div class="module-header"><div class="module-tag" style="color:#ffa657">LPIC-2 · Topic 207 · Exam 202</div><div class="module-title">🌍 DNS Server (BIND)</div><div class="module-subtitle">BIND9, zone files, DNS records, DNSSEC basics</div><div class="progress-bar"><div class="progress-fill" style="width:92%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>BIND9 DNS Server<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>BIND9 zone configuration</span></div><div class="cmd-body"><pre><span class="comment"># /etc/bind/named.conf.local</span>
+zone "example.com" {
+    type master;
+    file "/etc/bind/db.example.com";
+};
+
+zone "1.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.192.168.1";
+};
+
+<span class="comment"># Zone file /etc/bind/db.example.com</span>
+$TTL    86400
+@   IN  SOA ns1.example.com. admin.example.com. (
+                2024011501 ; Serial (YYYYMMDDNN)
+                3600       ; Refresh
+                1800       ; Retry
+                604800     ; Expire
+                86400 )    ; Negative TTL
+
+; Name servers
+@       IN  NS  ns1.example.com.
+@       IN  NS  ns2.example.com.
+
+; A records
+@       IN  A   203.0.113.10
+ns1     IN  A   203.0.113.10
+ns2     IN  A   203.0.113.11
+www     IN  A   203.0.113.20
+mail    IN  A   203.0.113.30
+
+; MX record
+@       IN  MX  10  mail.example.com.
+
+; CNAME
+ftp     IN  CNAME   www.example.com.
+
+<span class="comment"># Kiểm tra và reload</span>
+<span class="prompt">root@server:~#</span> named-checkconf
+<span class="prompt">root@server:~#</span> named-checkzone example.com /etc/bind/db.example.com
+<span class="prompt">root@server:~#</span> rndc reload
+<span class="prompt">root@server:~#</span> dig @localhost example.com A</pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(16)">← Mail Server</button><button class="nav-btn primary" onclick="goNext(16)">Web Services →</button></div></div>
+
+<div class="module" id="m17"><div class="module-header"><div class="module-tag" style="color:#ffa657">LPIC-2 · Topic 208 · Exam 202</div><div class="module-title">🌐 Web Services</div><div class="module-subtitle">Apache2, Nginx, SSL/TLS, virtual hosts, proxies</div><div class="progress-bar"><div class="progress-fill" style="width:94%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Apache &amp; Nginx<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Virtual Hosts &amp; SSL</span></div><div class="cmd-body"><pre><span class="comment"># Apache2 Virtual Host (/etc/apache2/sites-available/example.conf)</span>
+&lt;VirtualHost *:443&gt;
+    ServerName example.com
+    ServerAlias www.example.com
+    DocumentRoot /var/www/example
+
+    SSLEngine on
+    SSLCertificateFile      /etc/ssl/certs/example.crt
+    SSLCertificateKeyFile   /etc/ssl/private/example.key
+
+    &lt;Directory /var/www/example&gt;
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+
+    ErrorLog  ${APACHE_LOG_DIR}/example_error.log
+    CustomLog ${APACHE_LOG_DIR}/example_access.log combined
+&lt;/VirtualHost&gt;
+
+<span class="comment"># Enable site</span>
+<span class="prompt">root@server:~#</span> a2ensite example.conf
+<span class="prompt">root@server:~#</span> a2enmod ssl rewrite headers
+<span class="prompt">root@server:~#</span> apache2ctl configtest
+<span class="prompt">root@server:~#</span> systemctl reload apache2
+
+<span class="comment"># Nginx Virtual Host (/etc/nginx/sites-available/example)</span>
+server {
+    listen 443 ssl http2;
+    server_name example.com www.example.com;
+    root /var/www/example;
+
+    ssl_certificate     /etc/ssl/certs/example.crt;
+    ssl_certificate_key /etc/ssl/private/example.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /api {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+<span class="prompt">root@server:~#</span> nginx -t &amp;&amp; systemctl reload nginx</pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(17)">← DNS Server</button><button class="nav-btn primary" onclick="goNext(17)">File Sharing →</button></div></div>
+
+<div class="module" id="m18"><div class="module-header"><div class="module-tag" style="color:#ffa657">LPIC-2 · Topic 209 · Exam 202</div><div class="module-title">📂 File Sharing</div><div class="module-subtitle">Samba (Windows shares), NFS (Linux/Unix shares)</div><div class="progress-bar"><div class="progress-fill" style="width:97%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Samba &amp; NFS<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>Samba &amp; NFS configuration</span></div><div class="cmd-body"><pre><span class="comment"># SAMBA /etc/samba/smb.conf</span>
+[global]
+    workgroup = COMPANY
+    server string = Linux File Server
+    security = user
+
+[shared]
+    comment = Shared Files
+    path = /srv/samba/shared
+    valid users = @staff
+    read only = no
+    create mask = 0664
+    directory mask = 0775
+
+<span class="prompt">root@server:~#</span> smbpasswd -a john    <span class="comment"># Thêm Samba user</span>
+<span class="prompt">root@server:~#</span> testparm             <span class="comment"># Validate config</span>
+<span class="prompt">root@server:~#</span> systemctl restart smbd nmbd
+
+<span class="comment"># NFS Server – /etc/exports</span>
+/srv/nfs/data   192.168.1.0/24(rw,sync,no_subtree_check)
+/srv/nfs/backup 10.0.0.0/8(ro,sync)
+
+<span class="prompt">root@server:~#</span> exportfs -ra         <span class="comment"># Reload exports</span>
+<span class="prompt">root@server:~#</span> showmount -e localhost
+
+<span class="comment"># NFS Client – mount</span>
+<span class="prompt">root@client:~#</span> mount server:/srv/nfs/data /mnt/data
+<span class="comment"># hoặc trong /etc/fstab:</span>
+server:/srv/nfs/data  /mnt/data  nfs  defaults,_netdev  0 0</pre></div></div>
+</div></div><div class="nav-buttons"><button class="nav-btn" onclick="goPrev(18)">← Web Services</button><button class="nav-btn primary" onclick="goNext(18)">Network Security →</button></div></div>
+
+<div class="module" id="m19"><div class="module-header"><div class="module-tag" style="color:#ffa657">LPIC-2 · Topic 210 · Exam 202</div><div class="module-title">🔒 Network Security Nâng Cao</div><div class="module-subtitle">OpenVPN, fail2ban, IDS/IPS, hardening</div><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></div><div class="section"><div class="section-header" onclick="toggleSection(this)"><div class="section-icon icon-detail">📖</div>Security Hardening<span class="section-toggle">▼</span></div><div class="section-content">
+<div class="cmd-block"><div class="cmd-header"><div class="cmd-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div><span>fail2ban &amp; system hardening</span></div><div class="cmd-body"><pre><span class="comment"># fail2ban – tự động ban IP brute-force</span>
+<span class="comment"># /etc/fail2ban/jail.local</span>
+[DEFAULT]
+bantime  = 3600        <span class="comment"># Ban 1 giờ</span>
+findtime = 600         <span class="comment"># Trong 10 phút</span>
+maxretry = 5           <span class="comment"># Nếu fail 5 lần</span>
+
+[sshd]
+enabled = true
+port    = ssh
+logpath = %(sshd_log)s
+
+[nginx-http-auth]
+enabled  = true
+filter   = nginx-http-auth
+logpath  = /var/log/nginx/error.log
+
+<span class="prompt">root@server:~#</span> fail2ban-client status
+<span class="output">Status
+|- Number of jail:      2
+`- Jail list:   nginx-http-auth, sshd</span>
+<span class="prompt">root@server:~#</span> fail2ban-client status sshd
+<span class="prompt">root@server:~#</span> fail2ban-client set sshd unbanip 1.2.3.4
+
+<span class="comment"># System hardening checklist</span>
+<span class="prompt">root@server:~#</span> lynis audit system   <span class="comment"># Security audit tool</span>
+<span class="prompt">root@server:~#</span> chkrootkit           <span class="comment"># Check rootkits</span>
+<span class="prompt">root@server:~#</span> rkhunter --check     <span class="comment"># Rootkit hunter</span>
+
+<span class="comment"># Disable unused services</span>
+<span class="prompt">root@server:~#</span> systemctl list-units --type=service --state=running
+<span class="prompt">root@server:~#</span> systemctl disable bluetooth cups avahi-daemon
+
+<span class="comment"># OpenSSH hardening (/etc/ssh/sshd_config)</span>
+Protocol 2
+PermitRootLogin no
+MaxAuthTries 3
+PubkeyAuthentication yes
+PasswordAuthentication no
+X11Forwarding no
+AllowTcpForwarding no
+ClientAliveInterval 300
+ClientAliveCountMax 2</pre></div></div>
+
+      <div class="info-box tip">✅ <span><strong>Checklist bảo mật server production:</strong> Disable root SSH, dùng key-based auth, enable firewall, cài fail2ban, cập nhật hệ thống thường xuyên, monitor log, chạy lynis định kỳ.</span></div>
+</div></div>
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="goPrev(19)">← File Sharing</button>
+    <div style="text-align:center;color:var(--accent2);font-weight:700">🎉 Hoàn thành toàn bộ chương trình LPI!</div>
+  </div>
+</div>
+
+  </main>
+</div>
+
+<script>
+const modules = document.querySelectorAll('.module');
+const navItems = document.querySelectorAll('.nav-item');
+
+function showModule(idx, el) {
+  modules.forEach(m => m.classList.remove('active'));
+  navItems.forEach(n => n.classList.remove('active'));
+  modules[idx].classList.add('active');
+  if (el) el.classList.add('active');
+  else navItems[idx].classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goNext(idx) {
+  if (idx < modules.length - 1) showModule(idx + 1, navItems[idx + 1]);
+}
+
+function goPrev(idx) {
+  if (idx > 0) showModule(idx - 1, navItems[idx - 1]);
+}
+
+function toggleSection(header) {
+  const content = header.nextElementSibling;
+  const toggle = header.querySelector('.section-toggle');
+  const isHidden = content.style.display === 'none';
+  content.style.display = isHidden ? 'block' : 'none';
+  toggle.textContent = isHidden ? '▼' : '▶';
+}
+
+function answerQuiz(el, correct, explanation) {
+  const item = el.closest('.quiz-item');
+  const opts = item.querySelectorAll('.quiz-opt');
+  const explain = item.querySelector('.quiz-explain');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    opts.forEach(o => {
+      if (o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+    });
+  }
+  explain.textContent = (correct ? '✓ Chính xác! ' : '✗ Sai. ') + explanation;
+  explain.classList.add('show');
+}
+
+function toggleSolution(btn) {
+  const box = btn.nextElementSibling;
+  const show = box.classList.toggle('show');
+  btn.textContent = show ? '🔼 Ẩn lời giải' : '💡 Xem lời giải';
+}
+</script>
+
+
+</body></html>

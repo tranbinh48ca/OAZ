@@ -1,0 +1,39 @@
+# more /u01/oracle/backup_db/scripts/backup_db_level_1.rcv
+RUN
+{
+SQL "BEGIN binhtv.send_sms_binhtv(''3.binh_9.215 Backup Level 1 Start''); END; ";
+Crosscheck archivelog all;
+Delete noprompt expired archivelog all;
+--DELETE BACKUP COMPLETED BEFORE 'SYSDATE-4' DEVICE TYPE DISK;
+ALLOCATE CHANNEL c1 DEVICE TYPE DISK  format '/s01/backup_db/binh/c1_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c2 DEVICE TYPE DISK  format '/s02/backup_db/binh/c2_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c3 DEVICE TYPE DISK  format '/s03/backup_db/binh/c3_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c4 DEVICE TYPE DISK  format '/s04/backup_db/binh/c4_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c5 DEVICE TYPE DISK  format '/s04/backup_db/binh/c5_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c6 DEVICE TYPE DISK  format '/s01/backup_db/binh/c6_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c7 DEVICE TYPE DISK  format '/s02/backup_db/binh/c7_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c8 DEVICE TYPE DISK  format '/s03/backup_db/binh/c8_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c9 DEVICE TYPE DISK  format '/s04/backup_db/binh/c9_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c10 DEVICE TYPE DISK  format '/s04/backup_db/binh/c10_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c11 DEVICE TYPE DISK  format '/s01/backup_db/binh/c11_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c12 DEVICE TYPE DISK  format '/s02/backup_db/binh/c12_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c13 DEVICE TYPE DISK  format '/s03/backup_db/binh/c13_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c14 DEVICE TYPE DISK  format '/s04/backup_db/binh/c14_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c15 DEVICE TYPE DISK  format '/s02/backup_db/binh/c15_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c16 DEVICE TYPE DISK  format '/s01/backup_db/binh/c16_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c17 DEVICE TYPE DISK  format '/s02/backup_db/binh/c17_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c18 DEVICE TYPE DISK  format '/s03/backup_db/binh/c18_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c19 DEVICE TYPE DISK  format '/s04/backup_db/binh/c19_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c20 DEVICE TYPE DISK  format '/s04/backup_db/binh/c20_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c21 DEVICE TYPE DISK  format '/s01/backup_db/binh/c21_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c22 DEVICE TYPE DISK  format '/s02/backup_db/binh/c22_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c23 DEVICE TYPE DISK  format '/s03/backup_db/binh/c23_binh_level1_ora_df%T_s%s_s%p';
+ALLOCATE CHANNEL c24 DEVICE TYPE DISK  format '/s04/backup_db/binh/c24_binh_level1_ora_df%T_s%s_s%p';
+BACKUP AS COMPRESSED BACKUPSET INCREMENTAL LEVEL 1 DATABASE FILESPERSET 10 MAXSETSIZE 40 G TAG LEVEL1 ;
+BACKUP AS COMPRESSED BACKUPSET ARCHIVELOG ALL FILESPERSET 10 TAG ARCH DELETE INPUT;
+#Delete noprompt archivelog until time 'sysdate-1';
+CROSSCHECK BACKUP;
+DELETE NOPROMPT EXPIRED BACKUP;
+DELETE OBSOLETE;
+--SQL "BEGIN binhtv.send_sms_binhtv(''3.binh_9.215 Backup Level 1 Success''); END; ";
+}

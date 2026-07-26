@@ -1,0 +1,121 @@
+﻿Tự động Backup Oracle Database hàng ngày qua Crontab_New
+
+Mục đích: Tự động Backup Oracle Database hàng ngày qua Crontab
+1. Tạo script backup:
+1.1. Tạo scritp backup level 0
+$ mkdir ~/backup (hoặc cd /home/oracle/backup)
+$ cd ~/backup
+$ mkdir  logs
+$ mkdir  level0
+$ mkdir  level1
+
+oracle@dbaviet-db02 # vi /home/oracle/backup/level0.rman
+#################################
+# Script for backup full database dbaviet
+# Created Date 13/10/2020
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/home/oracle/backup/level0/auto_dbaviet_ctl%F';
+run {
+CROSSCHECK BACKUP;
+DELETE NOPROMPT EXPIRED BACKUP;
+DELETE NOPROMPT OBSOLETE;
+CROSSCHECK ARCHIVELOG ALL;
+delete noprompt expired archivelog all;
+BACKUP AS COMPRESSED BACKUPSET DEVICE TYPE DISK INCREMENTAL LEVEL 0 DATABASE FORMAT '/home/oracle/backup/level0/dbaviet_%T_%d_%u_%s' FILESPERSET 10 MAXSETSIZE 40G TAG LEVEL0; 
+sql 'ALTER SYSTEM ARCHIVE LOG CURRENT';
+BACKUP AS COMPRESSED BACKUPSET DEVICE TYPE DISK ARCHIVELOG ALL FORMAT '/home/oracle/backup/level0/arc_%T_%d_%u_%s_%U' FILESPERSET 10 TAG ARCH;
+DELETE ARCHIVELOG UNTIL TIME 'SYSDATE-2';
+#sql ' BEGIN TEST_SEND_MAIL_BACKUP; END; ';
+}
+EXIT;
+oracle@dbaviet-db02 # vi /home/oracle/backup/level0.sh 
+#################################
+# Script for backup full database dbaviet
+# Created Date 13/10/2020
+#su - oracle
+logfile=`date +%Y%m%d`_level0.log 
+export ORACLE_SID=orcl
+export NLS_DATE_FORMAT="yyyy-mm-dd hh24:mi:ss"
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
+export PATH=$ORACLE_HOME/bin:$PATH
+rman target / nocatalog cmdfile /home/oracle/backup/level0.rman  log /home/oracle/backup/logs/$logfile
+exit
+
+
+1.2. Tạo script backup level 1
+
+oracle@dbaviet-db02 # vi /home/oracle/backup/level1.rman
+#################################
+# Script for backup incremental database dbaviet
+# Created Date 13/10/2020
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/home/oracle/backup/level1/auto_dbaviet_ctl%F';
+run {
+CROSSCHECK BACKUP;
+DELETE NOPROMPT EXPIRED BACKUP;
+DELETE NOPROMPT OBSOLETE;
+CROSSCHECK ARCHIVELOG ALL;
+delete noprompt expired archivelog all;
+BACKUP AS COMPRESSED BACKUPSET DEVICE TYPE DISK INCREMENTAL LEVEL 1 DATABASE FORMAT '/home/oracle/backup/level1/dbaviet_%T_%d_%u_%s' FILESPERSET 10 MAXSETSIZE 80G TAG LEVEL1; 
+sql 'ALTER SYSTEM ARCHIVE LOG CURRENT';
+BACKUP AS COMPRESSED BACKUPSET DEVICE TYPE DISK ARCHIVELOG ALL FORMAT '/home/oracle/backup/level1/arc_%T_%d_%u_%s_%U' FILESPERSET 10 TAG ARCH;
+DELETE ARCHIVELOG UNTIL TIME 'SYSDATE-1';
+#sql ' BEGIN TEST_SEND_MAIL_BACKUP; END; ';
+}
+EXIT;
+
+oracle@dbaviet-db02 # vi  /home/oracle/backup/level1.sh
+#################################
+# Script for backup incremental database dbaviet
+# Created Date 13/10/2020
+logfile=`date +%Y%m%d`_level1.log 
+export ORACLE_SID=db12c
+export NLS_DATE_FORMAT="yyyy-mm-dd hh24:mi:ss"
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
+export PATH=$ORACLE_HOME/bin:$PATH
+rman target / nocatalog cmdfile /home/oracle/backup/level1.rman  log /home/oracle/backup/logs/$logfile
+exit
+
+2. Phân quyền chạy 
+$ cd /home/oracle/backup/
+
+$ chmod +x *.sh
+
+Yêu cầu phải có đầy đru các file sau:
+
+
+(file swp bỏ qua)
+
+3. Tạo crontab backup tự động trên OS, user oracle
+#########backupdb_dbaviet########
+Vào bằng user oracle
+
+(oracle)$ crontab -e
+
+00 00 * * 0,3 /home/oracle/backup/level0.sh             #00h ngày thứ 4 và chủ nhật backup level 0
+00 00 * * 1,2,4,5,6 /home/oracle/backup/level1.sh     #Các ngày còn lại backup level 1
+
+Sau đó lưu lại bằng phím Esc --> :wq (write and quite)
+
+Kiểm tra lại nếu có 2 dòng như trên là thành công:
+
+(oracle)$ crontab -l 
+
+Kiểm tra log lịch chạy bằng crontab sinh ra:
+
+oot@ol7 log]# tail -1000f /var/log/cron
+
+4. Kiểm tra lại bản backup
+
+RMAN > list backup;
+
+RMAN> list backup summary;
+
+RMAN> list backup of datafile 1;
+
+SQL> select command_id, start_time, end_time, status,INPUT_TYPE, input_bytes_display, output_bytes_display, time_taken_display, round(compression_ratio,2) RATIO , input_bytes_per_sec_display, output_bytes_per_sec_display
+from v$rman_backup_job_details 
+where trunc(end_time)>=trunc(sysdate-120)
+order by end_time desc; 
